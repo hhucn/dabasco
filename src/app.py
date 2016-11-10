@@ -7,24 +7,28 @@ from pos import Position
 from sm import SM
 from doj import DoJ
 
+
 app = Flask(__name__)
-CORS(app) # Set security headers for Web Requests
+CORS(app) # Set security headers for Web requests
+
 
 @app.route('/evaluate/all', methods=['GET'])
 def evaluate_issue_all():
     '''Return a json file with all DoJs and all strengths of reason.'''
-    
     issue = request.args.get('issue')
-    url = "http://localhost:4284/export/doj/"+str(issue)
-    print(url)
+    url = 'http://localhost:4284/export/doj/{}'.format(issue)
+
     response = urllib.request.urlopen(url).read()
-    export = json.loads(response.decode("utf-8"))
+    export = response.decode('utf-8')
+
+    while isinstance(export, str):
+        export = json.loads(export)
 
     # Create statement map from data.
     nNodes = 0
     nodeIDForIndex = {}
     nodeIndexForID = {}
-    for n in export["nodes"]:
+    for n in export['nodes']:
         print(n)
         nNodes += 1
         nodeIDForIndex[nNodes] = n
@@ -36,7 +40,7 @@ def evaluate_issue_all():
 
     print()
     print()
-    for i in export["inferences"]:
+    for i in export['inferences']:
         print(i)
         premises = [nodeIndexForID[n] for n in i['premises']]
         target = nodeIndexForID[i['conclusion']]
@@ -46,18 +50,18 @@ def evaluate_issue_all():
         if (rid != i['id']):
             print('Falsche id: rid='+str(rid)+', i[id]='+str(i['id']))
         else:
-            print('added successfully!')
+            print('Added successfully!')
 
     print()
     print()
-    for u in export["undercuts"]:
+    for u in export['undercuts']:
         print(u)
         premises = [nodeIndexForID[n] for n in u['premises']]
         rid = sm.addUndercut(premises, u['conclusion'], u['id'])
         if (rid != u['id']):
             print('Falsche id: rid='+str(rid)+', u[id]='+str(u['id']))
         else:
-            print('added successfully!')
+            print('Added successfully!')
 
     print()
     print()
@@ -86,11 +90,11 @@ def evaluate_issue_all():
             reasons_p.append(r)
         print('Reasons for ',nodeIDForIndex[p],': ',reasons_p)
         reasons[nodeIDForIndex[p]] = reasons_p
-    
+
     return jsonify({'dojs': dojs,
                     'reasons': reasons})
 
 
 if __name__ == '__main__':
-    app.run(threaded=True,port=5101)
+    app.run(threaded=True, port=5101)
 
