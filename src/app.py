@@ -2,14 +2,13 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import urllib.request
 import json
-import math
 from pos import Position
 from sm import SM
 from doj import DoJ
 
 
 app = Flask(__name__)
-CORS(app) # Set security headers for Web requests
+CORS(app)  # Set security headers for Web requests
 
 
 @app.route('/evaluate/all', methods=['GET'])
@@ -44,7 +43,7 @@ def evaluate_issue_all():
         print(i)
         premises = [nodeIndexForID[n] for n in i['premises']]
         target = nodeIndexForID[i['conclusion']]
-        if i['is_supportive'] == False:
+        if not i['is_supportive']:
             target = -target
         rid = sm.addInference(premises, target, i['id'])
         if (rid != i['id']):
@@ -73,22 +72,22 @@ def evaluate_issue_all():
     doj = DoJ()
     dojs = {}
     n = sm.n
-    for s in range(1,n+1):
+    for s in range(1, n+1):
         pos = Position(n)
         pos.setAccepted(s)
-        doj_s = doj.doj(sm,pos,DoJ.DOJ_RECALL,SM.COHERENCE_DEDUCTIVE_INFERENCES)
+        doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
         dojs[nodeIDForIndex[s]] = doj_s
-        print('DoJ(',nodeIDForIndex[s],'): ',doj_s)
+        print('DoJ(', nodeIDForIndex[s], '): ', doj_s)
 
     # Calculate all Reason relations.
     n = sm.n
     reasons = {}
-    for p in range(1,n+1):
+    for p in range(1, n+1):
         reasons_p = []
-        for q in range(1,n+1):
-            r = doj.reason(sm,p,q,DoJ.REASON_RELATION_1,DoJ.DOJ_RECALL,SM.COHERENCE_DEDUCTIVE_INFERENCES)
+        for q in range(1, n+1):
+            r = doj.reason(sm, p, q, DoJ.REASON_RELATION_1, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
             reasons_p.append(r)
-        print('Reasons for ',nodeIDForIndex[p],': ',reasons_p)
+        print('Reasons for ', nodeIDForIndex[p], ': ', reasons_p)
         reasons[nodeIDForIndex[p]] = reasons_p
 
     return jsonify({'dojs': dojs,
@@ -97,4 +96,3 @@ def evaluate_issue_all():
 
 if __name__ == '__main__':
     app.run(threaded=True, port=5101)
-
