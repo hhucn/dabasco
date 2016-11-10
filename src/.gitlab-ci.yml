@@ -1,0 +1,12 @@
+image: hhucn/python
+
+before_script:
+  - export PIP_CACHE_DIR="pip-cache"
+  - pip install --quiet -U pip
+
+flake8:
+  stage: test
+  script:
+    - pip install --quiet flake8
+    - flake8 .
+  allow_failure: true
