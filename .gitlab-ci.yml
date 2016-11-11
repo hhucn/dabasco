@@ -11,8 +11,8 @@ flake8:
     - flake8 src/
   allow_failure: true
 
-pytest:
-  stage: test
-  script:
-    - pip install -r requirements.txt
-    - pytest src/
+# pytest:
+#   stage: test
+#   script:
+#     - pip install --quiet -r requirements.txt
+#     - pytest src/
