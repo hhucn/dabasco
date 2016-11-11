@@ -13,7 +13,7 @@ CORS(app)  # Set security headers for Web requests
 
 @app.route('/evaluate/all', methods=['GET'])
 def evaluate_issue_all():
-    '''Return a json file with all DoJs and all strengths of reason.'''
+    """Return a json file with all DoJs and all strengths of reason."""
     issue = request.args.get('issue')
     url = 'http://localhost:4284/export/doj/{}'.format(issue)
 
@@ -24,30 +24,30 @@ def evaluate_issue_all():
         export = json.loads(export)
 
     # Create statement map from data.
-    nNodes = 0
-    nodeIDForIndex = {}
-    nodeIndexForID = {}
+    n_nodes = 0
+    node_id_for_index = {}
+    node_index_for_id = {}
     for n in export['nodes']:
         print(n)
-        nNodes += 1
-        nodeIDForIndex[nNodes] = n
-        nodeIndexForID[n] = nNodes
-    print(nodeIDForIndex)
-    print(nodeIndexForID)
+        n_nodes += 1
+        node_id_for_index[n_nodes] = n
+        node_index_for_id[n] = n_nodes
+    print(node_id_for_index)
+    print(node_index_for_id)
     sm = SM()
-    sm.n = nNodes
+    sm.n = n_nodes
 
     print()
     print()
     for i in export['inferences']:
         print(i)
-        premises = [nodeIndexForID[n] for n in i['premises']]
-        target = nodeIndexForID[i['conclusion']]
+        premises = [node_index_for_id[n] for n in i['premises']]
+        target = node_index_for_id[i['conclusion']]
         if not i['is_supportive']:
             target = -target
         rid = sm.addInference(premises, target, i['id'])
-        if (rid != i['id']):
-            print('Falsche id: rid='+str(rid)+', i[id]='+str(i['id']))
+        if rid != i['id']:
+            print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
         else:
             print('Added successfully!')
 
@@ -55,10 +55,10 @@ def evaluate_issue_all():
     print()
     for u in export['undercuts']:
         print(u)
-        premises = [nodeIndexForID[n] for n in u['premises']]
+        premises = [node_index_for_id[n] for n in u['premises']]
         rid = sm.addUndercut(premises, u['conclusion'], u['id'])
-        if (rid != u['id']):
-            print('Falsche id: rid='+str(rid)+', u[id]='+str(u['id']))
+        if rid != u['id']:
+            print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
         else:
             print('Added successfully!')
 
@@ -76,8 +76,8 @@ def evaluate_issue_all():
         pos = Position(n)
         pos.setAccepted(s)
         doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
-        dojs[nodeIDForIndex[s]] = doj_s
-        print('DoJ(', nodeIDForIndex[s], '): ', doj_s)
+        dojs[node_id_for_index[s]] = doj_s
+        print('DoJ(', node_id_for_index[s], '): ', doj_s)
 
     # Calculate all Reason relations.
     n = sm.n
@@ -87,8 +87,8 @@ def evaluate_issue_all():
         for q in range(1, n+1):
             r = doj.reason(sm, p, q, DoJ.REASON_RELATION_1, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
             reasons_p.append(r)
-        print('Reasons for ', nodeIDForIndex[p], ': ', reasons_p)
-        reasons[nodeIDForIndex[p]] = reasons_p
+        print('Reasons for ', node_id_for_index[p], ': ', reasons_p)
+        reasons[node_id_for_index[p]] = reasons_p
 
     return jsonify({'dojs': dojs,
                     'reasons': reasons})
