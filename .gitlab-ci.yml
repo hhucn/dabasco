@@ -8,5 +8,10 @@ flake8:
   stage: test
   script:
     - pip install --quiet flake8
-    - flake8 .
+    - flake8 src/
   allow_failure: true
+
+pytest:
+  stage: test
+  script:
+    - pytest src/
