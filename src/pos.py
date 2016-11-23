@@ -11,9 +11,6 @@ class Position(object):
     def __init__(self, n):
         self.n = n
         self.nUndecided = n  # Cache the number of undecided elements to improve performance.
-        print(n)
-        print(range(n+1))
-        print([Position.UNDECIDED]*(n+1))
         self.A = [Position.UNDECIDED]*(n+1)
 
     def set_acceptance(self, i, a):

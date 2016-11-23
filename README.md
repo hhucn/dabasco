@@ -19,9 +19,13 @@ export for each individual issue at:
 
     http://localhost:4284/export/doj/<issue_index>
     
-To request results, use:
+To request all degrees of justifaction and all reason relations for an issue, use:
 
     http://localhost:5101/evaluate/all?issue=<issue_index>
+    
+To request all degrees of justifaction for an issue, use:
+
+    http://localhost:5101/evaluate/dojs?issue=<issue_index>
     
 Results are provided as JSON string. 
 
