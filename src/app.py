@@ -97,10 +97,22 @@ def evaluate_issue_all():
 
 @app.route('/evaluate/dojs', methods=['GET'])
 def evaluate_issue_dojs():
-    """Return a json file with all DoJs."""
+    """Return a json file with DoJs for the specified statements.
+
+    GET parameter 'issue':
+     Is expected to specify the issue for which statement DoJs are calculated.
+    GET parameter 'statements':
+     May specify a list of statement IDs (separated by comma) for which the DoJs are calculated.
+     IDs of statements not existing in the given issue are ignored.
+     If not given, DoJs for all statements are calculated."""
 
     issue = request.args.get('issue')
     url = 'http://localhost:4284/export/doj/{}'.format(issue)
+
+    requested_statements = request.args.get('statements')
+    requested_statements_list = None
+    if requested_statements:
+        requested_statements_list = [int(s) for s in requested_statements.split(',')]
 
     response = urllib.request.urlopen(url).read()
     export = response.decode('utf-8')
@@ -153,11 +165,17 @@ def evaluate_issue_dojs():
     print()
     print()
 
-    # Calculate all DoJs.
+    # Calculate the DoJs of all requested statements.
     doj = DoJ()
     dojs = {}
     n = sm.n
-    for s in range(1, n+1):
+    if requested_statements_list:
+        requested_statements_list = [i for i in requested_statements_list if i in node_index_for_id]
+        query_requested_statements = [node_index_for_id[i] for i in requested_statements_list]
+    else:
+        # Default: calculate all DoJs ([1,...,n]) if no specific statements were requested.
+        query_requested_statements = range(1, n + 1)
+    for s in query_requested_statements:
         pos = Position(n)
         pos.set_accepted(s)
         doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)

@@ -27,6 +27,10 @@ To request all degrees of justifaction for an issue, use:
 
     http://localhost:5101/evaluate/dojs?issue=<issue_index>
     
+To request the degrees of justifaction of specific statements in an issue, use:
+
+    http://localhost:5101/evaluate/dojs?issue=<issue_index>&statements=<s1>,<s2>,...
+    
 Results are provided as JSON string. 
 
 ## Testing
