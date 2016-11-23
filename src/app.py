@@ -45,7 +45,7 @@ def evaluate_issue_all():
         target = node_index_for_id[i['conclusion']]
         if not i['is_supportive']:
             target = -target
-        rid = sm.addInference(premises, target, i['id'])
+        rid = sm.add_inference(premises, target, i['id'])
         if rid != i['id']:
             print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
         else:
@@ -56,7 +56,7 @@ def evaluate_issue_all():
     for u in export['undercuts']:
         print(u)
         premises = [node_index_for_id[n] for n in u['premises']]
-        rid = sm.addUndercut(premises, u['conclusion'], u['id'])
+        rid = sm.add_undercut(premises, u['conclusion'], u['id'])
         if rid != u['id']:
             print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
         else:
@@ -64,7 +64,7 @@ def evaluate_issue_all():
 
     print()
     print()
-    sm.prettyPrint()
+    sm.pretty_print()
     print()
     print()
 
@@ -74,7 +74,7 @@ def evaluate_issue_all():
     n = sm.n
     for s in range(1, n+1):
         pos = Position(n)
-        pos.setAccepted(s)
+        pos.set_accepted(s)
         doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
         dojs[node_id_for_index[s]] = doj_s
         print('DoJ(', node_id_for_index[s], '): ', doj_s)
