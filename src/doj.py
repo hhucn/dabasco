@@ -39,33 +39,33 @@ class DoJ(object):
     # DEGREE OF JUSTIFICATION: implementations
     def recall(self, graph, pos, _coh):
         empty_pos = Position(pos.n)
-        n1 = graph.getNumberOfCoherentCompletions(pos, _coh)
-        n2 = graph.getNumberOfCoherentCompletions(empty_pos, _coh)
+        n1 = graph.get_number_of_coherent_completions(pos, _coh)
+        n2 = graph.get_number_of_coherent_completions(empty_pos, _coh)
         return n1/float(n2)
 
     def recall_conditional(self, graph, pos, conditional_pos, _coh):
-        pos_union = conditional_pos.unionWith(pos)
+        pos_union = conditional_pos.union_with(pos)
         if pos_union is None:
             return 0.0
-        n1 = graph.getNumberOfCoherentCompletions(pos_union, _coh)
+        n1 = graph.get_number_of_coherent_completions(pos_union, _coh)
         if n1 == 0:
             return 0.0
-        n2 = graph.getNumberOfCoherentCompletions(conditional_pos, _coh)
+        n2 = graph.get_number_of_coherent_completions(conditional_pos, _coh)
         return n1/float(n2)
 
     def precision(self, graph, pos, _coh):
-        n1 = graph.getNumberOfCoherentCompletions(pos, _coh)
-        n2 = pos.getNumberOfCompletions()
+        n1 = graph.get_number_of_coherent_completions(pos, _coh)
+        n2 = pos.get_number_of_completions()
         return n1/float(n2)
 
     def precision_conditional(self, graph, pos, conditional_pos, _coh):
-        pos_union = conditional_pos.unionWith(pos)
+        pos_union = conditional_pos.union_with(pos)
         if pos_union is None:
             return 0.0
-        n1 = graph.getNumberOfCoherentCompletions(pos_union, _coh)
+        n1 = graph.get_number_of_coherent_completions(pos_union, _coh)
         if n1 == 0:
             return 0.0
-        n2 = pos_union.getNumberOfCompletions()
+        n2 = pos_union.get_number_of_completions()
         return n1/float(n2)
 
     # -----------------------------------------------------------
@@ -90,9 +90,9 @@ class DoJ(object):
     def reason1(self, graph, p, q, _doj, _coh):
         """Calculate doj(p|q) - doj(p)."""
         pos = Position(graph.n)
-        pos.setAcceptance(p, Position.ACCEPTED)
+        pos.set_acceptance(p, Position.ACCEPTED)
         cond_pos = Position(graph.n)
-        cond_pos.setAcceptance(q, Position.ACCEPTED)
+        cond_pos.set_acceptance(q, Position.ACCEPTED)
         doj1 = self.doj_conditional(graph, pos, cond_pos, _doj, _coh)
         doj2 = self.doj(graph, pos, _doj, _coh)
         return doj1 - doj2
@@ -102,11 +102,11 @@ class DoJ(object):
     def reason2(self, graph, p, q, _doj, _coh):
         """Calculate doj(p|q) - doj(p|-q)."""
         pos = Position(graph.n)
-        pos.setAcceptance(p, Position.ACCEPTED)
+        pos.set_acceptance(p, Position.ACCEPTED)
         cond_pos1 = Position(graph.n)
-        cond_pos1.setAcceptance(q, Position.ACCEPTED)
+        cond_pos1.set_acceptance(q, Position.ACCEPTED)
         cond_pos2 = Position(graph.n)
-        cond_pos2.setAcceptance(q, Position.REJECTED)
+        cond_pos2.set_acceptance(q, Position.REJECTED)
         doj1 = self.doj_conditional(graph, pos, cond_pos1, _doj, _coh)
         doj2 = self.doj_conditional(graph, pos, cond_pos2, _doj, _coh)
         return doj1 - doj2
@@ -116,9 +116,9 @@ class DoJ(object):
     def reason3(self, graph, p, q, _doj, _coh):
         """Calculate log_2( doj(p|q) / doj(p) )."""
         pos = Position(graph.n)
-        pos.setAcceptance(p, Position.ACCEPTED)
+        pos.set_acceptance(p, Position.ACCEPTED)
         cond_pos = Position(graph.n)
-        cond_pos.setAcceptance(q, Position.ACCEPTED)
+        cond_pos.set_acceptance(q, Position.ACCEPTED)
         doj1 = self.doj_conditional(graph, pos, cond_pos, _doj, _coh)
         doj2 = self.doj(graph, pos, _doj, _coh)
         if doj1 == 0:
@@ -133,11 +133,11 @@ class DoJ(object):
     def reason4(self, graph, p, q, _doj, _coh):
         """Calculate log_2( doj(p|q) / doj(p|-q) )."""
         pos = Position(graph.n)
-        pos.setAcceptance(p, Position.ACCEPTED)
+        pos.set_acceptance(p, Position.ACCEPTED)
         cond_pos1 = Position(graph.n)
-        cond_pos1.setAcceptance(q, Position.ACCEPTED)
+        cond_pos1.set_acceptance(q, Position.ACCEPTED)
         cond_pos2 = Position(graph.n)
-        cond_pos2.setAcceptance(q, Position.REJECTED)
+        cond_pos2.set_acceptance(q, Position.REJECTED)
         doj1 = self.doj_conditional(graph, pos, cond_pos1, _doj, _coh)
         doj2 = self.doj_conditional(graph, pos, cond_pos2, _doj, _coh)
         if doj1 == 0:

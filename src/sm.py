@@ -6,7 +6,7 @@ Inference = collections.namedtuple('Inference', ['id', 'origin', 'target'])
 
 class SM(object):
     """A statement map data structure.
-    
+
     Consists of:
     n -- Number of statements (set of statements is [1, .., n] implicitly)
     inferences -- Set of arguments
@@ -83,15 +83,15 @@ class SM(object):
     # EVALUATION
     def inference_is_violated(self, pos, r):
         for p in r.origin:
-            if not pos.isAccepted(p):
+            if not pos.is_accepted(p):
                 return False
-        return pos.isRejected(r.target)
+        return pos.is_rejected(r.target)
 
     def get_active_inferences(self, pos):
         """Return all active and non-undercut inferences.
-        
+
         An inference is active if it has a satisfied premise.
-        An inference is undercut if there is an undercut with 
+        An inference is undercut if there is an undercut with
         satisfied premise against it.
         """
 
@@ -101,7 +101,7 @@ class SM(object):
             r = self.inferences[rid]
             active = True
             for p in r.origin:
-                if not pos.isAccepted(p):
+                if not pos.is_accepted(p):
                     active = False
                     break
             if active:
@@ -113,7 +113,7 @@ class SM(object):
             r = self.undercuts[rid]
             active = True
             for p in r.origin:
-                if not pos.isAccepted(p):
+                if not pos.is_accepted(p):
                     active = False
                     break
             if active:
@@ -145,7 +145,7 @@ class SM(object):
                 n_new = len(active_undercuts)
                 if n_new < n_old:
                     changed = True
-        
+
         return active_inferences
 
     def get_violated_rules(self, pos):
@@ -168,7 +168,7 @@ class SM(object):
         return 0
 
     def get_number_of_deductively_valid_completions(self, pos):
-        possible_statements = list(pos.getFreeElements())
+        possible_statements = list(pos.get_free_elements())
         pos2 = copy.deepcopy(pos)
         return self.get_number_of_deductively_valid_completions_rec(pos2, possible_statements, len(possible_statements))
 
@@ -180,9 +180,9 @@ class SM(object):
                 return 0
         k -= 1
         possible_statement = possible_statements[k]
-        pos.setAccepted(possible_statement)
+        pos.set_accepted(possible_statement)
         n1 = self.get_number_of_deductively_valid_completions_rec(pos, possible_statements, k)
-        pos.setRejected(possible_statement)
+        pos.set_rejected(possible_statement)
         n2 = self.get_number_of_deductively_valid_completions_rec(pos, possible_statements, k)
-        pos.setUndecided(possible_statement)
+        pos.set_undecided(possible_statement)
         return n1+n2

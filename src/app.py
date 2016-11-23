@@ -14,6 +14,7 @@ CORS(app)  # Set security headers for Web requests
 @app.route('/evaluate/all', methods=['GET'])
 def evaluate_issue_all():
     """Return a json file with all DoJs and all strengths of reason."""
+
     issue = request.args.get('issue')
     url = 'http://localhost:4284/export/doj/{}'.format(issue)
 
@@ -74,6 +75,9 @@ def evaluate_issue_all():
     n = sm.n
     for s in range(1, n+1):
         pos = Position(n)
+        print("max pos index: "+str(n+1))
+        print("used index s: "+str(s))
+        print("A: "+str(pos.A))
         pos.set_accepted(s)
         doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
         dojs[node_id_for_index[s]] = doj_s

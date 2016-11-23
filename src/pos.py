@@ -11,7 +11,10 @@ class Position(object):
     def __init__(self, n):
         self.n = n
         self.nUndecided = n  # Cache the number of undecided elements to improve performance.
-        self.A = [Position.UNDECIDED in range(n+1)]
+        print(n)
+        print(range(n+1))
+        print([Position.UNDECIDED]*(n+1))
+        self.A = [Position.UNDECIDED]*(n+1)
 
     def set_acceptance(self, i, a):
         change = abs(self.A[i]) - abs(a)
@@ -69,7 +72,7 @@ class Position(object):
 
     def union_with(self, other_pos):
         """Create a new position from self and otherPos.
-        
+
         Creates a new position of same size as self. For each
         undecided element in self, use the acceptance value from
         otherPos, else use acceptance from self.
