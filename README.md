@@ -19,15 +19,15 @@ export for each individual issue at:
 
     http://localhost:4284/export/doj/<issue_index>
     
-To request all degrees of justifaction and all reason relations for an issue, use:
+To request all degrees of justification and all reason relations for an issue, use:
 
     http://localhost:5101/evaluate/all?issue=<issue_index>
     
-To request all degrees of justifaction for an issue, use:
+To request all degrees of justification for an issue, use:
 
     http://localhost:5101/evaluate/dojs?issue=<issue_index>
     
-To request the degrees of justifaction of specific statements in an issue, use:
+To request the degrees of justification of specific statements in an issue, use:
 
     http://localhost:5101/evaluate/dojs?issue=<issue_index>&statements=<s1>,<s2>,...
     
