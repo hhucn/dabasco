@@ -4,7 +4,7 @@ import urllib.request
 import json
 from pos import Position
 from sm import SM
-from doj import DoJ
+from eval import DoJ
 
 
 app = Flask(__name__)
@@ -183,6 +183,79 @@ def evaluate_issue_dojs():
         print('DoJ(', node_id_for_index[s], '): ', doj_s)
 
     return jsonify({'dojs': dojs})
+
+
+@app.route('/evaluate/doj', methods=['GET'])
+def evaluate_issue_conditional_doj():
+    """
+    Return a json file with the DoJ of pos1 given pos2 (optional).
+    """
+
+    # TODO get issue from url
+    issue = 4
+    # issue = request.args.get('issue')
+    url = 'http://localhost:4284/export/doj/{}'.format(issue)
+
+    response = urllib.request.urlopen(url).read()
+    export = response.decode('utf-8')
+
+    while isinstance(export, str):
+        export = json.loads(export)
+
+    # Create statement map from data.
+    n_nodes = 0
+    node_id_for_index = {}
+    node_index_for_id = {}
+    for n in export['nodes']:
+        print(n)
+        n_nodes += 1
+        node_id_for_index[n_nodes] = n
+        node_index_for_id[n] = n_nodes
+    print(node_id_for_index)
+    print(node_index_for_id)
+    sm = SM()
+    sm.n = n_nodes
+
+    print()
+    print()
+    for i in export['inferences']:
+        print(i)
+        premises = [node_index_for_id[n] for n in i['premises']]
+        target = node_index_for_id[i['conclusion']]
+        if not i['is_supportive']:
+            target = -target
+        rid = sm.add_inference(premises, target, i['id'])
+        if rid != i['id']:
+            print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
+        else:
+            print('Added successfully!')
+
+    print()
+    print()
+    for u in export['undercuts']:
+        print(u)
+        premises = [node_index_for_id[n] for n in u['premises']]
+        rid = sm.add_undercut(premises, u['conclusion'], u['id'])
+        if rid != u['id']:
+            print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
+        else:
+            print('Added successfully!')
+
+    print()
+    print()
+    sm.pretty_print()
+    print()
+    print()
+
+    # Calculate the conditional DoJ of position 1 given position 2.
+    doj = DoJ()
+    n = sm.n
+    # TODO get pos1 and pos2 data from url
+    pos1 = Position(n)
+    pos2 = Position(n)
+    result = doj.doj_conditional(sm, pos1, pos2, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
+
+    return jsonify({'doj': result})
 
 
 if __name__ == '__main__':

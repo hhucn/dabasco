@@ -8,11 +8,11 @@ flake8:
   stage: test
   script:
     - pip install --quiet flake8
-    - flake8 src/
+    - flake8 doj/
   allow_failure: true
 
 # pytest:
 #   stage: test
 #   script:
 #     - pip install --quiet -r requirements.txt
-#     - pytest src/
+#     - pytest doj/
