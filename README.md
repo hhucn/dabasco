@@ -11,7 +11,11 @@ TODO
 
 To run the service, execute:
 
-    python app.py
+    make run
+    
+Or alternatively:
+
+    python dabasco/app.py
     
 This requires a running D-BAS instance on localhost.
 Alternatively, provide the D-BAS export interface yourself and serve the json

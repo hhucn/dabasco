@@ -1,5 +1,5 @@
 import math
-from pos import Position
+from .pos import Position
 
 
 class DoJ(object):

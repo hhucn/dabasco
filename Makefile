@@ -6,6 +6,6 @@ dependencies:
 	pip install -r requirements.txt
 
 run:
-	python doj/app.py
+	python dabasco/app.py
 
 .PHONY: test

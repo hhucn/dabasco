@@ -2,9 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import urllib.request
 import json
-from pos import Position
-from sm import SM
-from eval import DoJ
+from doj.pos import Position
+from doj.sm import SM
+from doj.doj import DoJ
 
 
 app = Flask(__name__)
