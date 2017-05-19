@@ -1,11 +1,20 @@
+#!/usr/bin/env python3
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
+
 from doj.pos import Position
 from doj.sm import SM
 from doj.doj import DoJ
 
+from os import path
+import logging
+import logging.config
+log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging.ini')
+logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
+logger = logging.getLogger('root')
 
 app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
@@ -20,6 +29,7 @@ def evaluate_issue_reasons(discussion):
     :return: json string
     """
 
+    # Get D-BAS graph
     url = 'http://localhost:4284/export/doj/{}'.format(discussion)
 
     response = urllib.request.urlopen(url).read()
@@ -28,62 +38,20 @@ def evaluate_issue_reasons(discussion):
     while isinstance(export, str):
         export = json.loads(export)
 
-    # Create statement map from data.
-    n_nodes = 0
-    node_id_for_index = {}
-    node_index_for_id = {}
-    for n in export['nodes']:
-        print(n)
-        n_nodes += 1
-        node_id_for_index[n_nodes] = n
-        node_index_for_id[n] = n_nodes
-    print(node_id_for_index)
-    print(node_index_for_id)
-    sm = SM()
-    sm.n = n_nodes
+    # Create statement map from data
+    statement_map, node_index_for_id, node_id_for_index = dbas_graph_to_statement_map(export)
 
-    print()
-    print()
-    for i in export['inferences']:
-        print(i)
-        premises = [node_index_for_id[n] for n in i['premises']]
-        target = node_index_for_id[i['conclusion']]
-        if not i['is_supportive']:
-            target = -target
-        rid = sm.add_inference(premises, target, i['id'])
-        if rid != i['id']:
-            print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    for u in export['undercuts']:
-        print(u)
-        premises = [node_index_for_id[n] for n in u['premises']]
-        rid = sm.add_undercut(premises, u['conclusion'], u['id'])
-        if rid != u['id']:
-            print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    sm.pretty_print()
-    print()
-    print()
-
-    # Calculate all Reason relations.
+    # Calculate all Reason relations
     doj = DoJ()
-    n = sm.n
+    n = statement_map.n
     reasons = {}
-    for p in range(1, n+1):
-        reasons_p = []
-        for q in range(1, n+1):
-            r = doj.reason(sm, p, q, DoJ.REASON_RELATION_1, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
-            reasons_p.append(r)
-        print('Reasons for ', node_id_for_index[p], ': ', reasons_p)
-        reasons[node_id_for_index[p]] = reasons_p
+    for s1 in range(1, n + 1):
+        reasons_s1 = {}
+        for s2 in range(1, n + 1):
+            r = doj.reason(statement_map, s1, s2, DoJ.REASON_RELATION_1, DoJ.DOJ_RECALL,
+                           SM.COHERENCE_DEDUCTIVE_INFERENCES)
+            reasons_s1[node_id_for_index[s2]] = r
+        reasons[node_id_for_index[s1]] = reasons_s1
 
     return jsonify({'reasons': reasons})
 
@@ -115,55 +83,13 @@ def evaluate_issue_dojs(discussion, statements):
     while isinstance(export, str):
         export = json.loads(export)
 
-    # Create statement map from data.
-    n_nodes = 0
-    node_id_for_index = {}
-    node_index_for_id = {}
-    for n in export['nodes']:
-        print(n)
-        n_nodes += 1
-        node_id_for_index[n_nodes] = n
-        node_index_for_id[n] = n_nodes
-    print(node_id_for_index)
-    print(node_index_for_id)
-    sm = SM()
-    sm.n = n_nodes
+    # Create statement map from data
+    statement_map, node_index_for_id, node_id_for_index = dbas_graph_to_statement_map(export)
 
-    print()
-    print()
-    for i in export['inferences']:
-        print(i)
-        premises = [node_index_for_id[n] for n in i['premises']]
-        target = node_index_for_id[i['conclusion']]
-        if not i['is_supportive']:
-            target = -target
-        rid = sm.add_inference(premises, target, i['id'])
-        if rid != i['id']:
-            print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    for u in export['undercuts']:
-        print(u)
-        premises = [node_index_for_id[n] for n in u['premises']]
-        rid = sm.add_undercut(premises, u['conclusion'], u['id'])
-        if rid != u['id']:
-            print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    sm.pretty_print()
-    print()
-    print()
-
-    # Calculate the DoJs of all requested statements.
+    # Calculate the DoJs of all requested statements
     doj = DoJ()
     dojs = {}
-    n = sm.n
+    n = statement_map.n
     if requested_statements_list:
         requested_statements_list = [i for i in requested_statements_list if i in node_index_for_id]
         query_requested_statements = [node_index_for_id[i] for i in requested_statements_list]
@@ -173,9 +99,9 @@ def evaluate_issue_dojs(discussion, statements):
     for s in query_requested_statements:
         pos = Position(n)
         pos.set_accepted(s)
-        doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
+        doj_s = doj.doj(statement_map, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
         dojs[node_id_for_index[s]] = doj_s
-        print('DoJ(', node_id_for_index[s], '): ', doj_s)
+        logging.debug('DoJ(%s): %s', node_id_for_index[s], doj_s)
 
     return jsonify({'dojs': dojs})
 
@@ -219,53 +145,11 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     while isinstance(export, str):
         export = json.loads(export)
 
-    # Create statement map from data.
-    n_nodes = 0
-    node_id_for_index = {}
-    node_index_for_id = {}
-    for n in export['nodes']:
-        print(n)
-        n_nodes += 1
-        node_id_for_index[n_nodes] = n
-        node_index_for_id[n] = n_nodes
-    print(node_id_for_index)
-    print(node_index_for_id)
-    sm = SM()
-    sm.n = n_nodes
-
-    print()
-    print()
-    for i in export['inferences']:
-        print(i)
-        premises = [node_index_for_id[n] for n in i['premises']]
-        target = node_index_for_id[i['conclusion']]
-        if not i['is_supportive']:
-            target = -target
-        rid = sm.add_inference(premises, target, i['id'])
-        if rid != i['id']:
-            print('Added wrong inference id: rid='+str(rid)+', i[id]='+str(i['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    for u in export['undercuts']:
-        print(u)
-        premises = [node_index_for_id[n] for n in u['premises']]
-        rid = sm.add_undercut(premises, u['conclusion'], u['id'])
-        if rid != u['id']:
-            print('Added wrong undercut id: rid='+str(rid)+', u[id]='+str(u['id']))
-        else:
-            print('Added successfully!')
-
-    print()
-    print()
-    sm.pretty_print()
-    print()
-    print()
+    # Create statement map from data
+    statement_map, node_index_for_id, node_id_for_index = dbas_graph_to_statement_map(export)
 
     # Process input positions
-    n = sm.n
+    n = statement_map.n
     pos1 = Position(n)
     if acc1:
         for s in acc1.split(','):
@@ -288,9 +172,57 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
 
     # Calculate the conditional DoJ of position 1 given position 2.
     doj = DoJ()
-    result = doj.doj_conditional(sm, pos1, pos2, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
+    result = doj.doj_conditional(statement_map, pos1, pos2, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
 
     return jsonify({'doj': result})
+
+
+def dbas_graph_to_statement_map(dbas_graph):
+    """
+    Convert the given D-BAS graph export to a SM data structure.
+
+    :param dbas_graph: string as provided by D-BAS graph export 
+    :return: SM, node_index_for_id, node_id_for_index
+
+    Along with the SM object, also provides the corresponding mappings
+    between D-BAS statement IDs and SM statement indices. 
+    """
+    logging.debug('Create Statement Map from D-BAS graph...')
+    n_nodes = 0
+    node_id_for_index = {}
+    node_index_for_id = {}
+    for n in dbas_graph['nodes']:
+        logging.debug('Node: %s', n)
+        n_nodes += 1
+        node_id_for_index[n_nodes] = n
+        node_index_for_id[n] = n_nodes
+    logging.debug('node_id_for_index: %s', node_id_for_index)
+    logging.debug('node_index_for_id: %s', node_index_for_id)
+    statement_map = SM()
+    statement_map.n = n_nodes
+
+    for i in dbas_graph['inferences']:
+        logging.debug('Inference: %s', i)
+        premises = [node_index_for_id[n] for n in i['premises']]
+        target = node_index_for_id[i['conclusion']]
+        if not i['is_supportive']:
+            target = -target
+        rid = statement_map.add_inference(premises, target, i['id'])
+        if rid != i['id']:
+            logging.warning('Added wrong inference id: rid=%s, i[id]=%s', str(rid), str(i['id']))
+        else:
+            logging.debug('Added inference successfully (rid=%s)!', str(rid))
+
+    for u in dbas_graph['undercuts']:
+        logging.debug('Undercut: %s', u)
+        premises = [node_index_for_id[n] for n in u['premises']]
+        rid = statement_map.add_undercut(premises, u['conclusion'], u['id'])
+        if rid != u['id']:
+            logging.warning('Added wrong undercut id: rid=' + str(rid) + ', u[id]=' + str(u['id']))
+        else:
+            logging.debug('Added undercut successfully (rid=%s)!', str(rid))
+
+    return statement_map, node_index_for_id, node_id_for_index
 
 
 if __name__ == '__main__':
