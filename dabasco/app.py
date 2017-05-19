@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
@@ -11,12 +11,16 @@ app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
 
-@app.route('/evaluate/all', methods=['GET'])
-def evaluate_issue_all():
-    """Return a json file with all DoJs and all strengths of reason."""
+@app.route('/evaluate/reasons/<int:discussion>')
+def evaluate_issue_reasons(discussion):
+    """
+    Return a json string with all strengths of reason for the given discussion.
+    
+    :param discussion: discussion ID 
+    :return: json string
+    """
 
-    issue = request.args.get('issue')
-    url = 'http://localhost:4284/export/doj/{}'.format(issue)
+    url = 'http://localhost:4284/export/doj/{}'.format(discussion)
 
     response = urllib.request.urlopen(url).read()
     export = response.decode('utf-8')
@@ -69,18 +73,8 @@ def evaluate_issue_all():
     print()
     print()
 
-    # Calculate all DoJs.
-    doj = DoJ()
-    dojs = {}
-    n = sm.n
-    for s in range(1, n+1):
-        pos = Position(n)
-        pos.set_accepted(s)
-        doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
-        dojs[node_id_for_index[s]] = doj_s
-        print('DoJ(', node_id_for_index[s], '): ', doj_s)
-
     # Calculate all Reason relations.
+    doj = DoJ()
     n = sm.n
     reasons = {}
     for p in range(1, n+1):
@@ -91,28 +85,29 @@ def evaluate_issue_all():
         print('Reasons for ', node_id_for_index[p], ': ', reasons_p)
         reasons[node_id_for_index[p]] = reasons_p
 
-    return jsonify({'dojs': dojs,
-                    'reasons': reasons})
+    return jsonify({'reasons': reasons})
 
 
-@app.route('/evaluate/dojs', methods=['GET'])
-def evaluate_issue_dojs():
-    """Return a json file with DoJs for the specified statements.
+@app.route('/evaluate/dojs/<int:discussion>/<string:statements>')
+@app.route('/evaluate/dojs/<int:discussion>/', defaults={'statements': ''})
+@app.route('/evaluate/dojs/<int:discussion>', defaults={'statements': ''})
+def evaluate_issue_dojs(discussion, statements):
+    """
+    Return a json string with DoJs for the specified statements.
 
-    GET parameter 'issue':
-     Is expected to specify the issue for which statement DoJs are calculated.
-    GET parameter 'statements':
-     May specify a list of statement IDs (separated by comma) for which the DoJs are calculated.
-     IDs of statements not existing in the given issue are ignored.
-     If not given, DoJs for all statements are calculated."""
+    :param discussion: discussion ID
+    :param statements: comma separated string of statements for which the DoJs are calculated. 
+    :return: json string
+    
+    IDs of statements that do not exist in the given discussion are ignored.
+    If no statements are given, DoJs for all statements in the discussion are calculated.
+    """
 
-    issue = request.args.get('issue')
-    url = 'http://localhost:4284/export/doj/{}'.format(issue)
+    url = 'http://localhost:4284/export/doj/{}'.format(discussion)
 
-    requested_statements = request.args.get('statements')
     requested_statements_list = None
-    if requested_statements:
-        requested_statements_list = [int(s) for s in requested_statements.split(',')]
+    if statements:
+        requested_statements_list = [int(s) for s in statements.split(',')]
 
     response = urllib.request.urlopen(url).read()
     export = response.decode('utf-8')
@@ -185,16 +180,38 @@ def evaluate_issue_dojs():
     return jsonify({'dojs': dojs})
 
 
-@app.route('/evaluate/doj', methods=['GET'])
-def evaluate_issue_conditional_doj():
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>')
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'acc1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'rej1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/rej/<string:rej2>', defaults={'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>', defaults={'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'acc1': '', 'rej1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>', defaults={'acc1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>', defaults={'acc1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/rej/<string:rej2>', defaults={'rej1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>', defaults={'rej1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2', defaults={'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/rej/<string:rej2>', defaults={'acc1': '', 'rej1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>', defaults={'acc1': '', 'rej1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2', defaults={'acc1': '', 'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2', defaults={'rej1': '', 'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2', defaults={'acc1': '', 'rej1': '', 'acc2': '', 'rej2': ''})
+def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     """
-    Return a json file with the DoJ of pos1 given pos2 (optional).
+    Return a json string with the DoJ of position pos1 given position pos2.
+    
+    :param dis: discussion ID
+    :param acc1: (optional) comma separated string of statement IDs which are accepted in position pos1.
+    :param rej1: (optional) comma separated string of statement IDs which are rejected in position pos1.
+    :param acc2: (optional) comma separated string of statement IDs which are accepted in conditional position pos2.
+    :param rej2: (optional) comma separated string of statement IDs which are rejected in conditional position pos2. 
+    :return: json string
+    
+    IDs of statements that do not exist in the given discussion are ignored.
     """
 
-    # TODO get issue from url
-    issue = 4
-    # issue = request.args.get('issue')
-    url = 'http://localhost:4284/export/doj/{}'.format(issue)
+    # Get discussion graph
+    url = 'http://localhost:4284/export/doj/{}'.format(dis)
 
     response = urllib.request.urlopen(url).read()
     export = response.decode('utf-8')
@@ -247,12 +264,30 @@ def evaluate_issue_conditional_doj():
     print()
     print()
 
+    # Process input positions
+    n = sm.n
+    pos1 = Position(n)
+    if acc1:
+        for s in acc1.split(','):
+            if int(s) in node_index_for_id:
+                pos1.set_accepted(node_index_for_id[int(s)])
+    if rej1:
+        for s in rej1.split(','):
+            if int(s) in node_index_for_id:
+                pos1.set_rejected(node_index_for_id[int(s)])
+
+    pos2 = Position(n)
+    if acc2:
+        for s in acc2.split(','):
+            if int(s) in node_index_for_id:
+                pos2.set_accepted(node_index_for_id[int(s)])
+    if rej2:
+        for s in rej2.split(','):
+            if int(s) in node_index_for_id:
+                pos2.set_rejected(node_index_for_id[int(s)])
+
     # Calculate the conditional DoJ of position 1 given position 2.
     doj = DoJ()
-    n = sm.n
-    # TODO get pos1 and pos2 data from url
-    pos1 = Position(n)
-    pos2 = Position(n)
     result = doj.doj_conditional(sm, pos1, pos2, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
 
     return jsonify({'doj': result})

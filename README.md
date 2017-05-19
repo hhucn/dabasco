@@ -23,19 +23,33 @@ export for each individual issue at:
 
     http://localhost:4284/export/doj/<issue_index>
     
-To request all degrees of justification and all reason relations for an issue, use:
+## Degrees of Justification
 
-    http://localhost:5101/evaluate/all?issue=<issue_index>
-    
-To request all degrees of justification for an issue, use:
+All results are provided as a JSON string.
 
-    http://localhost:5101/evaluate/dojs?issue=<issue_index>
-    
-To request the degrees of justification of specific statements in an issue, use:
+To request all degrees of justification for a discussion, use:
 
-    http://localhost:5101/evaluate/dojs?issue=<issue_index>&statements=<s1>,<s2>,...
+    http://localhost:5101/evaluate/dojs/<discussion_id>
     
-Results are provided as JSON string. 
+To request the degrees of justification of specific statements (s1, s2, ...) in a discussion, use:
+
+    http://localhost:5101/evaluate/dojs/<discussion_id>/<s1>,<s2>,...
+
+To request the degree of justification of a specific position (given by comma separated IDs of accepted statements "acc1" and rejected statements "rej1") conditioned by another specific position (given by "acc2" and "rej2"), use:
+
+    http://localhost:5101/evaluate/doj/<discussion_id>/pos1/acc/<acc1>/rej/<rej1>/pos2/acc/<acc2>/rej/<rej2>
+    
+All statement parameters are optional. When omitting a parameter, also omit the corresponding route element, e.g.:
+
+    http://localhost:5101/evaluate/doj/<discussion_id>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>
+    http://localhost:5101/evaluate/doj/<discussion_id>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>
+    http://localhost:5101/evaluate/doj/<discussion_id>/pos1/rej/<string:rej1>/pos2
+    http://localhost:5101/evaluate/doj/<discussion_id>/pos1/pos2
+
+To request all reason relations for a discussion, use:
+
+    http://localhost:5101/evaluate/reasons/<discussion_id>
+     
 
 ## Testing
 TODO
