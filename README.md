@@ -17,11 +17,12 @@ Or alternatively:
 
     python dabasco/app.py
     
-This requires a running D-BAS instance on localhost.
+This module requires a running D-BAS instance on localhost.
 Alternatively, provide the D-BAS export interface yourself and serve the json
-export for each individual issue at:
+export for the graph data and user opinion data at (respectively):
 
-    http://localhost:4284/export/doj/<issue_index>
+    http://localhost:4284/export/doj/<discussion_id>
+    http://localhost:4284/export/doj_user/<user_id>/<discussion_id>
     
 ## Degrees of Justification
 
@@ -50,6 +51,15 @@ To request all reason relations for a discussion, use:
 
     http://localhost:5101/evaluate/reasons/<discussion_id>
      
+## TOAST Interface
+
+To get a TOAST input format representation of a user opinion in a discussion, use:
+
+    http://localhost:5101/evaluate/toastify/<discussion_id>/<user_id>
+     
+Example to feed this into the TOAST Web service:
+
+    curl http://localhost:5101/evaluate/toastify/2/39 | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
 
 ## Testing
 TODO

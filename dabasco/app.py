@@ -177,6 +177,74 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     return jsonify({'doj': result})
 
 
+@app.route('/evaluate/toastify/<int:discussion>/<int:user>')
+def toastify(discussion, user):
+    """
+    Create a TOAST-formatted graph representation for given user's opinion.
+
+    :param discussion: discussion ID
+    :param user: user ID
+    :return: json string
+    
+    TOAST documentation: http://www.arg.dundee.ac.uk/toast/help/web
+    """
+
+    # Get D-BAS graph and user data
+    graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion)
+    user_url = 'http://localhost:4284/export/doj_user/{}/{}'.format(user, discussion)
+
+    user_response = urllib.request.urlopen(user_url).read()
+    user_export = user_response.decode('utf-8')
+    while isinstance(user_export, str):
+        user_export = json.loads(user_export)
+
+    graph_response = urllib.request.urlopen(graph_url).read()
+    graph_export = graph_response.decode('utf-8')
+    while isinstance(graph_export, str):
+        graph_export = json.loads(graph_export)
+
+    # Get assumptions and inference rules from D-BAS data
+    assumptions = ''
+    for statement in user_export['marked_statements']:
+        if statement in graph_export['nodes']:
+            assumptions += str(statement) + ';'
+    for statement in user_export['accepted_statements_via_click']:
+        if statement in graph_export['nodes']:
+            assumptions += str(statement) + ';'
+    for statement in user_export['rejected_statements_via_click']:
+        if statement in graph_export['nodes']:
+            assumptions += '~' + str(statement) + ';'
+
+    rules = ''
+    for rule in graph_export['inferences']:
+        rules += '[r' + str(rule['id']) + '] ' \
+                 + (','.join(map(str, list(rule['premises'])))) \
+                 + '=>' + ('~' if rule['is_supportive'] else '') \
+                 + str(rule['conclusion']) + ';'
+    for undercut in graph_export['undercuts']:
+        rules += '[r' + str(undercut['id']) + '] ' \
+                 + (','.join(map(str, list(undercut['premises'])))) \
+                 + '=>~' \
+                 + '[r' + str(undercut['conclusion']) + '];'
+
+    # Auxiliary TOAST input fields (not used, or defaults used)
+    statement_prefs = ''
+    rule_prefs = ''
+    link_principle = 'weakest'  # options: 'weakest', 'last'.
+    # query = ''
+    semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
+
+    json_result = jsonify({'assumptions': assumptions,
+                           'kbPrefs': statement_prefs,
+                           'rules': rules,
+                           'rulePrefs': rule_prefs,
+                           'contrariness': '',
+                           'link': link_principle,
+                           # 'query': query,
+                           'semantics': semantics})
+    return json_result
+
+
 def dbas_graph_to_statement_map(dbas_graph):
     """
     Convert the given D-BAS graph export to a SM data structure.
