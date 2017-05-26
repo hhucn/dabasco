@@ -177,6 +177,62 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     return jsonify({'doj': result})
 
 
+@app.route('/evaluate/doj/<int:dis>/user/<int:user>')
+def evaluate_issue_doj_user_position(dis, user):
+    """
+    Return a json string with the DoJ of the opinion of the given user.
+
+    :param dis: discussion ID
+    :param user: user ID 
+    :return: json string
+    """
+
+    # Get D-BAS graph and user data
+    graph_url = 'http://localhost:4284/export/doj/{}'.format(dis)
+    user_url = 'http://localhost:4284/export/doj_user/{}/{}'.format(user, dis)
+
+    user_response = urllib.request.urlopen(user_url).read()
+    user_export = user_response.decode('utf-8')
+    while isinstance(user_export, str):
+        user_export = json.loads(user_export)
+
+    graph_response = urllib.request.urlopen(graph_url).read()
+    graph_export = graph_response.decode('utf-8')
+    while isinstance(graph_export, str):
+        graph_export = json.loads(graph_export)
+
+    # Create statement map from data
+    statement_map, node_index_for_id, node_id_for_index = dbas_graph_to_statement_map(graph_export)
+
+    # Process input position
+    n = statement_map.n
+    pos1 = Position(n)
+    for statement in user_export['marked_statements']:
+        if statement in graph_export['nodes']:
+            pos1.set_accepted(node_index_for_id[int(statement)])
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(dis))
+    for statement in user_export['accepted_statements_via_click']:
+        if statement in graph_export['nodes']:
+            pos1.set_accepted(node_index_for_id[int(statement)])
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(dis))
+    for statement in user_export['rejected_statements_via_click']:
+        if statement in graph_export['nodes']:
+            pos1.set_rejected(node_index_for_id[int(statement)])
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(dis))
+
+    # Calculate the conditional DoJ of position 1 given position 2.
+    doj = DoJ()
+    result = doj.doj(statement_map, pos1, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
+
+    return jsonify({'doj': result})
+
+
 @app.route('/evaluate/toastify/<int:discussion>/<int:user>')
 def toastify(discussion, user):
     """
@@ -208,18 +264,27 @@ def toastify(discussion, user):
     for statement in user_export['marked_statements']:
         if statement in graph_export['nodes']:
             assumptions += str(statement) + ';'
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(discussion))
     for statement in user_export['accepted_statements_via_click']:
         if statement in graph_export['nodes']:
             assumptions += str(statement) + ';'
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(discussion))
     for statement in user_export['rejected_statements_via_click']:
         if statement in graph_export['nodes']:
             assumptions += '~' + str(statement) + ';'
+        else:
+            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
+                            'issue %s!', str(statement), str(discussion))
 
     rules = ''
     for rule in graph_export['inferences']:
         rules += '[r' + str(rule['id']) + '] ' \
                  + (','.join(map(str, list(rule['premises'])))) \
-                 + '=>' + ('~' if rule['is_supportive'] else '') \
+                 + '=>' + ('' if rule['is_supportive'] else '~') \
                  + str(rule['conclusion']) + ';'
     for undercut in graph_export['undercuts']:
         rules += '[r' + str(undercut['id']) + '] ' \
