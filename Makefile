@@ -3,9 +3,9 @@ test:
 	pep8 .
 
 dependencies:
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 
 run:
-	python dabasco/app.py
+	python3 dabasco/app.py
 
 .PHONY: test

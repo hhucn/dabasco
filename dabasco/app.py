@@ -9,6 +9,8 @@ from doj.pos import Position
 from doj.sm import SM
 from doj.doj import DoJ
 
+from af.af import AF
+
 from os import path
 import logging
 import logging.config
@@ -24,8 +26,8 @@ CORS(app)  # Set security headers for Web requests
 def evaluate_issue_reasons(discussion):
     """
     Return a json string with all strengths of reason for the given discussion.
-    
-    :param discussion: discussion ID 
+
+    :param discussion: discussion ID
     :return: json string
     """
 
@@ -64,9 +66,9 @@ def evaluate_issue_dojs(discussion, statements):
     Return a json string with DoJs for the specified statements.
 
     :param discussion: discussion ID
-    :param statements: comma separated string of statements for which the DoJs are calculated. 
+    :param statements: comma separated string of statements for which the DoJs are calculated.
     :return: json string
-    
+
     IDs of statements that do not exist in the given discussion are ignored.
     If no statements are given, DoJs for all statements in the discussion are calculated.
     """
@@ -125,14 +127,14 @@ def evaluate_issue_dojs(discussion, statements):
 def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     """
     Return a json string with the DoJ of position pos1 given position pos2.
-    
+
     :param dis: discussion ID
     :param acc1: (optional) comma separated string of statement IDs which are accepted in position pos1.
     :param rej1: (optional) comma separated string of statement IDs which are rejected in position pos1.
     :param acc2: (optional) comma separated string of statement IDs which are accepted in conditional position pos2.
-    :param rej2: (optional) comma separated string of statement IDs which are rejected in conditional position pos2. 
+    :param rej2: (optional) comma separated string of statement IDs which are rejected in conditional position pos2.
     :return: json string
-    
+
     IDs of statements that do not exist in the given discussion are ignored.
     """
 
@@ -183,7 +185,7 @@ def evaluate_issue_doj_user_position(dis, user):
     Return a json string with the DoJ of the opinion of the given user.
 
     :param dis: discussion ID
-    :param user: user ID 
+    :param user: user ID
     :return: json string
     """
 
@@ -241,7 +243,7 @@ def toastify(discussion, user):
     :param discussion: discussion ID
     :param user: user ID
     :return: json string
-    
+
     TOAST documentation: http://www.arg.dundee.ac.uk/toast/help/web
     """
 
@@ -310,15 +312,45 @@ def toastify(discussion, user):
     return json_result
 
 
+@app.route('/evaluate/dungify/<int:discussion>')
+def dungify(discussion):
+    """
+    Create a Dung-style argumentation graph representation for the given discussion.
+
+    :param discussion: discussion ID
+    :return: json string
+    """
+
+    # Get D-BAS graph and user data
+    graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion)
+
+    graph_response = urllib.request.urlopen(graph_url).read()
+    graph_export = graph_response.decode('utf-8')
+    while isinstance(graph_export, str):
+        graph_export = json.loads(graph_export)
+
+    # Create AF
+    af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument = \
+        dbas_graph_to_argumentation_framework(graph_export)
+    af.pretty_print()
+
+    json_result = jsonify({'af arguments': af.A,
+                           'af attacks': af.R,
+                           'argument_for_statement_id': argument_for_statement_id,
+                           'argument_for_inference_id': argument_for_inference_id,
+                           'element_id_for_argument': element_id_for_argument})
+    return json_result
+
+
 def dbas_graph_to_statement_map(dbas_graph):
     """
     Convert the given D-BAS graph export to a SM data structure.
 
-    :param dbas_graph: string as provided by D-BAS graph export 
+    :param dbas_graph: string as provided by D-BAS graph export
     :return: SM, node_index_for_id, node_id_for_index
 
     Along with the SM object, also provides the corresponding mappings
-    between D-BAS statement IDs and SM statement indices. 
+    between D-BAS statement IDs and SM statement indices.
     """
     logging.debug('Create Statement Map from D-BAS graph...')
     n_nodes = 0
@@ -357,6 +389,88 @@ def dbas_graph_to_statement_map(dbas_graph):
 
     return statement_map, node_index_for_id, node_id_for_index
 
+
+def dbas_graph_to_argumentation_framework(dbas_graph):
+    """
+    Convert the given D-BAS graph export to an argumentation framework.
+
+    :param dbas_graph: string as provided by D-BAS graph export
+    :return: AF object
+    """
+    logging.debug('Create Argumentation Framework from D-BAS graph...')
+    current_argument = -1
+    element_id_for_argument = {}
+    argument_for_statement_id = {}
+    argument_for_inference_id = {}
+
+    # Add two arguments for each statement
+    for statement in dbas_graph['nodes']:
+        logging.debug('Statement: %s', statement)
+        current_argument += 1
+        element_id_for_argument[current_argument] = statement  # statement argument
+        argument_for_statement_id[statement] = current_argument
+        current_argument += 1
+        element_id_for_argument[current_argument] = -statement  # negated statement argument
+
+    # Add one argument for each inference
+    for inference in dbas_graph['inferences']:
+        logging.debug('Inference: %s', inference['id'])
+        current_argument += 1
+        element_id_for_argument[current_argument] = inference['id']  # inference argument
+        argument_for_inference_id[inference['id']] = current_argument
+    for inference in dbas_graph['undercuts']:
+        logging.debug('Undercut: %s', inference['id'])
+        current_argument += 1
+        element_id_for_argument[current_argument] = inference['id']  # inference argument
+        argument_for_inference_id[inference['id']] = current_argument
+
+    logging.debug('element_id_for_argument: %s', element_id_for_argument)
+    logging.debug('argument_for_statement_id: %s', argument_for_statement_id)
+    logging.debug('argument_for_inference_id: %s', argument_for_inference_id)
+    n_nodes = current_argument+1
+    af = AF(n_nodes)
+
+    # Create attacks between statement arguments
+    for statement in dbas_graph['nodes']:
+        statement_argument = argument_for_statement_id[statement]
+        negated_statement_argument = statement_argument+1
+        af.set_attack(statement_argument, negated_statement_argument, AF.DEFINITE_ATTACK)
+        af.set_attack(negated_statement_argument, statement_argument, AF.DEFINITE_ATTACK)
+
+    # Create undercut attacks
+    for inference in dbas_graph['undercuts']:
+        inference_argument = argument_for_inference_id[inference['id']]
+        target_argument = argument_for_inference_id[inference['conclusion']]
+        af.set_attack(inference_argument, target_argument, AF.DEFINITE_ATTACK)
+
+    # Create rebutting and undermining attacks
+    for inference in dbas_graph['inferences']:
+        inference_argument = argument_for_inference_id[inference['id']]
+        conclusion = inference['conclusion']
+
+        # Attack the statement argument that contradicts the conclusion
+        eliminated_statement_argument = argument_for_statement_id[conclusion]
+        if inference['is_supportive']:
+            eliminated_statement_argument += 1  # In case of a supportive inference, attack the negated statement
+        af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
+
+        for inference2 in dbas_graph['inferences']:
+            inference2_argument = argument_for_inference_id[inference2['id']]
+
+            # Create rebutting attacks
+            conclusion2 = inference2['conclusion']
+            if conclusion == conclusion2:
+                if inference['is_supportive'] != inference2['is_supportive']:
+                    af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
+                    af.set_attack(inference2_argument, inference_argument, AF.DEFINITE_ATTACK)
+
+            # Create undermining attacks
+            if not inference['is_supportive']:  # TODO: can a premise be a negated statement? If yes, cover that case!!
+                for premise2 in inference2['premises']:
+                    if conclusion == premise2:
+                        af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
+
+    return af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument
 
 if __name__ == '__main__':
     app.run(threaded=True, port=5101)
