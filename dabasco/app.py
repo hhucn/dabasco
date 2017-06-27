@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
+import itertools
 
 from doj.pos import Position
 from doj.sm import SM
@@ -330,16 +331,30 @@ def dungify(discussion):
         graph_export = json.loads(graph_export)
 
     # Create AF
-    af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument = \
+    af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument, = \
         dbas_graph_to_argumentation_framework(graph_export)
-    af.pretty_print()
 
-    json_result = jsonify({'af arguments': af.A,
-                           'af attacks': af.R,
-                           'argument_for_statement_id': argument_for_statement_id,
-                           'argument_for_inference_id': argument_for_inference_id,
-                           'element_id_for_argument': element_id_for_argument})
+    # Create output text format
+    str_list = []
+    for arg in range(af.n):
+        if af.A[arg] == AF.DEFINITE_ARGUMENT:
+            str_list.append('arg(')
+            str_list.append(str(element_id_for_argument[arg]))
+            str_list.append(').\n')
+    for attacker in range(af.n):
+        for target in range(af.n):
+            if af.R[attacker][target] == AF.DEFINITE_ATTACK:
+                str_list.append('att(')
+                str_list.append(str(element_id_for_argument[attacker]))
+                str_list.append(',')
+                str_list.append(str(element_id_for_argument[target]))
+                str_list.append(').\n')
+
+    str_output = ''.join(str_list)
+
+    json_result = jsonify({str(discussion): str_output})
     return json_result
+    # return str_output
 
 
 def dbas_graph_to_statement_map(dbas_graph):
@@ -413,15 +428,10 @@ def dbas_graph_to_argumentation_framework(dbas_graph):
         element_id_for_argument[current_argument] = -statement  # negated statement argument
 
     # Add one argument for each inference
-    for inference in dbas_graph['inferences']:
+    for inference in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
         logging.debug('Inference: %s', inference['id'])
         current_argument += 1
-        element_id_for_argument[current_argument] = inference['id']  # inference argument
-        argument_for_inference_id[inference['id']] = current_argument
-    for inference in dbas_graph['undercuts']:
-        logging.debug('Undercut: %s', inference['id'])
-        current_argument += 1
-        element_id_for_argument[current_argument] = inference['id']  # inference argument
+        element_id_for_argument[current_argument] = 'r' + str(inference['id'])  # inference argument
         argument_for_inference_id[inference['id']] = current_argument
 
     logging.debug('element_id_for_argument: %s', element_id_for_argument)
@@ -436,6 +446,14 @@ def dbas_graph_to_argumentation_framework(dbas_graph):
         negated_statement_argument = statement_argument+1
         af.set_attack(statement_argument, negated_statement_argument, AF.DEFINITE_ATTACK)
         af.set_attack(negated_statement_argument, statement_argument, AF.DEFINITE_ATTACK)
+
+        # Create undermining attacks from statement arguments against inference premises
+        for inference2 in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+            inference2_argument = argument_for_inference_id[inference2['id']]
+            for premise2 in inference2['premises']:
+                # TODO: can a premise be a negated statement? If yes, cover that case, too!!
+                if statement == premise2:
+                    af.set_attack(negated_statement_argument, inference2_argument, AF.DEFINITE_ATTACK)
 
     # Create undercut attacks
     for inference in dbas_graph['undercuts']:
@@ -454,7 +472,7 @@ def dbas_graph_to_argumentation_framework(dbas_graph):
             eliminated_statement_argument += 1  # In case of a supportive inference, attack the negated statement
         af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
 
-        for inference2 in dbas_graph['inferences']:
+        for inference2 in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
             inference2_argument = argument_for_inference_id[inference2['id']]
 
             # Create rebutting attacks
