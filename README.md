@@ -63,6 +63,18 @@ To get a TOAST input format representation of a user opinion in a discussion, us
 Example to feed this into the TOAST Web service:
 
     curl http://localhost:5101/evaluate/toastify/2/39 | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
+    
+## Dung AF Interface
+
+To get a Dung-style argumentation framework (AF) representation of a discussion, use:
+
+    http://localhost:5101/evaluate/dungify/<discussion_id>    
+
+The AF is provided in ASPARTIX format.
+
+An extended AF representation that also includes AF arguments for D-BAS statements can be obtained by:
+ 
+    http://localhost:5101/evaluate/dungify_extended/<discussion_id> 
 
 ## Testing
 TODO

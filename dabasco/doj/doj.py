@@ -41,9 +41,6 @@ class DoJ(object):
         empty_pos = Position(pos.n)
         n1 = graph.get_number_of_coherent_completions(pos, _coh)
         n2 = graph.get_number_of_coherent_completions(empty_pos, _coh)
-        print('------------------------')
-        print('n2: '+str(n2))
-        print('------------------------')
         return n1/float(n2)
 
     def recall_conditional(self, graph, pos, conditional_pos, _coh):

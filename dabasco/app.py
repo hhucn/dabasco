@@ -110,10 +110,14 @@ def evaluate_issue_dojs(discussion, statements):
 
 
 @app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>')
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'acc1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'rej1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/rej/<string:rej2>', defaults={'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>', defaults={'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
+           defaults={'acc1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
+           defaults={'rej1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/rej/<string:rej2>',
+           defaults={'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>',
+           defaults={'rej2': ''})
 @app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'acc1': '', 'rej1': ''})
 @app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>', defaults={'acc1': '', 'acc2': ''})
 @app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>', defaults={'acc1': '', 'rej2': ''})
@@ -313,6 +317,49 @@ def toastify(discussion, user):
     return json_result
 
 
+@app.route('/evaluate/dungify_extended/<int:discussion>')
+def dungify_extended(discussion):
+    """
+    Create a Dung-style argumentation graph representation for the given discussion.
+
+    :param discussion: discussion ID
+    :return: json string
+    """
+
+    # Get D-BAS graph and user data
+    graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion)
+
+    graph_response = urllib.request.urlopen(graph_url).read()
+    graph_export = graph_response.decode('utf-8')
+    while isinstance(graph_export, str):
+        graph_export = json.loads(graph_export)
+
+    # Create AF
+    af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument, = \
+        dbas_graph_to_argumentation_framework_extended(graph_export)
+
+    # Create output text format
+    str_list = []
+    for arg in range(af.n):
+        if af.A[arg] == AF.DEFINITE_ARGUMENT:
+            str_list.append('arg(')
+            str_list.append(str(element_id_for_argument[arg]))
+            str_list.append(').\n')
+    for attacker in range(af.n):
+        for target in range(af.n):
+            if af.R[attacker][target] == AF.DEFINITE_ATTACK:
+                str_list.append('att(')
+                str_list.append(str(element_id_for_argument[attacker]))
+                str_list.append(',')
+                str_list.append(str(element_id_for_argument[target]))
+                str_list.append(').\n')
+
+    str_output = ''.join(str_list)
+
+    json_result = jsonify({'discussion_' + str(discussion): str_output})
+    return json_result
+
+
 @app.route('/evaluate/dungify/<int:discussion>')
 def dungify(discussion):
     """
@@ -331,7 +378,7 @@ def dungify(discussion):
         graph_export = json.loads(graph_export)
 
     # Create AF
-    af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument, = \
+    af, argument_for_inference_id, element_id_for_argument, = \
         dbas_graph_to_argumentation_framework(graph_export)
 
     # Create output text format
@@ -352,9 +399,8 @@ def dungify(discussion):
 
     str_output = ''.join(str_list)
 
-    json_result = jsonify({str(discussion): str_output})
+    json_result = jsonify({'discussion_' + str(discussion): str_output})
     return json_result
-    # return str_output
 
 
 def dbas_graph_to_statement_map(dbas_graph):
@@ -409,8 +455,74 @@ def dbas_graph_to_argumentation_framework(dbas_graph):
     """
     Convert the given D-BAS graph export to an argumentation framework.
 
+    The AF representation contains an argument per inference/undercut in the D-BAS graph.
+
     :param dbas_graph: string as provided by D-BAS graph export
-    :return: AF object
+    :return: AF, argument_for_inference_id, element_id_for_argument
+
+    Along with the AF object, also provides the corresponding mappings
+    between D-BAS inference IDs and AF argument IDs.
+    """
+    logging.debug('Create Argumentation Framework from D-BAS graph...')
+    current_argument = -1
+    element_id_for_argument = {}
+    argument_for_inference_id = {}
+
+    # Add one argument for each inference
+    for inference in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+        logging.debug('Inference: %s', inference['id'])
+        current_argument += 1
+        element_id_for_argument[current_argument] = inference['id']  # inference argument
+        argument_for_inference_id[inference['id']] = current_argument
+
+    logging.debug('element_id_for_argument: %s', element_id_for_argument)
+    logging.debug('argument_for_inference_id: %s', argument_for_inference_id)
+    n_nodes = current_argument+1
+    af = AF(n_nodes)
+
+    # Create undercut attacks
+    for inference in dbas_graph['undercuts']:
+        inference_argument = argument_for_inference_id[inference['id']]
+        target_argument = argument_for_inference_id[inference['conclusion']]
+        af.set_attack(inference_argument, target_argument, AF.DEFINITE_ATTACK)
+
+    # Create rebutting and undermining attacks
+    for inference in dbas_graph['inferences']:
+        inference_argument = argument_for_inference_id[inference['id']]
+        conclusion = inference['conclusion']
+
+        # Create rebutting attacks
+        for inference2 in dbas_graph['inferences']:
+            inference2_argument = argument_for_inference_id[inference2['id']]
+            conclusion2 = inference2['conclusion']
+            if conclusion == conclusion2:
+                if inference['is_supportive'] != inference2['is_supportive']:
+                    af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
+                    af.set_attack(inference2_argument, inference_argument, AF.DEFINITE_ATTACK)
+
+        # Create undermining attacks
+        for inference2 in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+            inference2_argument = argument_for_inference_id[inference2['id']]
+            if not inference['is_supportive']:  # TODO: can a premise be a negated statement? If yes, cover that case!!
+                for premise2 in inference2['premises']:
+                    if conclusion == premise2:
+                        af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
+
+    return af, argument_for_inference_id, element_id_for_argument
+
+
+def dbas_graph_to_argumentation_framework_extended(dbas_graph):
+    """
+    Convert the given D-BAS graph export to an argumentation framework.
+
+    The AF representation contains an argument per inference/undercut in the D-BAS graph
+    and two arguments for each statement in the D-BAS graph (negated and not-negated).
+
+    :param dbas_graph: string as provided by D-BAS graph export
+    :return: AF, argument_for_statement_id, argument_for_inference_id, element_id_for_argument
+
+    Along with the AF object, also provides the corresponding mappings
+    between D-BAS statement/inference IDs and AF argument IDs.
     """
     logging.debug('Create Argumentation Framework from D-BAS graph...')
     current_argument = -1
@@ -472,23 +584,25 @@ def dbas_graph_to_argumentation_framework(dbas_graph):
             eliminated_statement_argument += 1  # In case of a supportive inference, attack the negated statement
         af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
 
-        for inference2 in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+        # Create rebutting attacks
+        for inference2 in dbas_graph['inferences']:
             inference2_argument = argument_for_inference_id[inference2['id']]
-
-            # Create rebutting attacks
             conclusion2 = inference2['conclusion']
             if conclusion == conclusion2:
                 if inference['is_supportive'] != inference2['is_supportive']:
                     af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
                     af.set_attack(inference2_argument, inference_argument, AF.DEFINITE_ATTACK)
 
-            # Create undermining attacks
+        # Create undermining attacks
+        for inference2 in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+            inference2_argument = argument_for_inference_id[inference2['id']]
             if not inference['is_supportive']:  # TODO: can a premise be a negated statement? If yes, cover that case!!
                 for premise2 in inference2['premises']:
                     if conclusion == premise2:
                         af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
 
     return af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument
+
 
 if __name__ == '__main__':
     app.run(threaded=True, port=5101)
