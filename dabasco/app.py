@@ -23,13 +23,22 @@ app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
 
-@app.route('/evaluate/reasons/<int:discussion>')
-def evaluate_issue_reasons(discussion):
+@app.route('/evaluate/reasons/<int:discussion>/for/<int:s1>/by/<int:s2>')
+@app.route('/evaluate/reasons/<int:discussion>/by/<int:s2>/for/<int:s1>')
+@app.route('/evaluate/reasons/<int:discussion>/for/<int:s1>', defaults={'s2': None})
+@app.route('/evaluate/reasons/<int:discussion>/by/<int:s2>', defaults={'s1': None})
+@app.route('/evaluate/reasons/<int:discussion>', defaults={'s1': None, 's2': None})
+def evaluate_issue_reasons(discussion, s1, s2):
     """
-    Return a json string with all strengths of reason for the given discussion.
+    Return a json string with strengths of reason for the given discussion and the specified statements.
 
     :param discussion: discussion ID
+    :param s1: statement ID, calculate reasons for/against this
+    :param s2: statement ID, calculate reasons by/from this
     :return: json string
+
+    IDs of statements that do not exist in the given discussion are ignored.
+    If no statements are given, strengths of reason for all statements in the discussion are calculated.
     """
 
     # Get D-BAS graph
@@ -48,13 +57,17 @@ def evaluate_issue_reasons(discussion):
     doj = DoJ()
     n = statement_map.n
     reasons = {}
-    for s1 in range(1, n + 1):
+
+    s1_range = [node_index_for_id[s1]] if (s1 and s1 in node_index_for_id) else range(1, n + 1)
+    s2_range = [node_index_for_id[s2]] if (s2 and s2 in node_index_for_id) else range(1, n + 1)
+
+    for s1 in s1_range:
         reasons_s1 = {}
-        for s2 in range(1, n + 1):
+        for s2 in s2_range:
             r = doj.reason(statement_map, s1, s2, DoJ.REASON_RELATION_1, DoJ.DOJ_RECALL,
                            SM.COHERENCE_DEDUCTIVE_INFERENCES)
             reasons_s1[node_id_for_index[s2]] = r
-        reasons[node_id_for_index[s1]] = reasons_s1
+        reasons['for ' + str(node_id_for_index[s1])] = reasons_s1
 
     return jsonify({'reasons': reasons})
 

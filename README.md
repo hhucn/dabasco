@@ -50,9 +50,25 @@ To request the degree of justification of a user opinion (as provided by the use
 
     http://localhost:5101/evaluate/doj/<discussion_id>/user/<user_id>
 
+## Reasons
+
 To request all reason relations for a discussion, use:
 
     http://localhost:5101/evaluate/reasons/<discussion_id>
+
+To request the strength of reason of a specific statement s2 for/against a specific statement s1, use (either of):
+
+    http://localhost:5101/evaluate/reasons/<discussion_id>/for/<s1>/by/<s2>
+    http://localhost:5101/evaluate/reasons/<discussion_id>/by/<s2>/for/<s1>
+                                             
+To request the strength of reason of all statements for/against a specific statement s1, use:
+
+    http://localhost:5101/evaluate/reasons/<discussion_id>/for/<s1>
+        
+To request the strength of reason of a specific statement s2 for/against all statements, use:
+
+    http://localhost:5101/evaluate/reasons/<discussion_id>/by/<s2>
+    
      
 ## TOAST Interface
 
