@@ -9,7 +9,8 @@ import itertools
 from doj.pos import Position
 from doj.sm import SM
 from doj.doj import DoJ
-
+from adf.accnode import ADFNode
+from adf.adf import ADF
 from af.af import AF
 
 from os import path
@@ -330,6 +331,50 @@ def toastify(discussion, user):
     return json_result
 
 
+@app.route('/evaluate/adfify/<int:discussion>/<int:user>')
+def adfify(discussion, user):
+    """
+    Create a YADF/QADF/DIAMOND-formatted ADF representation for given user's opinion.
+
+    :param discussion: discussion ID
+    :param user: user ID
+    :return: json string
+
+    YADF documentation: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
+    """
+
+    # Get D-BAS graph and user data
+    graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion)
+    user_url = 'http://localhost:4284/export/doj_user/{}/{}'.format(user, discussion)
+
+    user_response = urllib.request.urlopen(user_url).read()
+    user_export = user_response.decode('utf-8')
+    while isinstance(user_export, str):
+        user_export = json.loads(user_export)
+
+    graph_response = urllib.request.urlopen(graph_url).read()
+    graph_export = graph_response.decode('utf-8')
+    while isinstance(graph_export, str):
+        graph_export = json.loads(graph_export)
+
+    # Create AF
+    adf = dbas_graph_to_adf(graph_export, user_export)
+
+    # Convert to YADF formatted string
+    output_list = []
+
+    for statement in adf.statements:
+        output_list.append('s(' + statement + ').')
+        acceptance_condition = adf_acc_condition_to_string(adf.acceptance[statement])
+        output_list.append('ac(' + statement + ',' + acceptance_condition + ').')
+
+    # Output
+    output_string = '\n'.join(output_list)
+    print(output_string)
+    json_result = jsonify({'discussion_' + str(discussion): output_string})
+    return json_result
+
+
 @app.route('/evaluate/dungify_extended/<int:discussion>')
 def dungify_extended(discussion):
     """
@@ -615,6 +660,165 @@ def dbas_graph_to_argumentation_framework_extended(dbas_graph):
                         af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
 
     return af, argument_for_statement_id, argument_for_inference_id, element_id_for_argument
+
+
+def dbas_graph_to_adf(dbas_graph, user_opinion):
+    """
+    Create an ADF representation for given user's opinion in given discussion.
+
+    :param dbas_graph: string as provided by D-BAS graph export
+    :param user_opinion: string as provided by D-BAS user opinion export
+    :return: ADF
+    """
+
+    adf = ADF()
+
+    user_rejected_statements = user_opinion['rejected_statements_via_click']
+    user_accepted_statements = user_opinion['accepted_statements_via_click'] \
+        + user_opinion['marked_statements']
+
+    # Setup statement acceptance functions
+    for statement in dbas_graph['nodes']:
+        inferences_for = []
+        inferences_against = []
+        for inference in dbas_graph['inferences']:
+            if inference['conclusion'] == statement:
+                if inference['is_supportive']:
+                    inferences_for.append(inference)
+                else:
+                    inferences_against.append(inference)
+        statement_assumed = statement in user_accepted_statements
+        statement_rejected = statement in user_rejected_statements
+
+        # Acceptance condition for the positive (non-negated) literal
+        if not inferences_for and not statement_assumed:
+            adf.add_statement('s' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+        else:
+            acceptance_criteria = ['i' + str(inference['id']) for inference in inferences_for]
+            if statement_assumed:
+                acceptance_criteria.append('a' + str(statement))
+            adf.add_statement('s' + str(statement), ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, ['ns' + str(statement)]),
+                ADFNode(ADFNode.OR, acceptance_criteria)
+            ]))
+
+        # Acceptance condition for the negative (negated) literal
+        if not inferences_against and not statement_rejected:
+            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+        else:
+            acceptance_criteria = ['i' + str(inference['id']) for inference in inferences_against]
+            if statement_rejected:
+                acceptance_criteria.append('a' + str(statement))
+            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, ['s' + str(statement)]),
+                ADFNode(ADFNode.OR, acceptance_criteria)
+            ]))
+
+    # Setup user assumption acceptance functions
+    for assumption in user_accepted_statements:
+        adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+        adf.add_statement('na' + str(assumption), ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, ['s' + str(assumption)]),
+            ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+        ]))
+    for assumption in user_rejected_statements:
+        adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+        adf.add_statement('na' + str(assumption), ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, ['ns' + str(assumption)]),
+            ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+        ]))
+
+    # Setup inference acceptance functions
+    for inference in dbas_graph['inferences']:
+        premises = ['s' + str(premise) for premise in inference['premises']]
+        conclusion = 's' + str(inference['conclusion'])
+        negated_conclusion = 'n' + conclusion if inference['is_supportive'] \
+            else conclusion
+        rule_name = 'i' + str(inference['id'])
+        rule_name_negated = 'n' + rule_name
+        adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, negated_conclusion),
+            ADFNode(ADFNode.NOT, rule_name_negated)
+        ] + premises))
+        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
+
+    # for statement in dbas_graph['nodes']:
+    #     output_list.append('s(s' + str(statement) + ').')
+    #     output_list.append('s(ns' + str(statement) + ').')
+    # for inference in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
+    #     output_list.append('s(i' + str(inference['id']) + ').')
+    #     output_list.append('s(ni' + str(inference['id']) + ').')
+    # for assumption in itertools.chain(user_accepted_statements, user_rejected_statements):
+    #     output_list.append('s(a' + str(assumption) + ').')
+    #     output_list.append('s(na' + str(assumption) + ').')
+    #
+    # # Setup statement acceptance functions
+    # for statement in dbas_graph['nodes']:
+    #     inferences_for = []
+    #     inferences_against = []
+    #     for inference in dbas_graph['inferences']:
+    #         if inference['conclusion'] == statement:
+    #             if inference['is_supportive']:
+    #                 inferences_for.append(inference)
+    #             else:
+    #                 inferences_against.append(inference)
+    #     statement_assumed = statement in user_accepted_statements
+    #     statement_rejected = statement in user_rejected_statements
+    #
+    #     # Acceptance condition for the positive (non-negated) literal
+    #     if not inferences_for and not statement_assumed:
+    #         output_list.append('ac(s' + str(statement) + ',c(f)).')
+    #     else:
+    #         output_list.append('ac(s' + str(statement) + ',and(neg(ns' + str(statement) + '),')
+    #         if statement_assumed:
+    #             output_list.append('a' + str(statement))
+    #         output_list.append(')).')
+    #     # Acceptance condition for the negative (negated) literal
+
+    return adf
+
+
+def adf_acc_condition_to_string(acc_node):
+    if not isinstance(acc_node, ADFNode):
+        return str(acc_node)
+    else:
+        if acc_node.operator == ADFNode.LEAF:
+            leaf = acc_node.children[0]
+            if leaf == ADFNode.CONSTANT_FALSE:
+                return 'c(f)'
+            elif leaf == ADFNode.CONSTANT_TRUE:
+                return 'c(v)'
+            else:
+                return str(leaf)
+        elif acc_node.operator == ADFNode.NOT:
+            child = acc_node.children[0]
+            return 'neg(' + adf_acc_condition_to_string(child) + ')'
+        elif acc_node.operator == ADFNode.AND:
+            n_children = len(acc_node.children)
+            if n_children == 1:
+                return adf_acc_condition_to_string(acc_node.children[0])
+            else:
+                output_string = 'and(' + adf_acc_condition_to_string(acc_node.children[n_children-2]) \
+                                + ',' + adf_acc_condition_to_string(acc_node.children[n_children-1]) + ')'
+                n_children -= 2
+                while n_children > 0:
+                    output_string = 'and(' + adf_acc_condition_to_string(acc_node.children[n_children-1]) \
+                                    + ',' + output_string + ')'
+                    n_children -= 1
+            return output_string
+        elif acc_node.operator == ADFNode.OR:
+            n_children = len(acc_node.children)
+            if n_children == 1:
+                return adf_acc_condition_to_string(acc_node.children[0])
+            else:
+                output_string = 'or(' + adf_acc_condition_to_string(acc_node.children[n_children - 2]) \
+                                + ',' + adf_acc_condition_to_string(acc_node.children[n_children - 1]) + ')'
+                n_children -= 2
+                while n_children > 0:
+                    output_string = 'or(' + adf_acc_condition_to_string(acc_node.children[n_children - 1]) \
+                                    + ',' + output_string + ')'
+                    n_children -= 1
+            return output_string
 
 
 if __name__ == '__main__':
