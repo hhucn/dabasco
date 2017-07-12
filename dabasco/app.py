@@ -342,6 +342,7 @@ def adfify(discussion, user):
 
     YADF documentation: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
     """
+    logging.debug('Create ADF from D-BAS graph...')
 
     # Get D-BAS graph and user data
     graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion)
@@ -370,7 +371,7 @@ def adfify(discussion, user):
 
     # Output
     output_string = '\n'.join(output_list)
-    print(output_string)
+    logging.debug(output_string)
     json_result = jsonify({'discussion_' + str(discussion): output_string})
     return json_result
 
@@ -741,48 +742,35 @@ def dbas_graph_to_adf(dbas_graph, user_opinion):
             ADFNode(ADFNode.NOT, rule_name_negated)
         ] + premises))
         adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
-
-    # for statement in dbas_graph['nodes']:
-    #     output_list.append('s(s' + str(statement) + ').')
-    #     output_list.append('s(ns' + str(statement) + ').')
-    # for inference in itertools.chain(dbas_graph['inferences'], dbas_graph['undercuts']):
-    #     output_list.append('s(i' + str(inference['id']) + ').')
-    #     output_list.append('s(ni' + str(inference['id']) + ').')
-    # for assumption in itertools.chain(user_accepted_statements, user_rejected_statements):
-    #     output_list.append('s(a' + str(assumption) + ').')
-    #     output_list.append('s(na' + str(assumption) + ').')
-    #
-    # # Setup statement acceptance functions
-    # for statement in dbas_graph['nodes']:
-    #     inferences_for = []
-    #     inferences_against = []
-    #     for inference in dbas_graph['inferences']:
-    #         if inference['conclusion'] == statement:
-    #             if inference['is_supportive']:
-    #                 inferences_for.append(inference)
-    #             else:
-    #                 inferences_against.append(inference)
-    #     statement_assumed = statement in user_accepted_statements
-    #     statement_rejected = statement in user_rejected_statements
-    #
-    #     # Acceptance condition for the positive (non-negated) literal
-    #     if not inferences_for and not statement_assumed:
-    #         output_list.append('ac(s' + str(statement) + ',c(f)).')
-    #     else:
-    #         output_list.append('ac(s' + str(statement) + ',and(neg(ns' + str(statement) + '),')
-    #         if statement_assumed:
-    #             output_list.append('a' + str(statement))
-    #         output_list.append(')).')
-    #     # Acceptance condition for the negative (negated) literal
+    for undercut in dbas_graph['undercuts']:
+        premises = ['s' + str(premise) for premise in undercut['premises']]
+        negated_conclusion = 'i' + str(undercut['conclusion'])
+        rule_name = 'i' + str(undercut['id'])
+        rule_name_negated = 'n' + rule_name
+        adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, negated_conclusion),
+            ADFNode(ADFNode.NOT, rule_name_negated)
+        ] + premises))
+        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
 
     return adf
 
 
 def adf_acc_condition_to_string(acc_node):
+    """
+    Create a YADF/DIAMOND string representation of the acceptance function represented by the given tree node.
+
+    :param acc_node: root node of acceptance tree
+    :type acc_node: ADFNode, string
+    :return: string representation
+    """
+
     if not isinstance(acc_node, ADFNode):
+        # Current node contains a single value without an operator
         return str(acc_node)
     else:
         if acc_node.operator == ADFNode.LEAF:
+            # Current node contains a single value without an operator
             leaf = acc_node.children[0]
             if leaf == ADFNode.CONSTANT_FALSE:
                 return 'c(f)'
@@ -791,31 +779,22 @@ def adf_acc_condition_to_string(acc_node):
             else:
                 return str(leaf)
         elif acc_node.operator == ADFNode.NOT:
+            # Current node contains a 1-ary 'neg' operator
             child = acc_node.children[0]
             return 'neg(' + adf_acc_condition_to_string(child) + ')'
-        elif acc_node.operator == ADFNode.AND:
+        else:
+            # Current node contains an n-ary 'and' or 'or' operator (arbitrary n=>1)
+            operator = 'and' if acc_node.operator == ADFNode.AND else 'or'
             n_children = len(acc_node.children)
             if n_children == 1:
                 return adf_acc_condition_to_string(acc_node.children[0])
             else:
-                output_string = 'and(' + adf_acc_condition_to_string(acc_node.children[n_children-2]) \
+                # Output operators must not have more than 2 arguments. Nest operators as necessary.
+                output_string = operator + '(' + adf_acc_condition_to_string(acc_node.children[n_children-2]) \
                                 + ',' + adf_acc_condition_to_string(acc_node.children[n_children-1]) + ')'
                 n_children -= 2
                 while n_children > 0:
-                    output_string = 'and(' + adf_acc_condition_to_string(acc_node.children[n_children-1]) \
-                                    + ',' + output_string + ')'
-                    n_children -= 1
-            return output_string
-        elif acc_node.operator == ADFNode.OR:
-            n_children = len(acc_node.children)
-            if n_children == 1:
-                return adf_acc_condition_to_string(acc_node.children[0])
-            else:
-                output_string = 'or(' + adf_acc_condition_to_string(acc_node.children[n_children - 2]) \
-                                + ',' + adf_acc_condition_to_string(acc_node.children[n_children - 1]) + ')'
-                n_children -= 2
-                while n_children > 0:
-                    output_string = 'or(' + adf_acc_condition_to_string(acc_node.children[n_children - 1]) \
+                    output_string = operator + '(' + adf_acc_condition_to_string(acc_node.children[n_children-1]) \
                                     + ',' + output_string + ')'
                     n_children -= 1
             return output_string
