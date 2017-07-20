@@ -14,9 +14,12 @@ class AF(object):
     DEFINITE_ARGUMENT = 1
 
     def __init__(self, n):
-        self.n = n
+        self.n = n  # number of arguments. The set of arguments is [0,...,n-1] implicitly.
         self.A = [AF.DEFINITE_ARGUMENT for _ in range(n)]
         self.R = [[AF.NO_ATTACK for _ in range(n)] for _ in range(n)]
+
+        self.name_for_argument = {}
+        self.argument_for_name = {}
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -35,6 +38,33 @@ class AF(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def set_argument_name(self, arg, name):
+        self.name_for_argument[arg] = name
+        self.argument_for_name[name] = arg
+
+    def get_name_for_argument(self, arg):
+        """
+        Return the name of the given argument.
+
+        :param arg: argument ID in [0,...,self.n-1]
+        :type arg: int
+        :return: name of the given argument
+        """
+        if arg in self.name_for_argument:
+            return self.name_for_argument[arg]
+        return arg
+
+    def get_argument_for_name(self, name):
+        """
+        Return the argument that represents the given name in this AF.
+
+        :param name: argument name
+        :return: argument ID of the given statement
+        """
+        if name in self.argument_for_name:
+            return self.argument_for_name[name]
+        return name
 
     def merge_with_af(self, other):
         """

@@ -1,6 +1,3 @@
-from .accnode import ADFNode
-
-
 class ADF(object):
     """
     Abstract Dialectical Framework.
