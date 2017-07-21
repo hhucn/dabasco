@@ -33,7 +33,7 @@ An extended AF representation that also includes AF arguments for D-BAS statemen
      
 Example pipeline for Dung AF evaluation using conarg2 (get stable extensions of discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.discussion_2' > temp; ./conarg2 -e stable temp; rm temp;
+    curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.af' > temp; ./conarg2 -e stable temp; rm temp;
 
 ## TOAST/ASPIC Interface
 
@@ -53,7 +53,7 @@ To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discus
          
 Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/2/1' | jq -r '.discussion_2' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;    
+    curl -s 'http://localhost:5101/evaluate/adfify/2/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;    
 
 ## Degrees of Justification
 

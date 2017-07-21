@@ -5,7 +5,8 @@ Inference = collections.namedtuple('Inference', ['id', 'origin', 'target'])
 
 
 class SM(object):
-    """A statement map data structure.
+    """
+    A statement map data structure.
 
     Consists of:
     n -- Number of statements (set of statements is [1, .., n] implicitly)
@@ -21,6 +22,8 @@ class SM(object):
         self.n = 0
         self.inferences = {}
         self.undercuts = {}
+        self.node_index_for_id = {}
+        self.node_id_for_index = {}
 
     def add_inference(self, origin, target, rid):
         """Add an inference rule with a statement target."""

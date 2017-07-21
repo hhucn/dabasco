@@ -2,62 +2,39 @@ import logging
 logger = logging.getLogger('root')
 
 
-def export_toast(graph_export, user_export, discussion_id, user_id):
+def export_toast(dbas_graph, dbas_user):
     """
     Create an ASPIC representation formatted for TOAST from the given D-BAS data.
 
-    :param graph_export:
-    :param user_export:
-    :param discussion_id:
-    :param user_id:
+    :param dbas_graph: DBASGraph to be used for ADF generation
+    :type dbas_graph: DBASGraph
+    :param dbas_user: DBASUser to be used for ADF generation
+    :type dbas_user: DBASUser
     :return: dict
     """
-    # TODO: do not use graph_export/user_export strings as input, but the dbas defeasible KB class (to be implemented)
-    assumptions = ''
-    for statement in user_export['marked_statements']:
-        if statement in graph_export['nodes']:
-            assumptions += str(statement) + ';'
-        else:
-            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
-                            'issue %s!', str(statement), str(discussion_id))
-    for statement in user_export['accepted_statements_via_click']:
-        if statement in graph_export['nodes']:
-            assumptions += str(statement) + ';'
-        else:
-            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
-                            'issue %s!', str(statement), str(discussion_id))
-    for statement in user_export['rejected_statements_via_click']:
-        if statement in graph_export['nodes']:
-            assumptions += '~' + str(statement) + ';'
-        else:
-            logging.warning('Found non-matching statement ID (%s) in user opinion - No such statement exists for '
-                            'issue %s!', str(statement), str(discussion_id))
+    assumptions = []
+    for statement in dbas_user.accepted_statements_explicit:
+        assumptions.append(str(statement))
+    for statement in dbas_user.accepted_statements_implicit:
+        assumptions.append(str(statement))
+    for statement in dbas_user.rejected_statements_implicit:
+        assumptions.append('~' + str(statement))
 
-    rules = ''
-    for rule in graph_export['inferences']:
-        rules += '[r' + str(rule['id']) + '] ' \
-                 + (','.join(map(str, list(rule['premises'])))) \
-                 + '=>' + ('' if rule['is_supportive'] else '~') \
-                 + str(rule['conclusion']) + ';'
-    for undercut in graph_export['undercuts']:
-        rules += '[r' + str(undercut['id']) + '] ' \
-                 + (','.join(map(str, list(undercut['premises'])))) \
-                 + '=>~' \
-                 + '[r' + str(undercut['conclusion']) + '];'
+    rules = []
+    for inference_id in dbas_graph.inferences:
+        inference = dbas_graph.inferences[inference_id]
+        rules.append('[r' + str(inference.id) + '] '
+                     + (','.join(map(str, list(inference.premises))))
+                     + '=>' + ('' if inference.is_supportive else '~')
+                     + str(inference.conclusion))
+    for undercut_id in dbas_graph.undercuts:
+        undercut = dbas_graph.undercuts[undercut_id]
+        rules.append('[r' + str(undercut.id) + '] '
+                     + (','.join(map(str, list(undercut.premises))))
+                     + '=>~'
+                     + '[r' + str(undercut.conclusion) + ']')
 
-    # Auxiliary TOAST input fields (not used, or defaults used)
-    statement_prefs = ''
-    rule_prefs = ''
-    link_principle = 'weakest'  # options: 'weakest', 'last'.
-    # query = ''
-    semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
-
-    result = {'assumptions': assumptions,
-              'kbPrefs': statement_prefs,
-              'rules': rules,
-              'rulePrefs': rule_prefs,
-              'contrariness': '',
-              'link': link_principle,
-              # 'query': query,
-              'semantics': semantics}
+    result = {'assumptions': ';'.join(assumptions),
+              'rules': ';'.join(rules),
+              'contrariness': ''}
     return result
