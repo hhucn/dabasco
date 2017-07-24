@@ -6,7 +6,7 @@ from dbas_user import DBASUser
 
 def import_adf(dbas_graph, user_opinion):
     """
-    Create an ADF representation for given user's opinion in given discussion.
+    Create an ADF representation for given user's opinion in the given discussion.
 
     :param dbas_graph: DBASGraph to be used for ADF generation
     :type dbas_graph: DBASGraph

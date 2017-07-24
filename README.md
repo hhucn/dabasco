@@ -34,17 +34,29 @@ An extended AF representation that also includes AF arguments for D-BAS statemen
 Example pipeline for Dung AF evaluation using conarg2 (get stable extensions of discussion 2):
 
     curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.af' > temp; ./conarg2 -e stable temp; rm temp;
+    
+Web sources:
+
+- ASPARTIX documentation: https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/docu.htm
+- conarg website: http://www.dmi.unipg.it/conarg/
 
 ## TOAST/ASPIC Interface
 
 To get a TOAST input format representation of a user opinion in a discussion, use:
 
     http://localhost:5101/evaluate/toastify/<discussion_id>/<user_id>
-     
-Example to feed this into the TOAST Web service (discussion 2, user ID 1):
+
+Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1):
 
     curl http://localhost:5101/evaluate/toastify/2/1 | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
     
+Web sources:
+
+- TOAST website: http://toast.arg-tech.org/help/web
+- TOAST API: http://www.arg.dundee.ac.uk/toast/help/api
+- TOAST interactive web interface: http://toast.arg-tech.org/
+- TOAST web interface: http://www.arg.dundee.ac.uk/toast/api/evaluate
+
 ## ADF Interface
 
 To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discussion, use:
@@ -53,7 +65,14 @@ To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discus
          
 Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/2/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;    
+    curl -s 'http://localhost:5101/evaluate/adfify/2/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
+     
+Web sources:
+
+- YADF: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
+- DIAMOND: https://isysrv.informatik.uni-leipzig.de/diamond
+- gringo/clasp: http://potassco.sourceforge.net/
+- lpopt: https://www.dbai.tuwien.ac.at/research/project/lpopt/
 
 ## Degrees of Justification
 

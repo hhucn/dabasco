@@ -157,17 +157,28 @@ def evaluate_issue_dojs(discussion, statements):
            defaults={'acc2': ''})
 @app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>',
            defaults={'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>', defaults={'acc1': '', 'rej1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>', defaults={'acc1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>', defaults={'acc1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/rej/<string:rej2>', defaults={'rej1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>', defaults={'rej1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2', defaults={'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/rej/<string:rej2>', defaults={'acc1': '', 'rej1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>', defaults={'acc1': '', 'rej1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2', defaults={'acc1': '', 'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2', defaults={'rej1': '', 'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2', defaults={'acc1': '', 'rej1': '', 'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>',
+           defaults={'acc1': '', 'rej1': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>',
+           defaults={'acc1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>',
+           defaults={'acc1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/rej/<string:rej2>',
+           defaults={'rej1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>',
+           defaults={'rej1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2',
+           defaults={'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/rej/<string:rej2>',
+           defaults={'acc1': '', 'rej1': '', 'acc2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>',
+           defaults={'acc1': '', 'rej1': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2',
+           defaults={'acc1': '', 'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2',
+           defaults={'rej1': '', 'acc2': '', 'rej2': ''})
+@app.route('/evaluate/doj/<int:dis>/pos1/pos2',
+           defaults={'acc1': '', 'rej1': '', 'acc2': '', 'rej2': ''})
 def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     """
     Return a json string with the DoJ of position pos1 given position pos2.

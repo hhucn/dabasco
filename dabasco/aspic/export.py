@@ -1,7 +1,3 @@
-import logging
-logger = logging.getLogger('root')
-
-
 def export_toast(dbas_graph, dbas_user):
     """
     Create an ASPIC representation formatted for TOAST from the given D-BAS data.

@@ -6,6 +6,7 @@ def export_diamond(adf):
     Create a DIAMOND/YADF/QADF formatted string representation of the given adf.
 
     :param adf: ADF
+    :type adf: ADF
     :return: DIAMOND/YADF/QADF formatted string representation of the given adf
     """
     output_list = []

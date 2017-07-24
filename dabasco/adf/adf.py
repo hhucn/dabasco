@@ -1,3 +1,7 @@
+import logging
+logger = logging.getLogger('root')
+
+
 class ADF(object):
     """
     Abstract Dialectical Framework.
@@ -19,7 +23,9 @@ class ADF(object):
         :param acc_tree: root node of acceptance tree
         :type acc_tree: ADFNode
         """
-        if statement not in self.statements:
+        if statement in self.statements:
+            logging.warning('Add statement %s to ADF: already exists!', str(statement))
+        else:
             self.statements.append(statement)
-            self.acceptance[statement] = acc_tree
+        self.acceptance[statement] = acc_tree
 
