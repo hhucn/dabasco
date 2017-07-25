@@ -32,6 +32,13 @@ CORS(app)  # Set security headers for Web requests
 
 
 def load_dbas_graph_data(discussion_id):
+    """
+    Get graph data for the given discussion from the D-BAS export interface.
+
+    :param discussion_id: discussion ID
+    :type discussion_id: int
+    :return: json string representation of the graph
+    """
     graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion_id)
     graph_response = urllib.request.urlopen(graph_url).read()
     graph_export = graph_response.decode('utf-8')
@@ -42,6 +49,15 @@ def load_dbas_graph_data(discussion_id):
 
 
 def load_dbas_user_data(discussion_id, user_id):
+    """
+    Get user opinion data for the given user in the given discussion from the D-BAS export interface.
+
+    :param discussion_id: discussion ID
+    :type discussion_id: int
+    :param user_id: user ID
+    :type user_id: int
+    :return: json string representation of the user opinion
+    """
     user_url = 'http://localhost:4284/export/doj_user/{}/{}'.format(user_id, discussion_id)
     user_response = urllib.request.urlopen(user_url).read()
     user_export = user_response.decode('utf-8')
@@ -60,13 +76,16 @@ def evaluate_issue_reasons(discussion, s1, s2):
     """
     Return a json string with strengths of reason for the given discussion and the specified statements.
 
-    :param discussion: discussion ID
-    :param s1: statement ID, calculate reasons for/against this
-    :param s2: statement ID, calculate reasons by/from this
-    :return: json string
-
     IDs of statements that do not exist in the given discussion are ignored.
     If no statements are given, strengths of reason for all statements in the discussion are calculated.
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param s1: statement ID, calculate reasons for/against this
+    :type s1: int
+    :param s2: statement ID, calculate reasons by/from this
+    :type s2: int
+    :return: json string
     """
 
     # Get D-BAS graph
@@ -108,12 +127,14 @@ def evaluate_issue_dojs(discussion, statements):
     """
     Return a json string with DoJs for the specified statements.
 
-    :param discussion: discussion ID
-    :param statements: comma separated string of statements for which the DoJs are calculated.
-    :return: json string
-
     IDs of statements that do not exist in the given discussion are ignored.
     If no statements are given, DoJs for all statements in the discussion are calculated.
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param statements: comma separated string of statements for which the DoJs are calculated.
+    :type statements: str
+    :return: json string
     """
 
     # Get D-BAS graph
@@ -183,14 +204,19 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     """
     Return a json string with the DoJ of position pos1 given position pos2.
 
-    :param dis: discussion ID
-    :param acc1: (optional) comma separated string of statement IDs which are accepted in position pos1.
-    :param rej1: (optional) comma separated string of statement IDs which are rejected in position pos1.
-    :param acc2: (optional) comma separated string of statement IDs which are accepted in conditional position pos2.
-    :param rej2: (optional) comma separated string of statement IDs which are rejected in conditional position pos2.
-    :return: json string
-
     IDs of statements that do not exist in the given discussion are ignored.
+
+    :param dis: discussion ID
+    :type dis: int
+    :param acc1: (optional) comma separated string of statement IDs which are accepted in position pos1.
+    :type acc1: str
+    :param rej1: (optional) comma separated string of statement IDs which are rejected in position pos1.
+    :type rej1: str
+    :param acc2: (optional) comma separated string of statement IDs which are accepted in conditional position pos2.
+    :type acc2: str
+    :param rej2: (optional) comma separated string of statement IDs which are rejected in conditional position pos2.
+    :type rej2: str
+    :return: json string
     """
 
     # Get D-BAS graph
@@ -236,7 +262,9 @@ def evaluate_issue_doj_user_position(discussion, user):
     Return a json string with the DoJ of the opinion of the given user.
 
     :param discussion: discussion ID
+    :type discussion: int
     :param user: user ID
+    :type user: int
     :return: json string
     """
 
@@ -313,7 +341,9 @@ def adfify(discussion, user):
     YADF documentation: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
 
     :param discussion: discussion ID
+    :type discussion: int
     :param user: user ID
+    :type user: int
     :return: json string
     """
     logging.debug('Create ADF from D-BAS graph...')

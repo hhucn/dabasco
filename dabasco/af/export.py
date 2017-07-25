@@ -1,11 +1,12 @@
-from .af import AF
+from .af_graph import AF
 
 
 def export_aspartix(af):
     """
     Create an ASPARTIX formatted string representation of the given af.
 
-    :param af: argumentation framework
+    :param af: argumentation framework to be converted
+    :type af: AF
     :return: ASPARTIX formatted string representation of the given af
     """
     str_list = []

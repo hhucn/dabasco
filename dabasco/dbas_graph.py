@@ -9,13 +9,13 @@ Undercut = collections.namedtuple('Undercut', ['id', 'premises', 'conclusion'])
 
 class DBASGraph(object):
     """
-    Data structure representing a single graph structure obtained from D-BAS export
+    Data structure representing a single graph structure obtained from D-BAS export.
 
     Attributes:
-        discussion_id   id of the discussion represented by this graph
-        statements      list of statements
-        inferences      dict of inference rules on the statements
-        undercuts       dict of undercut inference rules
+          discussion_id (int): id of the discussion represented by this graph.
+          statements (list): list of statements.
+          inferences (dict): dict of inference rules on the statements.
+          undercuts (dict): dict of undercut inference rules.
     """
 
     def __init__(self, discussion_id):

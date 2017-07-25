@@ -1,6 +1,6 @@
 import itertools
 
-from .af import AF
+from .af_graph import AF
 from dbas_graph import DBASGraph
 
 import logging

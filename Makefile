@@ -1,3 +1,5 @@
+
+.PHONY: test
 test:
 	py.test tests
 	pep8 .
@@ -8,4 +10,3 @@ dependencies:
 run:
 	python3 dabasco/app.py
 
-.PHONY: test

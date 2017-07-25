@@ -93,6 +93,14 @@ class Position(object):
         return 2**self.nUndecided
 
     def pretty_print(self, prefix, suffix):
+        """
+        Print a human readable representation of this position to stdout.
+
+        :param prefix: optional prefix to be printed before output.
+        :type prefix: str
+        :param suffix: optional suffix to be printed after output.
+        :type suffix: str
+        """
         if prefix:
             sys.stdout.write(prefix)
         sys.stdout.write('[')

@@ -1,11 +1,11 @@
-from .accnode import ADFNode
+from .adf_node import ADFNode
 
 
 def export_diamond(adf):
     """
     Create a DIAMOND/YADF/QADF formatted string representation of the given adf.
 
-    :param adf: ADF
+    :param adf: ADF to be converted
     :type adf: ADF
     :return: DIAMOND/YADF/QADF formatted string representation of the given adf
     """

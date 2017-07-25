@@ -65,6 +65,9 @@ class SM(object):
     # -----------------------------------------------------------
     # I/O
     def pretty_print(self):
+        """
+        Print a human readable representation of this statement map to stdout.
+        """
         if self.n < 5:
             print('Statements: ', range(1, self.n+1))
         else:
