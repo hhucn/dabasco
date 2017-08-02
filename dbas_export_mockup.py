@@ -21,7 +21,7 @@ def export_dummy_discussion(discussion):
     undercuts = []
 
     if discussion == 1:
-        # Very small and simple demo discussion
+        # Nixon Diamond example discussion
         nodes = [1, 2, 3]
         inferences = [{'id': 1,
                        'premises': [2],
@@ -32,8 +32,27 @@ def export_dummy_discussion(discussion):
                        'is_supportive': False,
                        'conclusion': 1}]
 
-    if discussion == 2:
-        # Medium demo discussion
+    elif discussion == 2:
+        # Extended Nixon Diamond example discussion
+        nodes = [1, 2, 3, 4, 5]
+        inferences = [{'id': 1,
+                       'premises': [2],
+                       'is_supportive': True,
+                       'conclusion': 1},
+                      {'id': 2,
+                       'premises': [3],
+                       'is_supportive': False,
+                       'conclusion': 1},
+                      {'id': 3,
+                       'premises': [4],
+                       'is_supportive': False,
+                       'conclusion': 2}]
+        undercuts = [{'id': 4,
+                      'premises': [5],
+                      'conclusion': 2}]
+
+    elif discussion == 3:
+        # Town policy debate example discussion
         nodes = [76, 77, 78, 79, 80, 81, 82]
         inferences = [{'id': 65,
                        'premises': [77],
@@ -77,11 +96,19 @@ def export_dummy_useropinion(user, discussion):
     rejected_statements_via_click = []
 
     if discussion == 1:
+        # Nixon Diamond example discussion
         if user == 1:
             accepted_statements_via_click = [1]
             rejected_statements_via_click = [3]
 
     elif discussion == 2:
+        # Extended Nixon Diamond example discussion
+        if user == 1:
+            accepted_statements_via_click = [3, 4]
+            rejected_statements_via_click = [5]
+
+    elif discussion == 3:
+        # Town policy debate example discussion
         if user == 1:
             accepted_statements_via_click = [76, 77, 80, 81]
             rejected_statements_via_click = [78, 79, 82]

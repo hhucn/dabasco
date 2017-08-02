@@ -18,7 +18,7 @@ def import_af_wyner(dbas_graph):
     :type dbas_graph: DBASGraph
     :return: AF
     """
-    strict_inferences = False
+    strict_inferences = False  # TODO: remove, or put this in the dabasco interface to allow users to set it!
 
     logging.debug('Create Argumentation Framework from D-BAS graph...')
     current_argument = -1
