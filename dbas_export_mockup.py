@@ -98,7 +98,7 @@ def export_dummy_useropinion(user, discussion):
     if discussion == 1:
         # Nixon Diamond example discussion
         if user == 1:
-            accepted_statements_via_click = [1]
+            accepted_statements_via_click = [2]
             rejected_statements_via_click = [3]
 
     elif discussion == 2:

@@ -378,7 +378,8 @@ def dungify(discussion):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create AF
-    af = af_import.import_af_wyner(dbas_graph)
+    strict_inferences = False
+    af = af_import.import_af_wyner(dbas_graph, strict_inferences)
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
 

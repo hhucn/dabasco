@@ -30,9 +30,9 @@ To get a Dung-style argumentation framework (AF) representation of a discussion,
 
 The AF is provided in ASPARTIX format.
 
-Example pipeline for Dung AF evaluation using conarg2 (get stable extensions of discussion 2):
+Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.af' > temp; ./conarg2 -e stable temp; rm temp;
+    curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
     
 Web sources:
 

@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger('root')
 
 
-def import_af_wyner(dbas_graph):
+def import_af_wyner(dbas_graph, strict_inferences):
     """
     Create an AF representation of the given discussion.
 
@@ -18,8 +18,6 @@ def import_af_wyner(dbas_graph):
     :type dbas_graph: DBASGraph
     :return: AF
     """
-    strict_inferences = False  # TODO: remove, or put this in the dabasco interface to allow users to set it!
-
     logging.debug('Create Argumentation Framework from D-BAS graph...')
     current_argument = -1
     element_id_for_argument = {}
@@ -140,7 +138,8 @@ def import_af_small(dbas_graph):
         # Create undermining attacks
         for inference2_id, inference2 in itertools.chain(dbas_graph.inferences.items(), dbas_graph.undercuts.items()):
             inference2_argument = argument_for_inference_id[inference2_id]
-            if not inference.is_supportive:  # TODO: can a premise be a negated statement? If yes, cover that case!!
+            if not inference.is_supportive:
+                # If a a premise can be a negated statement in future versions of D-BAS, cover that case!
                 for premise2 in inference2.premises:
                     if conclusion == premise2:
                         af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
@@ -197,7 +196,7 @@ def import_af_extended(dbas_graph):
         for inference2_id, inference2 in itertools.chain(dbas_graph.inferences.items(), dbas_graph.undercuts.items()):
             inference2_argument = argument_for_inference_id[inference2_id]
             for premise2 in inference2.premises:
-                # TODO: can a premise be a negated statement? If yes, cover that case, too!!
+                # If a a premise can be a negated statement in future versions of D-BAS, cover that case!
                 if statement == premise2:
                     af.set_attack(negated_statement_argument, inference2_argument, AF.DEFINITE_ATTACK)
 
@@ -233,7 +232,8 @@ def import_af_extended(dbas_graph):
         # Create undermining attacks
         for inference2_id, inference2 in itertools.chain(dbas_graph.inferences.items(), dbas_graph.undercuts.items()):
             inference2_argument = argument_for_inference_id[inference2_id]
-            if not inference.is_supportive:  # TODO: can a premise be a negated statement? If yes, cover that case!!
+            if not inference.is_supportive:
+                # If a a premise can be a negated statement in future versions of D-BAS, cover that case!
                 for premise2 in inference2.premises:
                     if conclusion == premise2:
                         af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
