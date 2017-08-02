@@ -1,6 +1,6 @@
 # dabasco - Evaluation module for D-BAS
 
-This module provides an interface between the graph data and user data export of D-BAS and various argumentation formalisms. It can also calculate the degree of justification of individual statements or positions in D-BAS. Requires D-BAS argument graph export data as served by the D-BAS export interface. All results are provided as a JSON string.
+This module provides an interface between the graph data and user data export of [D-BAS](https://github.com/hhucn/dbas) and various argumentation formalisms. It can also calculate the degree of justification of individual statements or positions in D-BAS. Requires D-BAS argument graph export data as served by the D-BAS export interface. All results are provided as a JSON string.
 
 ## Setup
 
@@ -30,10 +30,6 @@ To get a Dung-style argumentation framework (AF) representation of a discussion,
 
 The AF is provided in ASPARTIX format.
 
-An extended AF representation that also includes AF arguments for D-BAS statements can be obtained by:
- 
-    http://localhost:5101/evaluate/dungify_extended/<discussion_id>
-     
 Example pipeline for Dung AF evaluation using conarg2 (get stable extensions of discussion 2):
 
     curl -s 'http://localhost:5101/evaluate/dungify/2' | jq -r '.af' > temp; ./conarg2 -e stable temp; rm temp;
