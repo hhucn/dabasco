@@ -100,6 +100,12 @@ def export_dummy_useropinion(user, discussion):
         if user == 1:
             accepted_statements_via_click = [2]
             rejected_statements_via_click = [3]
+        elif user == 2:
+            accepted_statements_via_click = [2, 3]
+            rejected_statements_via_click = []
+        elif user == 3:
+            accepted_statements_via_click = [1, 3]
+            rejected_statements_via_click = []
 
     elif discussion == 2:
         # Extended Nixon Diamond example discussion
@@ -112,12 +118,22 @@ def export_dummy_useropinion(user, discussion):
         if user == 1:
             accepted_statements_via_click = [76, 77, 80, 81]
             rejected_statements_via_click = [78, 79, 82]
+        elif user == 2:
+            accepted_statements_via_click = [77, 78, 80, 81, 82]
+            rejected_statements_via_click = [76, 79]
+        elif user == 3:
+            accepted_statements_via_click = [77, 78, 80, 81, 82]
+            rejected_statements_via_click = []
+        elif user == 4:
+            accepted_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
+            rejected_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
 
     return jsonify({'marked_statements': marked_statements,
                     'marked_arguments': marked_arguments,
                     'rejected_arguments': rejected_arguments,
                     'accepted_statements_via_click': accepted_statements_via_click,
                     'rejected_statements_via_click': rejected_statements_via_click})
+
 
 if __name__ == '__main__':
     app.run(threaded=True, port=4284)
