@@ -60,11 +60,22 @@ Web sources:
 
 To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discussion, use:
  
-    http://localhost:5101/evaluate/adfify/<discussion_id>/<user_id>
+    http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>
+    
+You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent D-BAS arguments and/or user assumptions by adding corresponding path elements, e.g.:
+
+    # Both defeasible
+    http://localhost:5101/evaluate/adfify/dis/2/user/1 
+    # Strict rules
+    http://localhost:5101/evaluate/adfify/dis/2/user/1/rules_strict 
+    # Strict assumptions
+    http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict 
+    # Both strict
+    http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict/rules_strict 
          
 Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/2/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
+    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
      
 Web sources:
 
