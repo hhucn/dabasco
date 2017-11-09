@@ -333,8 +333,13 @@ def toastify(discussion, user):
     return jsonify(result)
 
 
-@app.route('/evaluate/adfify/<int:discussion>/<int:user>')
-def adfify(discussion, user):
+# @app.route('/evaluate/adfify/<int:discussion>/<int:user>')
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>', defaults={'assumptions_strict': 0, 'rules_strict': 0})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict', defaults={'assumptions_strict': 1, 'rules_strict': 0})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict', defaults={'assumptions_strict': 0, 'rules_strict': 1})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict/rules_strict', defaults={'assumptions_strict': 1, 'rules_strict': 1})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict/assumptions_strict', defaults={'assumptions_strict': 1, 'rules_strict': 1})
+def adfify(discussion, user, rules_strict, assumptions_strict):
     """
     Create a YADF/QADF/DIAMOND-formatted ADF representation for given user's opinion.
 
@@ -344,6 +349,10 @@ def adfify(discussion, user):
     :type discussion: int
     :param user: user ID
     :type user: int
+    :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
+    :type rules_strict: int
+    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
+    :type assumptions_strict: int
     :return: json string
     """
     logging.debug('Create ADF from D-BAS graph...')
@@ -353,7 +362,7 @@ def adfify(discussion, user):
     dbas_user = load_dbas_user_data(discussion, user)
 
     # Create ADF
-    adf = adf_import.import_adf(dbas_graph, dbas_user)
+    adf = adf_import.import_adf(dbas_graph, dbas_user, bool(rules_strict), bool(assumptions_strict))
 
     # Convert to DIAMOND/YADF formatted string
     output_string = adf_export.export_diamond(adf)
