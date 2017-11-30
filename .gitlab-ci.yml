@@ -1,18 +1,30 @@
 image: hhucn/python
 
+stages:
+  - test
+
 before_script:
   - export PIP_CACHE_DIR="pip-cache"
   - pip install --quiet -U pip
 
+# ------------------------------------------------------------------------------
+# Job definitions
+
 flake8:
   stage: test
   script:
-    - pip install --quiet flake8
-    - flake8 doj/
+    - pip3 install --quiet flake8
+    - flake8 .
   allow_failure: true
 
-# pytest:
-#   stage: test
-#   script:
-#     - pip install --quiet -r requirements.txt
-#     - pytest doj/
+unittests:
+  stage: test
+  script:
+    - pip install --quiet -r requirements.txt
+    - nosetests --with-coverage adf af aspic doj
+  coverage: '/^TOTAL\s*\d+\s*\d+\s*(\d+\%)\s*$/'
+  artifacts:
+    paths:
+      - coverage.xml
+    expire_in: 10 mins
+
