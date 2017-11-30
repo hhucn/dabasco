@@ -147,12 +147,14 @@ def import_adf(dbas_graph, user_opinion, rules_strict, assumptions_strict):
     return adf
 
 
-def import_adf_objective(dbas_graph):
+def import_adf_objective(dbas_graph, rules_strict):
     """
     Create an ADF representation in the given discussion.
 
     :param dbas_graph: DBASGraph to be used for ADF generation
     :type dbas_graph: DBASGraph
+    :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
+    :type rules_strict: Boolean
     :return: ADF
     """
     adf = ADF()
@@ -189,30 +191,56 @@ def import_adf_objective(dbas_graph):
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
-    # Setup inference acceptance functions
-    for inference_id in dbas_graph.inferences:
-        inference = dbas_graph.inferences[inference_id]
-        premises = ['s' + str(premise) for premise in inference.premises]
-        conclusion = 's' + str(inference.conclusion)
-        negated_conclusion = 'n' + conclusion if inference.is_supportive \
-            else conclusion
-        rule_name = 'i' + str(inference.id)
-        rule_name_negated = 'n' + rule_name
-        adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
-        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
-    for undercut_id in dbas_graph.undercuts:
-        undercut = dbas_graph.undercuts[undercut_id]
-        premises = ['s' + str(premise) for premise in undercut.premises]
-        negated_conclusion = 'i' + str(undercut.conclusion)
-        rule_name = 'i' + str(undercut.id)
-        rule_name_negated = 'n' + rule_name
-        adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
-        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
+    if rules_strict:
+        # Setup strict inference acceptance functions
+        for inference_id in dbas_graph.inferences:
+            inference = dbas_graph.inferences[inference_id]
+            premises = ['s' + str(premise) for premise in inference.premises]
+            conclusion = 's' + str(inference.conclusion) if inference.is_supportive \
+                else 'ns' + str(inference.conclusion)
+            rule_name = 'i' + str(inference.id)
+            rule_name_negated = 'n' + rule_name
+            adf.add_statement(rule_name, ADFNode(ADFNode.AND, premises))
+            adf.add_statement(rule_name_negated, ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, conclusion),
+                ADFNode(ADFNode.NOT, rule_name_negated)
+            ] + premises))
+        for undercut_id in dbas_graph.undercuts:
+            undercut = dbas_graph.undercuts[undercut_id]
+            premises = ['s' + str(premise) for premise in undercut.premises]
+            negated_undercut_target = 'ni' + str(undercut.conclusion)
+            rule_name = 'i' + str(undercut.id)
+            rule_name_negated = 'n' + rule_name
+            adf.add_statement(rule_name, ADFNode(ADFNode.AND, premises))
+            adf.add_statement(rule_name_negated, ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, negated_undercut_target),
+                ADFNode(ADFNode.NOT, rule_name_negated)
+            ] + premises))
+    else:
+        # Setup defeasible inference acceptance functions
+        for inference_id in dbas_graph.inferences:
+            inference = dbas_graph.inferences[inference_id]
+            premises = ['s' + str(premise) for premise in inference.premises]
+            conclusion = 's' + str(inference.conclusion)
+            negated_conclusion = 'n' + conclusion if inference.is_supportive \
+                else conclusion
+            rule_name = 'i' + str(inference.id)
+            rule_name_negated = 'n' + rule_name
+            adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, negated_conclusion),
+                ADFNode(ADFNode.NOT, rule_name_negated)
+            ] + premises))
+            adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
+        for undercut_id in dbas_graph.undercuts:
+            undercut = dbas_graph.undercuts[undercut_id]
+            premises = ['s' + str(premise) for premise in undercut.premises]
+            negated_conclusion = 'i' + str(undercut.conclusion)
+            rule_name = 'i' + str(undercut.id)
+            rule_name_negated = 'n' + rule_name
+            adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
+                ADFNode(ADFNode.NOT, negated_conclusion),
+                ADFNode(ADFNode.NOT, rule_name_negated)
+            ] + premises))
+            adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
 
     return adf

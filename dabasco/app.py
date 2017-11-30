@@ -70,11 +70,14 @@ def load_dbas_user_data(discussion_id, user_id):
     return dbas_user
 
 
-@app.route('/evaluate/reasons/<int:discussion>/for/<int:s1>/by/<int:s2>')
-@app.route('/evaluate/reasons/<int:discussion>/by/<int:s2>/for/<int:s1>')
-@app.route('/evaluate/reasons/<int:discussion>/for/<int:s1>', defaults={'s2': None})
-@app.route('/evaluate/reasons/<int:discussion>/by/<int:s2>', defaults={'s1': None})
-@app.route('/evaluate/reasons/<int:discussion>', defaults={'s1': None, 's2': None})
+@app.route('/evaluate/reasons/dis/<int:discussion>/for/<int:s1>/by/<int:s2>')
+@app.route('/evaluate/reasons/dis/<int:discussion>/by/<int:s2>/for/<int:s1>')
+@app.route('/evaluate/reasons/dis/<int:discussion>/for/<int:s1>',
+           defaults={'s2': None})
+@app.route('/evaluate/reasons/dis/<int:discussion>/by/<int:s2>',
+           defaults={'s1': None})
+@app.route('/evaluate/reasons/dis/<int:discussion>',
+           defaults={'s1': None, 's2': None})
 def evaluate_issue_reasons(discussion, s1, s2):
     """
     Return a json string with strengths of reason for the given discussion and the specified statements.
@@ -123,9 +126,9 @@ def evaluate_issue_reasons(discussion, s1, s2):
     return json_result
 
 
-@app.route('/evaluate/dojs/<int:discussion>/<string:statements>')
-@app.route('/evaluate/dojs/<int:discussion>/', defaults={'statements': ''})
-@app.route('/evaluate/dojs/<int:discussion>', defaults={'statements': ''})
+@app.route('/evaluate/dojs/dis/<int:discussion>/stats/<string:statements>')
+@app.route('/evaluate/dojs/dis/<int:discussion>',
+           defaults={'statements': ''})
 def evaluate_issue_dojs(discussion, statements):
     """
     Return a json string with DoJs for the specified statements.
@@ -172,36 +175,37 @@ def evaluate_issue_dojs(discussion, statements):
     return json_result
 
 
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>')
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>/'
+           'rej/<string:rej2>')
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
            defaults={'acc1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>/rej/<string:rej2>',
            defaults={'rej1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/rej/<string:rej2>',
            defaults={'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2/acc/<string:acc2>',
            defaults={'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/pos2/acc/<string:acc2>/rej/<string:rej2>',
            defaults={'acc1': '', 'rej1': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/rej/<string:rej1>/pos2/rej/<string:rej2>',
            defaults={'acc1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/rej/<string:rej1>/pos2/acc/<string:acc2>',
            defaults={'acc1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/pos2/rej/<string:rej2>',
            defaults={'rej1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/pos2/acc/<string:acc2>',
            defaults={'rej1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/rej/<string:rej1>/pos2',
            defaults={'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/rej/<string:rej2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/pos2/rej/<string:rej2>',
            defaults={'acc1': '', 'rej1': '', 'acc2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2/acc/<string:acc2>',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/pos2/acc/<string:acc2>',
            defaults={'acc1': '', 'rej1': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/rej/<string:rej1>/pos2',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/rej/<string:rej1>/pos2',
            defaults={'acc1': '', 'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/acc/<string:acc1>/pos2',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/acc/<string:acc1>/pos2',
            defaults={'rej1': '', 'acc2': '', 'rej2': ''})
-@app.route('/evaluate/doj/<int:dis>/pos1/pos2',
+@app.route('/evaluate/doj/dis/<int:dis>/pos1/pos2',
            defaults={'acc1': '', 'rej1': '', 'acc2': '', 'rej2': ''})
 def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     """
@@ -259,7 +263,7 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     return json_result
 
 
-@app.route('/evaluate/doj/<int:discussion>/user/<int:user>')
+@app.route('/evaluate/doj/dis/<int:discussion>/user/<int:user>')
 def evaluate_issue_doj_user_position(discussion, user):
     """
     Return a json string with the DoJ of the opinion of the given user.
@@ -298,7 +302,7 @@ def evaluate_issue_doj_user_position(discussion, user):
     return json_result
 
 
-@app.route('/evaluate/toastify/<int:discussion>/<int:user>')
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>')
 def toastify(discussion, user):
     """
     Create a TOAST-formatted graph representation for given user's opinion.
@@ -336,12 +340,16 @@ def toastify(discussion, user):
     return jsonify(result)
 
 
-# @app.route('/evaluate/adfify/<int:discussion>/<int:user>')
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>', defaults={'assumptions_strict': 0, 'rules_strict': 0})
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict', defaults={'assumptions_strict': 1, 'rules_strict': 0})
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict', defaults={'assumptions_strict': 0, 'rules_strict': 1})
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict/rules_strict', defaults={'assumptions_strict': 1, 'rules_strict': 1})
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict/assumptions_strict', defaults={'assumptions_strict': 1, 'rules_strict': 1})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0, 'rules_strict': 0})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1, 'rules_strict': 0})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict',
+           defaults={'assumptions_strict': 0, 'rules_strict': 1})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict/rules_strict',
+           defaults={'assumptions_strict': 1, 'rules_strict': 1})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/rules_strict/assumptions_strict',
+           defaults={'assumptions_strict': 1, 'rules_strict': 1})
 def adfify(discussion, user, rules_strict, assumptions_strict):
     """
     Create a YADF/QADF/DIAMOND-formatted ADF representation for given user's opinion.
@@ -375,8 +383,11 @@ def adfify(discussion, user, rules_strict, assumptions_strict):
     return json_result
 
 
-@app.route('/evaluate/adfify_objective/<int:discussion>')
-def adfify_objective(discussion):
+@app.route('/evaluate/adfify_objective/dis/<int:discussion>',
+           defaults={'rules_strict': 0})
+@app.route('/evaluate/adfify_objective/dis/<int:discussion>/rules_strict',
+           defaults={'rules_strict': 1})
+def adfify_objective(discussion, rules_strict):
     """
     Create a YADF/QADF/DIAMOND-formatted ADF representation.
 
@@ -384,6 +395,8 @@ def adfify_objective(discussion):
 
     :param discussion: discussion ID
     :type discussion: int
+    :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
+    :type rules_strict: int
     :return: json string
     """
     logging.debug('Create objective ADF from D-BAS graph...')
@@ -392,7 +405,7 @@ def adfify_objective(discussion):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create ADF
-    adf = adf_import.import_adf_objective(dbas_graph)
+    adf = adf_import.import_adf_objective(dbas_graph, bool(rules_strict))
 
     # Convert to DIAMOND/YADF formatted string
     output_string = adf_export.export_diamond(adf)
@@ -401,7 +414,7 @@ def adfify_objective(discussion):
     return json_result
 
 
-@app.route('/evaluate/dungify/<int:discussion>')
+@app.route('/evaluate/dungify/dis/<int:discussion>')
 def dungify(discussion):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
@@ -428,7 +441,7 @@ def dungify(discussion):
     return json_result
 
 
-@app.route('/evaluate/dungify_small/<int:discussion>')
+@app.route('/evaluate/dungify_small/dis/<int:discussion>')
 def dungify_small(discussion):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
@@ -454,7 +467,7 @@ def dungify_small(discussion):
     return json_result
 
 
-@app.route('/evaluate/dungify_extended/<int:discussion>')
+@app.route('/evaluate/dungify_extended/dis/<int:discussion>')
 def dungify_extended(discussion):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
