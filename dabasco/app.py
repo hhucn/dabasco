@@ -30,6 +30,9 @@ logger = logging.getLogger('root')
 app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
+BASE_URL = 'http://localhost:4284/export'
+# BASE_URL = 'https://dbas.cs.uni-duesseldorf.de/export'
+
 
 def load_dbas_graph_data(discussion_id):
     """
@@ -39,7 +42,7 @@ def load_dbas_graph_data(discussion_id):
     :type discussion_id: int
     :return: json string representation of the graph
     """
-    graph_url = 'http://localhost:4284/export/doj/{}'.format(discussion_id)
+    graph_url = BASE_URL + '/doj/{}'.format(discussion_id)
     graph_response = urllib.request.urlopen(graph_url).read()
     graph_export = graph_response.decode('utf-8')
     while isinstance(graph_export, str):
@@ -58,7 +61,7 @@ def load_dbas_user_data(discussion_id, user_id):
     :type user_id: int
     :return: json string representation of the user opinion
     """
-    user_url = 'http://localhost:4284/export/doj_user/{}/{}'.format(user_id, discussion_id)
+    user_url = BASE_URL + '/doj_user/{}/{}'.format(user_id, discussion_id)
     user_response = urllib.request.urlopen(user_url).read()
     user_export = user_response.decode('utf-8')
     while isinstance(user_export, str):
