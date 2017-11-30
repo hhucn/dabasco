@@ -1,7 +1,6 @@
 import itertools
 
 from .af_graph import AF
-from dbas_graph import DBASGraph
 
 import logging
 logger = logging.getLogger('root')

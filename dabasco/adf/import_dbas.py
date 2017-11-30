@@ -1,7 +1,5 @@
 from .adf_graph import ADF
 from .adf_node import ADFNode
-from dbas_graph import DBASGraph
-from dbas_user import DBASUser
 
 
 def import_adf(dbas_graph, user_opinion, rules_strict, assumptions_strict):

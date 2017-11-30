@@ -30,4 +30,3 @@ class ADF(object):
         else:
             self.statements.append(statement)
         self.acceptance[statement] = acc_tree
-

@@ -25,4 +25,3 @@ class ADFNode(object):
             """(list) list of child nodes."""
         else:
             self.children = [children]
-
