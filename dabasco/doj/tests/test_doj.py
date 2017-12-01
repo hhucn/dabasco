@@ -1,7 +1,15 @@
 import unittest
+
 from dabasco.doj.pos import Position
 from dabasco.doj.sm import SM
 from dabasco.doj.doj import DoJ
+
+from os import path
+import logging
+import logging.config
+log_file_path = path.join(path.dirname(path.abspath(__file__)), '../../logging.ini')
+logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
+logger = logging.getLogger('test')
 
 
 class TestStatementMapDoJ(unittest.TestCase):
@@ -13,7 +21,7 @@ class TestStatementMapDoJ(unittest.TestCase):
             pos = Position(n)
             pos.set_accepted(s)
             doj_s = doj.doj(sm, pos, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
-            print(doj_s)
+            logging.debug('%f == %f', doj_s, dojs[i])
             self.assertEqual(doj_s, dojs[i])
 
     # -----------------------------------------------------
