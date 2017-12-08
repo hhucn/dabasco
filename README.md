@@ -34,7 +34,12 @@ To get a Dung-style argumentation framework (AF) representation of a discussion,
 
 The AF is provided in ASPARTIX format.
 
-Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2):
+You can configure dabasco to represent D-BAS arguments as strict inference rules (instead of defeasible inference rules, as default) by adding a corresponding path element:
+
+    http://localhost:5101/evaluate/dungify/dis/<discussion_id>/rules_strict 
+
+
+Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2, use defeasible rules):
 
     curl -s 'http://localhost:5101/evaluate/dungify/dis/2' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
     
@@ -48,6 +53,10 @@ Web sources:
 To get a TOAST input format representation of a user opinion in a discussion, use:
 
     http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>
+
+You can configure dabasco to represent the D-BAS user opinion by ASPIC axioms (instead of ASPIC assumptions, as default) by adding a corresponding path element:
+
+    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>/assumptions_strict 
 
 Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1):
 

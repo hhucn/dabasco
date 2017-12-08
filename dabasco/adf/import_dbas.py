@@ -11,9 +11,9 @@ def import_adf(dbas_graph, user_opinion, rules_strict, assumptions_strict):
     :param user_opinion: DBASUser to be used for ADF generation
     :type user_opinion: DBASUser
     :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
-    :type rules_strict: Boolean
+    :type rules_strict: bool
     :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strict: Boolean
+    :type assumptions_strict: bool
     :return: ADF
     """
     adf = ADF()
@@ -152,10 +152,17 @@ def import_adf_objective(dbas_graph, rules_strict):
     :param dbas_graph: DBASGraph to be used for ADF generation
     :type dbas_graph: DBASGraph
     :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
-    :type rules_strict: Boolean
+    :type rules_strict: bool
     :return: ADF
     """
     adf = ADF()
+
+    # Add defeasible rules for initial statement assumptions
+    for statement in dbas_graph.statements:
+        assumption_id = 'a' + str(statement)
+        dbas_graph.add_inference(assumption_id, [], statement, True)
+        rejection_id = 'an' + str(statement)
+        dbas_graph.add_inference(rejection_id, [], statement, False)
 
     # Setup statement acceptance functions
     for statement in dbas_graph.statements:

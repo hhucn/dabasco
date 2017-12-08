@@ -302,10 +302,54 @@ def evaluate_issue_doj_user_position(discussion, user):
     return json_result
 
 
-@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>')
-def toastify(discussion, user):
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0})
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1})
+def toastify(discussion, user, assumptions_strict):
     """
     Create a TOAST-formatted graph representation for given user's opinion.
+
+    TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param user: user ID
+    :type user: int
+    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
+    :type assumptions_strict: int
+    :return: json string
+    """
+    logging.debug('Create TOAST representation from D-BAS graph...')
+
+    # Get D-BAS graph and user data
+    dbas_graph = load_dbas_graph_data(discussion)
+    dbas_user = load_dbas_user_data(discussion, user)
+
+    # Get assumptions and inference rules from D-BAS data
+    result = aspic_export.export_toast(dbas_graph, dbas_user, bool(assumptions_strict))
+
+    # Auxiliary TOAST input fields (not used, or defaults used)
+    statement_prefs = ''
+    rule_prefs = ''
+    link_principle = 'weakest'  # options: 'weakest', 'last'.
+    semantics = 'preferred'     # options: 'stable', 'preferred', 'grounded'.
+
+    result['link'] = link_principle
+    result['rulePrefs'] = rule_prefs
+    result['semantics'] = semantics
+    result['kbPrefs'] = statement_prefs
+
+    result['dbas_discussion_id'] = discussion
+    result['dbas_user_id'] = user
+    return jsonify(result)
+
+
+@app.route('/evaluate/toastify_rulebased/dis/<int:discussion>/user/<int:user>')
+def toastify_rulebased(discussion, user):
+    """
+    Create a TOAST-formatted graph representation for given user's opinion.
+    Uses weak defeasible rules to represent user opinions instead of using assumptions.
 
     TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
 
@@ -322,21 +366,57 @@ def toastify(discussion, user):
     dbas_user = load_dbas_user_data(discussion, user)
 
     # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast(dbas_graph, dbas_user)
+    result = aspic_export.export_toast_rulebased(dbas_graph, dbas_user)
 
     # Auxiliary TOAST input fields (not used, or defaults used)
     statement_prefs = ''
-    rule_prefs = ''
-    link_principle = 'weakest'  # options: 'weakest', 'last'.
+    link_principle = 'last'  # options: 'weakest', 'last'.
     semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
 
     result['link'] = link_principle
-    result['rulePrefs'] = rule_prefs
     result['semantics'] = semantics
     result['kbPrefs'] = statement_prefs
 
     result['dbas_discussion_id'] = discussion
     result['dbas_user_id'] = user
+    return jsonify(result)
+
+
+@app.route('/evaluate/toastify_rulebased_objective/dis/<int:discussion>',
+           defaults={'positive_bias': 0})
+@app.route('/evaluate/toastify_rulebased_objective/dis/<int:discussion>/positive_bias',
+           defaults={'positive_bias': 1})
+def toastify_rulebased_objective(discussion, positive_bias):
+    """
+    Create a TOAST-formatted graph representation for given user's opinion.
+    Uses weak defeasible rules to represent user opinions instead of using assumptions.
+
+    TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param positive_bias: indicate whether default assumptions shall be created for all or only for positive literals
+    :type positive_bias: int
+    :return: json string
+    """
+    logging.debug('Create TOAST representation from D-BAS graph...')
+
+    # Get D-BAS graph and user data
+    dbas_graph = load_dbas_graph_data(discussion)
+
+    # Get assumptions and inference rules from D-BAS data
+    result = aspic_export.export_toast_rulebased_objective(dbas_graph, bool(positive_bias))
+
+    # Auxiliary TOAST input fields (not used, or defaults used)
+    statement_prefs = ''
+    link_principle = 'last'  # options: 'weakest', 'last'.
+    semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
+
+    result['link'] = link_principle
+    result['semantics'] = semantics
+    result['kbPrefs'] = statement_prefs
+
+    result['dbas_discussion_id'] = discussion
     return jsonify(result)
 
 
@@ -414,13 +494,18 @@ def adfify_objective(discussion, rules_strict):
     return json_result
 
 
-@app.route('/evaluate/dungify/dis/<int:discussion>')
-def dungify(discussion):
+@app.route('/evaluate/dungify/dis/<int:discussion>',
+           defaults={'rules_strict': 0})
+@app.route('/evaluate/dungify/dis/<int:discussion>/rules_strict',
+           defaults={'rules_strict': 1})
+def dungify(discussion, rules_strict):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
 
     :param discussion: discussion ID
     :type discussion: int
+    :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
+    :type rules_strict: int
     :return: json string
     """
     logging.debug('Create AF from D-BAS graph...')
@@ -429,14 +514,48 @@ def dungify(discussion):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create AF
-    strict_inferences = False
-    af = af_import.import_af_wyner(dbas_graph, strict_inferences)
+    af = af_import.import_af_wyner(dbas_graph, bool(rules_strict))
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
 
     # Create output text format
     str_output = af_export.export_aspartix(af)
     json_result = jsonify({'dbas_discussion_id': discussion,
+                           'af': str_output})
+    return json_result
+
+
+@app.route('/evaluate/dungify_subjective/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0})
+@app.route('/evaluate/dungify_subjective/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1})
+def dungify_subjective(discussion, user, assumptions_strict):
+    """
+    Create a Dung-style argumentation graph representation for the given discussion.
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param user: user ID
+    :type user: int
+    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
+    :type assumptions_strict: int
+    :return: json string
+    """
+    logging.debug('Create subjective AF from D-BAS graph and D-BAS user opinion...')
+
+    # Get D-BAS graph and user data
+    dbas_graph = load_dbas_graph_data(discussion)
+    dbas_user = load_dbas_user_data(discussion, user)
+
+    # Create AF
+    af = af_import.import_af_wyner_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
+    logging.debug(str(af.name_for_argument))
+    logging.debug(str(af.argument_for_name))
+
+    # Create output text format
+    str_output = af_export.export_aspartix(af)
+    json_result = jsonify({'dbas_discussion_id': discussion,
+                           'dbas_user_id': user,
                            'af': str_output})
     return json_result
 
@@ -493,5 +612,36 @@ def dungify_extended(discussion):
     return json_result
 
 
-if __name__ == '__main__':
-    app.run(threaded=True, port=5101)
+@app.route('/evaluate/dungify_extended_subjective/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0})
+@app.route('/evaluate/dungify_extended_subjective/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1})
+def dungify_extended_subjective(discussion, user, assumptions_strict):
+    """
+    Create a Dung-style argumentation graph representation for the given discussion.
+
+    :param discussion: discussion ID
+    :type discussion: int
+    :param user: user ID
+    :type user: int
+    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
+    :type assumptions_strict: int
+    :return: json string
+    """
+    logging.debug('Create AF from D-BAS graph...')
+
+    # Get D-BAS graph and user data
+    dbas_graph = load_dbas_graph_data(discussion)
+    dbas_user = load_dbas_user_data(discussion, user)
+
+    # Create AF
+    af = af_import.import_af_extended_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
+    logging.debug(str(af.name_for_argument))
+    logging.debug(str(af.argument_for_name))
+
+    # Create output text format
+    str_output = af_export.export_aspartix(af)
+    json_result = jsonify({'dbas_discussion_id': discussion,
+                           'dbas_user_id': user,
+                           'af': str_output})
+    return json_result
