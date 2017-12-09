@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import urllib.request
 import json
 
 import dbas_import
+from invalid_request_error import InvalidRequestError
 
 from doj.pos import Position
 from doj.sm import SM
@@ -302,121 +303,59 @@ def evaluate_issue_doj_user_position(discussion, user):
     return json_result
 
 
-@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>',
-           defaults={'assumptions_strict': 0})
-@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
-           defaults={'assumptions_strict': 1})
-def toastify(discussion, user, assumptions_strict):
+@app.route('/evaluate/toastify', methods=['GET'])
+def toastify():
     """
     Create a TOAST-formatted graph representation for given user's opinion.
 
     TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
 
-    :param discussion: discussion ID
-    :type discussion: int
-    :param user: user ID
-    :type user: int
-    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strict: int
     :return: json string
     """
     logging.debug('Create TOAST representation from D-BAS graph...')
 
-    # Get D-BAS graph and user data
+    json_params = request.get_json()
+
+    # Respond with error if no parameters in body
+    if not json_params:
+        raise InvalidRequestError('Missing request parameters', status_code=400)
+
+    # The 'discussion' field is mandatory, respond with error if missing.
+    if 'discussion' not in json_params:
+        raise InvalidRequestError('Field "discussion" is required', status_code=400)
+
+    discussion = int(json_params['discussion'])
     dbas_graph = load_dbas_graph_data(discussion)
-    dbas_user = load_dbas_user_data(discussion, user)
+
+    opinion_type = None
+    opinion = None
+    if 'opinion' in json_params:
+        opinion_params = json_params['opinion']
+        if isinstance(opinion_params, dict):
+            if 'type' in opinion_params and opinion_params['type'] in ['weak', 'strong', 'strict']:
+                opinion_type = opinion_params['type']
+            if opinion_type:
+                if 'user' in opinion_params:
+                    user_id = int(opinion_params['user'])
+                    opinion = load_dbas_user_data(discussion, user_id)
+
+    assumptions_type = None
+    assumptions_bias = None
+    if 'assumptions' in json_params:
+        assumptions = json_params['assumptions']
+        if isinstance(assumptions, dict):
+            if 'type' in assumptions and assumptions['type'] in ['weak', 'strong']:
+                assumptions_type = assumptions['type']
+            if 'bias' in assumptions and assumptions['bias'] in ['positive', 'negative']:
+                assumptions_bias = assumptions['bias']
 
     # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast(dbas_graph, dbas_user, bool(assumptions_strict))
+    result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias)
 
     # Auxiliary TOAST input fields (not used, or defaults used)
-    statement_prefs = ''
-    rule_prefs = ''
-    link_principle = 'weakest'  # options: 'weakest', 'last'.
-    semantics = 'preferred'     # options: 'stable', 'preferred', 'grounded'.
-
-    result['link'] = link_principle
-    result['rulePrefs'] = rule_prefs
-    result['semantics'] = semantics
-    result['kbPrefs'] = statement_prefs
-
-    result['dbas_discussion_id'] = discussion
-    result['dbas_user_id'] = user
-    return jsonify(result)
-
-
-@app.route('/evaluate/toastify_rulebased/dis/<int:discussion>/user/<int:user>')
-def toastify_rulebased(discussion, user):
-    """
-    Create a TOAST-formatted graph representation for given user's opinion.
-    Uses weak defeasible rules to represent user opinions instead of using assumptions.
-
-    TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
-
-    :param discussion: discussion ID
-    :type discussion: int
-    :param user: user ID
-    :type user: int
-    :return: json string
-    """
-    logging.debug('Create TOAST representation from D-BAS graph...')
-
-    # Get D-BAS graph and user data
-    dbas_graph = load_dbas_graph_data(discussion)
-    dbas_user = load_dbas_user_data(discussion, user)
-
-    # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast_rulebased(dbas_graph, dbas_user)
-
-    # Auxiliary TOAST input fields (not used, or defaults used)
-    statement_prefs = ''
-    link_principle = 'last'  # options: 'weakest', 'last'.
     semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
-
-    result['link'] = link_principle
     result['semantics'] = semantics
-    result['kbPrefs'] = statement_prefs
 
-    result['dbas_discussion_id'] = discussion
-    result['dbas_user_id'] = user
-    return jsonify(result)
-
-
-@app.route('/evaluate/toastify_rulebased_objective/dis/<int:discussion>',
-           defaults={'positive_bias': 0})
-@app.route('/evaluate/toastify_rulebased_objective/dis/<int:discussion>/positive_bias',
-           defaults={'positive_bias': 1})
-def toastify_rulebased_objective(discussion, positive_bias):
-    """
-    Create a TOAST-formatted graph representation for given user's opinion.
-    Uses weak defeasible rules to represent user opinions instead of using assumptions.
-
-    TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
-
-    :param discussion: discussion ID
-    :type discussion: int
-    :param positive_bias: indicate whether default assumptions shall be created for all or only for positive literals
-    :type positive_bias: int
-    :return: json string
-    """
-    logging.debug('Create TOAST representation from D-BAS graph...')
-
-    # Get D-BAS graph and user data
-    dbas_graph = load_dbas_graph_data(discussion)
-
-    # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast_rulebased_objective(dbas_graph, bool(positive_bias))
-
-    # Auxiliary TOAST input fields (not used, or defaults used)
-    statement_prefs = ''
-    link_principle = 'last'  # options: 'weakest', 'last'.
-    semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
-
-    result['link'] = link_principle
-    result['semantics'] = semantics
-    result['kbPrefs'] = statement_prefs
-
-    result['dbas_discussion_id'] = discussion
     return jsonify(result)
 
 
@@ -632,6 +571,13 @@ def dungify_extended_subjective(discussion, user, assumptions_strict):
                            'dbas_user_id': user,
                            'af': str_output})
     return json_result
+
+
+@app.errorhandler(InvalidRequestError)
+def handle_invalid_request(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 
 if __name__ == '__main__':

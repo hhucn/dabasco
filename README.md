@@ -52,15 +52,25 @@ Web sources:
 
 To get a TOAST input format representation of a user opinion in a discussion, use:
 
-    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>
+    http://localhost:5101/evaluate/toastify
 
-You can configure dabasco to represent the D-BAS user opinion by ASPIC axioms (instead of ASPIC assumptions, as default) by adding a corresponding path element:
+In the body of the request, provide JSON in the following format to specify parameters:
 
-    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>/assumptions_strict 
+    {
+      "discussion": <dbas_discussion_id>,  # mandatory
+      "assumptions": {  # optional, default type "none"
+        "type": "none", "weak", "strong",  # optional, default type "none"
+        "bias": "none", "positive", "negative",  # optional, default bias "none"
+      },
+      "opinion": {  # optional, default type "none"
+        "type": "none", "weak", "strong", "strict",  # optional, default type "none"
+        "user": <dbas_user_id>  # mandatory unless opinion type is "none"
+      }
+    }    
 
-Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1):
+Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1, with weak user opinion and no assumptions):
 
-    curl http://localhost:5101/evaluate/toastify/dis/2/user/1 | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
+    curl -H "Content-Type: application/json" -XGET 'http://localhost:5101/evaluate/toastify' -d '{"discussion": 2, "opinion": {"type": "weak", "user": 1}}' | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
     
 Web sources:
 
