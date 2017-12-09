@@ -632,3 +632,7 @@ def dungify_extended_subjective(discussion, user, assumptions_strict):
                            'dbas_user_id': user,
                            'af': str_output})
     return json_result
+
+
+if __name__ == '__main__':
+    app.run(threaded=True, port=5101)
