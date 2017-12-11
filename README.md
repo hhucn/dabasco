@@ -83,16 +83,12 @@ To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discus
  
     http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>
     
-You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent D-BAS arguments and/or user assumptions by adding corresponding path elements, e.g.:
+You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent D-BAS user assumptions by adding a corresponding path elements, e.g.:
 
-    # Both defeasible
+    # Defeasible user opinion
     http://localhost:5101/evaluate/adfify/dis/2/user/1 
-    # Strict rules
-    http://localhost:5101/evaluate/adfify/dis/2/user/1/rules_strict 
-    # Strict assumptions
+    # Strict user opinion
     http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict 
-    # Both strict
-    http://localhost:5101/evaluate/adfify/dis/2/user/1/rules_strict/assumptions_strict 
          
 Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
 
