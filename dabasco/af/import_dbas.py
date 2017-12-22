@@ -189,15 +189,6 @@ def import_af_wyner_subjective(dbas_graph, user_opinion, assumptions_strict):
         af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
         af.set_attack(eliminated_statement_argument, inference_argument, AF.DEFINITE_ATTACK)
 
-        # When using strict assumptions, let the dummy arg attack all inferences whose conclusion opposes the opinion
-        if assumptions_strict:
-            if inference.is_supportive:
-                if conclusion in user_rejected_statements:
-                    af.set_attack(dummy_argument_id, inference_argument, AF.DEFINITE_ATTACK)
-            else:
-                if conclusion in user_accepted_statements:
-                    af.set_attack(dummy_argument_id, inference_argument, AF.DEFINITE_ATTACK)
-
     return af
 
 

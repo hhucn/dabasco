@@ -32,14 +32,17 @@ To get a Dung-style argumentation framework (AF) representation of a discussion,
 
 The AF is provided in ASPARTIX format.
 
-You can configure dabasco to represent D-BAS arguments as strict inference rules (instead of defeasible inference rules, as default) by adding a corresponding path element:
+You can configure dabasco to use a single D-BAS user opinion as a source for assumptions by adding corresponding path elements:
 
-    http://localhost:5101/evaluate/dungify/dis/<discussion_id>/rules_strict 
+    http://localhost:5101/evaluate/dungify/dis/<discussion_id>/user/<user_id> 
 
+To get a different encoding, where the user opinion is strictly enforced, use:
 
-Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2, use defeasible rules):
+    http://localhost:5101/evaluate/dungify/dis/<discussion_id>/user/<user_id>/assumptions_strict
 
-    curl -s 'http://localhost:5101/evaluate/dungify/dis/2' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
+Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2, use user opinion 1):
+
+    curl -s 'http://localhost:5101/evaluate/dungify/dis/2/user/1' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
     
 Web sources:
 
@@ -83,16 +86,13 @@ To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discus
  
     http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>
     
-You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent D-BAS user assumptions by adding a corresponding path elements, e.g.:
+You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent D-BAS user assumptions by adding a corresponding path element:
 
-    # Defeasible user opinion
-    http://localhost:5101/evaluate/adfify/dis/2/user/1 
-    # Strict user opinion
-    http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict 
+    http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>/assumptions_strict 
          
 Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1/assumptions_strict' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
+    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
      
 Web sources:
 

@@ -32,7 +32,6 @@ app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
 BASE_URL = 'http://localhost:4284/export'
-# BASE_URL = 'https://dbas.cs.uni-duesseldorf.de/export'
 
 
 def load_dbas_graph_data(discussion_id):
@@ -421,17 +420,21 @@ def adfify_objective(discussion):
 
 
 @app.route('/evaluate/dungify/dis/<int:discussion>',
-           defaults={'rules_strict': 0})
-@app.route('/evaluate/dungify/dis/<int:discussion>/rules_strict',
-           defaults={'rules_strict': 1})
-def dungify(discussion, rules_strict):
+           defaults={'user': None, 'assumptions_strict': 0})
+@app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0})
+@app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1})
+def dungify(discussion, user, assumptions_strict):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
 
     :param discussion: discussion ID
     :type discussion: int
-    :param rules_strict: indicate whether rules shall be implemented as strict or defeasible
-    :type rules_strict: int
+    :param user: user ID
+    :type user: int
+    :param assumptions_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
+    :type assumptions_strict: int
     :return: json string
     """
     logging.debug('Create AF from D-BAS graph...')
@@ -440,49 +443,22 @@ def dungify(discussion, rules_strict):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create AF
-    af = af_import.import_af_wyner(dbas_graph, bool(rules_strict))
+    if user:
+        dbas_user = load_dbas_user_data(discussion, user)
+        af = af_import.import_af_wyner_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
+    else:
+        af = af_import.import_af_wyner(dbas_graph, strict_inferences=False)
+
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
 
     # Create output text format
     str_output = af_export.export_aspartix(af)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'af': str_output})
-    return json_result
-
-
-@app.route('/evaluate/dungify_subjective/dis/<int:discussion>/user/<int:user>',
-           defaults={'assumptions_strict': 0})
-@app.route('/evaluate/dungify_subjective/dis/<int:discussion>/user/<int:user>/assumptions_strict',
-           defaults={'assumptions_strict': 1})
-def dungify_subjective(discussion, user, assumptions_strict):
-    """
-    Create a Dung-style argumentation graph representation for the given discussion.
-
-    :param discussion: discussion ID
-    :type discussion: int
-    :param user: user ID
-    :type user: int
-    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strict: int
-    :return: json string
-    """
-    logging.debug('Create subjective AF from D-BAS graph and D-BAS user opinion...')
-
-    # Get D-BAS graph and user data
-    dbas_graph = load_dbas_graph_data(discussion)
-    dbas_user = load_dbas_user_data(discussion, user)
-
-    # Create AF
-    af = af_import.import_af_wyner_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
-    logging.debug(str(af.name_for_argument))
-    logging.debug(str(af.argument_for_name))
-
-    # Create output text format
-    str_output = af_export.export_aspartix(af)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'dbas_user_id': user,
-                           'af': str_output})
+    result = {'dbas_discussion_id': discussion,
+              'af': str_output}
+    if user:
+        result['user'] = user
+    json_result = jsonify(result)
     return json_result
 
 
@@ -512,13 +488,22 @@ def dungify_small(discussion):
     return json_result
 
 
-@app.route('/evaluate/dungify_extended/dis/<int:discussion>')
-def dungify_extended(discussion):
+@app.route('/evaluate/dungify_extended/dis/<int:discussion>',
+           defaults={'user': None, 'assumptions_strict': 0})
+@app.route('/evaluate/dungify_extended/dis/<int:discussion>/user/<int:user>',
+           defaults={'assumptions_strict': 0})
+@app.route('/evaluate/dungify_extended/dis/<int:discussion>/user/<int:user>/assumptions_strict',
+           defaults={'assumptions_strict': 1})
+def dungify_extended(discussion, user, assumptions_strict):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
 
     :param discussion: discussion ID
     :type discussion: int
+    :param user: user ID
+    :type user: int
+    :param assumptions_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
+    :type assumptions_strict: int
     :return: json string
     """
     logging.debug('Create AF from D-BAS graph...')
@@ -527,49 +512,22 @@ def dungify_extended(discussion):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create AF
-    af = af_import.import_af_extended(dbas_graph)
+    if user:
+        dbas_user = load_dbas_user_data(discussion, user)
+        af = af_import.import_af_extended_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
+    else:
+        af = af_import.import_af_extended(dbas_graph)
+
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
 
     # Create output text format
     str_output = af_export.export_aspartix(af)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'af': str_output})
-    return json_result
-
-
-@app.route('/evaluate/dungify_extended_subjective/dis/<int:discussion>/user/<int:user>',
-           defaults={'assumptions_strict': 0})
-@app.route('/evaluate/dungify_extended_subjective/dis/<int:discussion>/user/<int:user>/assumptions_strict',
-           defaults={'assumptions_strict': 1})
-def dungify_extended_subjective(discussion, user, assumptions_strict):
-    """
-    Create a Dung-style argumentation graph representation for the given discussion.
-
-    :param discussion: discussion ID
-    :type discussion: int
-    :param user: user ID
-    :type user: int
-    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strict: int
-    :return: json string
-    """
-    logging.debug('Create AF from D-BAS graph...')
-
-    # Get D-BAS graph and user data
-    dbas_graph = load_dbas_graph_data(discussion)
-    dbas_user = load_dbas_user_data(discussion, user)
-
-    # Create AF
-    af = af_import.import_af_extended_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
-    logging.debug(str(af.name_for_argument))
-    logging.debug(str(af.argument_for_name))
-
-    # Create output text format
-    str_output = af_export.export_aspartix(af)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'dbas_user_id': user,
-                           'af': str_output})
+    result = {'dbas_discussion_id': discussion,
+              'af': str_output}
+    if user:
+        result['user'] = user
+    json_result = jsonify(result)
     return json_result
 
 

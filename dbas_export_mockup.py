@@ -74,6 +74,18 @@ def export_dummy_discussion(discussion):
                       'premises': [82],
                       'conclusion': 65}]
 
+    elif discussion == 4:
+        # Simplified town policy debate example discussion
+        nodes = [76, 77, 78]
+        inferences = [{'id': 65,
+                       'premises': [77],
+                       'is_supportive': True,
+                       'conclusion': 76},
+                      {'id': 66,
+                       'premises': [78],
+                       'is_supportive': False,
+                       'conclusion': 76}]
+
     return jsonify({'nodes': nodes,
                     'inferences': inferences,
                     'undercuts': undercuts})
@@ -113,7 +125,7 @@ def export_dummy_useropinion(user, discussion):
             accepted_statements_via_click = [3, 4]
             rejected_statements_via_click = [5]
 
-    elif discussion == 3:
+    if discussion == 3:
         # Town policy debate example discussion
         if user == 1:
             accepted_statements_via_click = [76, 77, 80, 81]
@@ -127,6 +139,24 @@ def export_dummy_useropinion(user, discussion):
         elif user == 4:
             accepted_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
             rejected_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
+
+    elif discussion == 4:
+        # Simplified town policy debate example discussion
+        if user == 1:
+            accepted_statements_via_click = [76, 77]
+            rejected_statements_via_click = []
+        elif user == 2:
+            accepted_statements_via_click = [78]
+            rejected_statements_via_click = [76]
+        elif user == 3:
+            accepted_statements_via_click = [77]
+            rejected_statements_via_click = [78]
+        elif user == 4:
+            accepted_statements_via_click = [77, 78]
+            rejected_statements_via_click = []
+        elif user == 5:
+            accepted_statements_via_click = [76, 78]
+            rejected_statements_via_click = []
 
     return jsonify({'marked_statements': marked_statements,
                     'marked_arguments': marked_arguments,
