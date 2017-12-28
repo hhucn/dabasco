@@ -14,8 +14,8 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     :type assumptions_bias: str
     :return: dict
     """
-    aspic_assumptions = ['assumptions_dummy', 'opinion_dummy']
-    aspic_axioms = []
+    aspic_assumptions = []
+    aspic_axioms = ['assumptions_dummy', 'opinion_dummy']
     aspic_rules = []
 
     # Encode user opinion
