@@ -255,7 +255,7 @@ def import_af_small(dbas_graph):
     return af
 
 
-def import_af_extended(dbas_graph):
+def import_af_extended(dbas_graph, strict_inferences):
     """
     Create an AF representation of the given discussion.
 
@@ -264,6 +264,8 @@ def import_af_extended(dbas_graph):
 
     :param dbas_graph: DBASGraph to be used for AF generation
     :type dbas_graph: DBASGraph
+    :param strict_inferences
+    :type strict_inferences: bool
     :return: AF
     """
     logging.debug('Create Argumentation Framework from D-BAS graph...')
@@ -326,6 +328,9 @@ def import_af_extended(dbas_graph):
         if inference.is_supportive:
             eliminated_statement_argument += 1  # In case of a supportive inference, attack the negated statement
         af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
+        if not strict_inferences:
+            # Statement arguments can only rebut defeasible inferences, not strict inferences
+            af.set_attack(eliminated_statement_argument, inference_argument, AF.DEFINITE_ATTACK)
 
         # Create rebutting attacks
         for inference2_id in dbas_graph.inferences:

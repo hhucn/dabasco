@@ -516,7 +516,8 @@ def dungify_extended(discussion, user, assumptions_strict):
         dbas_user = load_dbas_user_data(discussion, user)
         af = af_import.import_af_extended_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
     else:
-        af = af_import.import_af_extended(dbas_graph)
+        strict_inferences = False
+        af = af_import.import_af_extended(dbas_graph, strict_inferences)
 
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
