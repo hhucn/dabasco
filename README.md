@@ -71,14 +71,14 @@ In the body of the request, provide JSON in the following format to specify para
 
 Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1, with weak user opinion and no assumptions):
 
-    curl -H "Content-Type: application/json" -XGET 'http://localhost:5101/evaluate/toastify' -d '{"discussion": 2, "opinion": {"type": "weak", "user": 1}}' | curl -d @- http://www.arg.dundee.ac.uk/toast/api/evaluate
+    curl -H "Content-Type: application/json" -XGET 'http://localhost:5101/evaluate/toastify' -d '{"discussion": 2, "opinion": {"type": "weak", "user": 1}}' | curl -d @- http://toast.arg-tech.org/api/evaluate
     
 Web sources:
 
 - TOAST website: http://toast.arg-tech.org/help/web
-- TOAST API: http://www.arg.dundee.ac.uk/toast/help/api
+- TOAST API: http://toast.arg-tech.org/help/api
 - TOAST interactive web interface: http://toast.arg-tech.org/
-- TOAST web interface: http://www.arg.dundee.ac.uk/toast/api/evaluate
+- TOAST web interface: http://toast.arg-tech.org/api/evaluate
 
 ## ADF Interface
 

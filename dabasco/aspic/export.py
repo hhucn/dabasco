@@ -77,25 +77,25 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
         inference_rule_ids.append('[r' + str(undercut.id) + ']')
 
     # Set rule preferences
-    aspic_rule_prefs = ''
+    aspic_rule_prefs = []
     if assumptions_type == "weak":
         for assumption_id in assumption_rule_ids:
             for inference_id in inference_rule_ids:
-                aspic_rule_prefs += assumption_id + ' < ' + inference_id + ';'
+                aspic_rule_prefs.append(assumption_id + ' < ' + inference_id)
     if opinion_type == "weak":
         for opinion_id in opinion_rule_ids:
             for inference_id in inference_rule_ids:
-                aspic_rule_prefs += opinion_id + ' < ' + inference_id + ';'
+                aspic_rule_prefs.append(opinion_id + ' < ' + inference_id)
     if opinion_type == "strong" and assumptions_type == "weak":
         for assumption_id in assumption_rule_ids:
             for opinion_id in opinion_rule_ids:
-                aspic_rule_prefs += assumption_id + ' < ' + opinion_id + ';'
+                aspic_rule_prefs.append(assumption_id + ' < ' + opinion_id)
 
-    result = {'assumptions': ';'.join(aspic_assumptions),
-              'axioms': ';'.join(aspic_axioms),
-              'rules': ';'.join(aspic_rules),
+    result = {'assumptions': aspic_assumptions,
+              'axioms': aspic_axioms,
+              'rules': aspic_rules,
               'rulePrefs': aspic_rule_prefs,
-              'kbPrefs': '',
+              'kbPrefs': [],
               'link': 'last',
-              'contrariness': ''}
+              'contrariness': []}
     return result

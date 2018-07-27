@@ -307,7 +307,7 @@ def toastify():
     """
     Create a TOAST-formatted graph representation for given user's opinion.
 
-    TOAST documentation: http://www.arg.dundee.ac.uk/aspic/help/web
+    TOAST documentation: http://toast.arg-tech.org/help/web
 
     :return: json string
     """
