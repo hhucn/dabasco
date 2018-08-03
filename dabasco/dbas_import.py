@@ -1,5 +1,5 @@
-from dbas_graph import DBASGraph
-from dbas_user import DBASUser
+from dabasco.dbas_graph import DBASGraph
+from dabasco.dbas_user import DBASUser
 
 import logging
 logger = logging.getLogger('root')
