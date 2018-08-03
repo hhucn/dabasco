@@ -21,7 +21,7 @@ unittests:
   stage: test
   script:
     - pip install --quiet -r requirements.txt
-    - nosetests --with-coverage --cover-xml dabasco dabasco/adf dabasco/af dabasco/aspic dabasco/doj
+    - nosetests --with-coverage --cover-xml dabasco
   coverage: '/^TOTAL\s*\d+\s*\d+\s*(\d+\%)\s*$/'
   artifacts:
     paths:
