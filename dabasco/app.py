@@ -393,32 +393,6 @@ def adfify(discussion, user, assumptions_strict):
     return json_result
 
 
-@app.route('/evaluate/adfify_objective/dis/<int:discussion>')
-def adfify_objective(discussion):
-    """
-    Create a YADF/QADF/DIAMOND-formatted ADF representation.
-
-    YADF documentation: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
-
-    :param discussion: discussion ID
-    :type discussion: int
-    :return: json string
-    """
-    logging.debug('Create objective ADF from D-BAS graph...')
-
-    # Get D-BAS graph data
-    dbas_graph = load_dbas_graph_data(discussion)
-
-    # Create ADF
-    adf = adf_import.import_adf_objective(dbas_graph)
-
-    # Convert to DIAMOND/YADF formatted string
-    output_string = adf_export.export_diamond(adf)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'adf': output_string})
-    return json_result
-
-
 @app.route('/evaluate/dungify/dis/<int:discussion>',
            defaults={'user': None, 'assumptions_strict': 0})
 @app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>',
