@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import unittest
 import sys
+sys.path.append('../')
 sys.path.append('../../')
 
 from dabasco.adf.adf_graph import ADF

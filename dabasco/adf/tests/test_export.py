@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import unittest
 
 from dabasco.adf.adf_graph import ADF
