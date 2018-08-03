@@ -1,0 +1,7 @@
+
+[run]
+omit =
+    # omit external packages
+    *SocketServer.py
+    *logging/config.py
+    *logging/handlers.py
