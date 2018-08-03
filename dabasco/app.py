@@ -352,7 +352,7 @@ def toastify():
     result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias)
 
     # Auxiliary TOAST input fields (not used, or defaults used)
-    semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
+    semantics = 'stable'  # options: 'stable', 'preferred', 'grounded'.
     result['semantics'] = semantics
 
     return jsonify(result)
