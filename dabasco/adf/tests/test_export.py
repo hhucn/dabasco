@@ -20,6 +20,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(f)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -30,6 +31,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -42,6 +44,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,s1).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -53,6 +56,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,neg(s1)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -64,6 +68,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,s2).', 's(s2).', 'ac(s2,s1).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -75,6 +80,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,neg(s1)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -86,6 +92,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,neg(s2)).', 's(s2).', 'ac(s2,s1).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -97,6 +104,31 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,neg(s2)).', 's(s2).', 'ac(s2,neg(s1)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
+        for output in outputs:
+            logging.debug('%s in %s', output, export_list)
+            self.assertTrue(output in export)
+
+    def test_2statements_test7(self):
+        adf = ADF()
+        adf.add_statement('s1', ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+        adf.add_statement('s2', ADFNode(ADFNode.AND, ['s1']))
+        outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,s1).']
+        export = export_diamond(adf)
+        export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
+        for output in outputs:
+            logging.debug('%s in %s', output, export_list)
+            self.assertTrue(output in export)
+
+    def test_2statements_test8(self):
+        adf = ADF()
+        adf.add_statement('s1', ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+        adf.add_statement('s2', ADFNode(ADFNode.OR, ['s1']))
+        outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,s1).']
+        export = export_diamond(adf)
+        export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -110,6 +142,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,c(v)).', 's(s3).', 'ac(s3,and(s1,s2)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -122,6 +155,7 @@ class TestADFExport(unittest.TestCase):
         outputs = ['s(s1).', 'ac(s1,c(v)).', 's(s2).', 'ac(s2,c(v)).', 's(s3).', 'ac(s3,or(s1,s2)).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -137,6 +171,7 @@ class TestADFExport(unittest.TestCase):
                    'ac(s4,and(s1,and(s2,s3))).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
@@ -151,6 +186,7 @@ class TestADFExport(unittest.TestCase):
                    'ac(s4,or(s1,or(s2,s3))).']
         export = export_diamond(adf)
         export_list = export.split('\n')
+        self.assertEqual(len(outputs), len(export_list))
         for output in outputs:
             logging.debug('%s in %s', output, export_list)
             self.assertTrue(output in export)
