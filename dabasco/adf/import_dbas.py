@@ -37,56 +37,56 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
 
         # Acceptance condition for the positive (non-negated) literal
         if not inferences_for and not statement_assumed:
-            adf.add_statement('s' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+            adf.add_statement('s' + str(statement), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = ['i' + str(inference.id) for inference in inferences_for]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, 'i' + str(inference.id)) for inference in inferences_for]
             if statement_assumed:
-                acceptance_criteria.append('a' + str(statement))
+                acceptance_criteria.append(ADFNode(ADFNode.LEAF, 'a' + str(statement)))
             adf.add_statement('s' + str(statement), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['ns' + str(statement)]),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns' + str(statement))),
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
         # Acceptance condition for the negative (negated) literal
         if not inferences_against and not statement_rejected:
-            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = ['i' + str(inference.id) for inference in inferences_against]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, 'i' + str(inference.id)) for inference in inferences_against]
             if statement_rejected:
-                acceptance_criteria.append('a' + str(statement))
+                acceptance_criteria.append(ADFNode(ADFNode.LEAF, 'a' + str(statement)))
             adf.add_statement('ns' + str(statement), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['s' + str(statement)]),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(statement))),
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
     if assumptions_strong:
         # Setup strict user assumption acceptance functions
         for assumption in user_accepted_statements:
-            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
             adf.add_statement('na' + str(assumption), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['s' + str(assumption)]),
-                ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(assumption))),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
             ]))
         for assumption in user_rejected_statements:
-            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_TRUE]))
+            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
             adf.add_statement('na' + str(assumption), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['ns' + str(assumption)]),
-                ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns' + str(assumption))),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
             ]))
     else:
         # Setup defeasible user assumption acceptance functions
         for assumption in user_accepted_statements:
             adf.add_statement('a' + str(assumption), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['ns' + str(assumption)]),
-                ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns' + str(assumption))),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
             ]))
-            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ['a' + str(assumption)]))
+            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a' + str(assumption))))
         for assumption in user_rejected_statements:
             adf.add_statement('a' + str(assumption), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['s' + str(assumption)]),
-                ADFNode(ADFNode.NOT, ['na' + str(assumption)])
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(assumption))),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
             ]))
-            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ['a' + str(assumption)]))
+            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a' + str(assumption))))
 
     # Setup defeasible inference acceptance functions
     for inference_id in dbas_graph.inferences:
@@ -98,10 +98,10 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
         rule_name = 'i' + str(inference.id)
         rule_name_negated = 'n' + rule_name
         adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
-        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, negated_conclusion)),
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name_negated))
+        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]))
+        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name)))
     for undercut_id in dbas_graph.undercuts:
         undercut = dbas_graph.undercuts[undercut_id]
         premises = ['s' + str(premise) for premise in undercut.premises]
@@ -109,10 +109,10 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
         rule_name = 'i' + str(undercut.id)
         rule_name_negated = 'n' + rule_name
         adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
-        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, negated_conclusion)),
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name_negated))
+        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]))
+        adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name)))
 
     return adf
 
@@ -148,21 +148,21 @@ def import_adf_objective(dbas_graph):
 
         # Acceptance condition for the positive (non-negated) literal
         if not inferences_for:
-            adf.add_statement('s' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+            adf.add_statement('s' + str(statement), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = ['i' + str(inference.id) for inference in inferences_for]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, 'i' + str(inference.id)) for inference in inferences_for]
             adf.add_statement('s' + str(statement), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['ns' + str(statement)]),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns' + str(statement))),
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
         # Acceptance condition for the negative (negated) literal
         if not inferences_against:
-            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.LEAF, [ADFNode.CONSTANT_FALSE]))
+            adf.add_statement('ns' + str(statement), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = ['i' + str(inference.id) for inference in inferences_against]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, 'i' + str(inference.id)) for inference in inferences_against]
             adf.add_statement('ns' + str(statement), ADFNode(ADFNode.AND, [
-                ADFNode(ADFNode.NOT, ['s' + str(statement)]),
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(statement))),
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
@@ -176,9 +176,9 @@ def import_adf_objective(dbas_graph):
         rule_name = 'i' + str(inference.id)
         rule_name_negated = 'n' + rule_name
         adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, negated_conclusion)),
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name_negated))
+        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]))
         adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
     for undercut_id in dbas_graph.undercuts:
         undercut = dbas_graph.undercuts[undercut_id]
@@ -187,9 +187,9 @@ def import_adf_objective(dbas_graph):
         rule_name = 'i' + str(undercut.id)
         rule_name_negated = 'n' + rule_name
         adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
-            ADFNode(ADFNode.NOT, negated_conclusion),
-            ADFNode(ADFNode.NOT, rule_name_negated)
-        ] + premises))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, negated_conclusion)),
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name_negated))
+        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]))
         adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, rule_name))
 
     return adf

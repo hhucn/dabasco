@@ -25,3 +25,33 @@ class ADFNode(object):
             """(list) list of child nodes."""
         else:
             self.children = [children]
+
+    def is_equivalent_to(self, other):
+        if isinstance(other, self.__class__):
+            if other == self:
+                return True
+            if self.operator != other.operator:
+                return False
+            if len(self.children) != len(other.children):
+                return False
+            if self.operator == ADFNode.LEAF:
+                return self.children == other.children
+            for child in self.children:
+                if isinstance(child, str) or isinstance(child, int):
+                    if child not in other.children:
+                        return False
+                    continue  # equal string was found, continue outer loop
+                if not isinstance(child, self.__class__):
+                    return False
+                none_equal = True
+                for child_other in other.children:
+                    if child.is_equivalent_to(child_other):
+                        none_equal = False
+                        break  # equal subtree was found, continue outer loop
+                if none_equal:
+                    return False
+            return True
+        else:
+            return False
+
+
