@@ -53,5 +53,3 @@ class ADFNode(object):
             return True
         else:
             return False
-
-
