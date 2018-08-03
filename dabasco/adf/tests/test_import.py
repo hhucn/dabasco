@@ -1,5 +1,9 @@
 import unittest
 
+import unittest
+import sys
+sys.path.append('../')
+
 from dabasco.adf.adf_graph import ADF
 from dabasco.adf.adf_node import ADFNode
 from dabasco.adf.import_dbas import import_adf
