@@ -1,3 +1,6 @@
+import sys
+sys.path.append('.')
+
 from dabasco.dbas_graph import DBASGraph
 from dabasco.dbas_user import DBASUser
 
