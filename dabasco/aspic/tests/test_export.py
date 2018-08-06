@@ -567,7 +567,7 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "3", "2"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy", "~3", "2"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -618,7 +618,7 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "3"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "~3"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -666,7 +666,7 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "3"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "~3"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
