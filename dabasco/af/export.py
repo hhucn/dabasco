@@ -16,12 +16,14 @@ def export_aspartix(af):
             str_list.append(str(af.get_name_for_argument(arg)))
             str_list.append(').\n')
     for attacker in range(af.n):
-        for target in range(af.n):
-            if af.R[attacker][target] == AF.DEFINITE_ATTACK:
-                str_list.append('att(')
-                str_list.append(str(af.get_name_for_argument(attacker)))
-                str_list.append(',')
-                str_list.append(str(af.get_name_for_argument(target)))
-                str_list.append(').\n')
+        if af.A[attacker] == AF.DEFINITE_ARGUMENT:
+            for target in range(af.n):
+                if af.A[target] == AF.DEFINITE_ARGUMENT:
+                    if af.R[attacker][target] == AF.DEFINITE_ATTACK:
+                        str_list.append('att(')
+                        str_list.append(str(af.get_name_for_argument(attacker)))
+                        str_list.append(',')
+                        str_list.append(str(af.get_name_for_argument(target)))
+                        str_list.append(').\n')
     str_output = ''.join(str_list)
     return str_output
