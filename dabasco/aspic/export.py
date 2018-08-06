@@ -26,7 +26,7 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
         for statement in opinion.accepted_statements_implicit:
             aspic_axioms.append(str(statement))
         for statement in opinion.rejected_statements_implicit:
-            aspic_axioms.append(str(statement))
+            aspic_axioms.append('~' + str(statement))
     elif opinion_type == 'strong':
         for statement in opinion.accepted_statements_explicit:
             aspic_rules.append('[o' + str(statement) + '] opinion_dummy=>' + str(statement))
