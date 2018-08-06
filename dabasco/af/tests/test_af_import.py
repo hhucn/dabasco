@@ -13,7 +13,7 @@ logging.config.fileConfig(log_file_path, disable_existing_loggers=False)
 logger = logging.getLogger('test')
 
 
-class TestAFGraph(unittest.TestCase):
+class TestAFImport(unittest.TestCase):
 
     def test_discussion1_no_user(self):
         discussion_id = 1
