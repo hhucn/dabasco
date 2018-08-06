@@ -28,7 +28,7 @@ class AF(object):
         self.name_for_argument = {}
         self.argument_for_name = {}
 
-    def __eq__(self, other):
+    def is_equivalent_to(self, other):
         if isinstance(other, self.__class__):
             if self.n != other.n:
                 return False
@@ -42,9 +42,6 @@ class AF(object):
             return True
         else:
             return False
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
 
     def set_argument_name(self, arg, name):
         """
