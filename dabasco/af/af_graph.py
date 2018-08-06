@@ -73,7 +73,7 @@ class AF(object):
         """
         if name in self.argument_for_name:
             return self.argument_for_name[name]
-        return name
+        return None
 
     def set_attack(self, attacker, target, value):
         """
