@@ -1,7 +1,3 @@
-from random import randrange
-import copy
-
-
 class AF(object):
     """
     Argumentation Framework.
@@ -102,4 +98,3 @@ class AF(object):
         :type value: int
         """
         self.A[argument] = value
-

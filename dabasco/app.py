@@ -417,11 +417,8 @@ def dungify(discussion, user, assumptions_strict):
     dbas_graph = load_dbas_graph_data(discussion)
 
     # Create AF
-    if user:
-        dbas_user = load_dbas_user_data(discussion, user)
-        af = af_import.import_af_wyner_subjective(dbas_graph, dbas_user, bool(assumptions_strict))
-    else:
-        af = af_import.import_af_wyner(dbas_graph, strict_inferences=False)
+    dbas_user = load_dbas_user_data(discussion, user) if user else None
+    af = af_import.import_af_wyner(dbas_graph, dbas_user, assumptions_strict=bool(assumptions_strict))
 
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
