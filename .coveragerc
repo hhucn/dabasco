@@ -3,6 +3,7 @@
 omit =
     # omit external packages
     *SocketServer.py
+    *socketserver.py
     *logging/config.py
     *logging/handlers.py
     # omit doj module from coverage report
