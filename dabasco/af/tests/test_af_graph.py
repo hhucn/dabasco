@@ -104,6 +104,11 @@ class TestAFGraph(unittest.TestCase):
         af2.set_attack(1, 1, AF.NO_ATTACK)
         self.assertTrue(af1.is_equivalent_to(af2))
 
+    def test_equivalence8(self):
+        af1 = AF(0)
+        af2 = None
+        self.assertFalse(af1.is_equivalent_to(af2))
+
 
 if __name__ == '__main__':
     unittest.main()
