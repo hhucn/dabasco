@@ -35,12 +35,8 @@ class ADFNode(object):
             if len(self.children) != len(other.children):
                 return False
             if self.operator == ADFNode.LEAF:
-                return self.children == other.children
+                return (other.operator == ADFNode.LEAF) and (self.children == other.children)
             for child in self.children:
-                if isinstance(child, str) or isinstance(child, int):
-                    if child not in other.children:
-                        return False
-                    continue  # equal string was found, continue outer loop
                 if not isinstance(child, self.__class__):
                     return False
                 none_equal = True
