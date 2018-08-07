@@ -52,6 +52,13 @@ class TestADFNode(unittest.TestCase):
 
         self.assertFalse(node1.is_equivalent_to(node2))
 
+    def test_equivalence7(self):
+        node0 = ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE)
+        node1 = ADFNode(ADFNode.NOT, ADFNode.CONSTANT_FALSE)
+        node2 = ADFNode(ADFNode.NOT, node0)
+
+        self.assertFalse(node1.is_equivalent_to(node2))
+
 
 if __name__ == '__main__':
     unittest.main()
