@@ -23,7 +23,7 @@ class TestADFGraph(unittest.TestCase):
 
         self.assertTrue(reference_node.is_equivalent_to(adf.acceptance['name']))
 
-    def test_equivalence_true(self):
+    def test_equivalence_true1(self):
         adf1 = ADF()
         adf1.add_statement('name1', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
         adf1.add_statement('name2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
@@ -32,6 +32,13 @@ class TestADFGraph(unittest.TestCase):
         adf2.add_statement('name2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
 
         self.assertTrue(adf1.is_equivalent_to(adf2))
+
+    def test_equivalence_true2(self):
+        adf1 = ADF()
+        adf1.add_statement('name1', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+        adf1.add_statement('name2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
+
+        self.assertTrue(adf1.is_equivalent_to(adf1))
 
     def test_equivalence_false1(self):
         adf1 = ADF()
@@ -58,6 +65,14 @@ class TestADFGraph(unittest.TestCase):
         adf1 = ADF()
         adf1.add_statement('name1', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
         adf2 = ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE)
+
+        self.assertFalse(adf1.is_equivalent_to(adf2))
+
+    def test_equivalence_false4(self):
+        adf1 = ADF()
+        adf1.add_statement('name1', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+        adf2 = ADF()
+        adf2.add_statement('name1', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
 
         self.assertFalse(adf1.is_equivalent_to(adf2))
 
