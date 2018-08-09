@@ -53,7 +53,7 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
         else:
             acceptance_criteria = [ADFNode(ADFNode.LEAF, 'i' + str(inference.id)) for inference in inferences_against]
             if statement_rejected:
-                acceptance_criteria.append(ADFNode(ADFNode.LEAF, 'a' + str(statement)))
+                acceptance_criteria.append(ADFNode(ADFNode.LEAF, 'r' + str(statement)))
             adf.add_statement('ns' + str(statement), ADFNode(ADFNode.AND, [
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(statement))),
                 ADFNode(ADFNode.OR, acceptance_criteria)
@@ -68,10 +68,10 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
             ]))
         for assumption in user_rejected_statements:
-            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
-            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.AND, [
+            adf.add_statement('r' + str(assumption), ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+            adf.add_statement('nr' + str(assumption), ADFNode(ADFNode.AND, [
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns' + str(assumption))),
-                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr' + str(assumption)))
             ]))
     else:
         # Setup defeasible user assumption acceptance functions
@@ -82,11 +82,11 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
             ]))
             adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a' + str(assumption))))
         for assumption in user_rejected_statements:
-            adf.add_statement('a' + str(assumption), ADFNode(ADFNode.AND, [
+            adf.add_statement('r' + str(assumption), ADFNode(ADFNode.AND, [
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's' + str(assumption))),
-                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na' + str(assumption)))
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr' + str(assumption)))
             ]))
-            adf.add_statement('na' + str(assumption), ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a' + str(assumption))))
+            adf.add_statement('nr' + str(assumption), ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'r' + str(assumption))))
 
     # Setup defeasible inference acceptance functions
     for inference_id in dbas_graph.inferences:

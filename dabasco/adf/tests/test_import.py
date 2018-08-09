@@ -60,7 +60,7 @@ class TestADFImport(unittest.TestCase):
         adf_reference.add_statement('s3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a3'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r3'))
         ]))
 
         # User opinion
@@ -69,11 +69,11 @@ class TestADFImport(unittest.TestCase):
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na2'))
         ]))
         adf_reference.add_statement('na2', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a2')))
-        adf_reference.add_statement('a3', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('r3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na3'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr3'))
         ]))
-        adf_reference.add_statement('na3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a3')))
+        adf_reference.add_statement('nr3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'r3')))
 
         # D-BAS Inferences
         adf_reference.add_statement('i1', ADFNode(ADFNode.AND, [
@@ -135,7 +135,7 @@ class TestADFImport(unittest.TestCase):
         adf_reference.add_statement('s3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a3'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r3'))
         ]))
 
         # User opinion
@@ -144,10 +144,10 @@ class TestADFImport(unittest.TestCase):
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's2')),
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na2'))
         ]))
-        adf_reference.add_statement('a3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
-        adf_reference.add_statement('na3', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('r3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+        adf_reference.add_statement('nr3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns3')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na3'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr3'))
         ]))
 
         # D-BAS Inferences
@@ -223,7 +223,7 @@ class TestADFImport(unittest.TestCase):
         adf_reference.add_statement('s5', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns5', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's5')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a5'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r5'))
         ]))
 
         # User opinion
@@ -235,10 +235,10 @@ class TestADFImport(unittest.TestCase):
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns4')),
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na4'))]))
         adf_reference.add_statement('na4', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a4')))
-        adf_reference.add_statement('a5', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('r5', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's5')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na5'))]))
-        adf_reference.add_statement('na5', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a5')))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr5'))]))
+        adf_reference.add_statement('nr5', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'r5')))
 
         # D-BAS Inferences
         adf_reference.add_statement('i1', ADFNode(ADFNode.AND, [
