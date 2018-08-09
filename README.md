@@ -46,7 +46,7 @@ Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions 
     
 Web sources:
 
-- ASPARTIX documentation: https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/docu.htm
+- ASPARTIX website: https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/
 - conarg website: http://www.dmi.unipg.it/conarg/
 
 ## TOAST/ASPIC Interface
