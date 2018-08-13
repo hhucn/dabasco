@@ -97,7 +97,7 @@ Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get pre
 Web sources:
 
 - YADF: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
-- DIAMOND: https://isysrv.informatik.uni-leipzig.de/diamond
+- DIAMOND: http://diamond-adf.sourceforge.net/
 - gringo/clasp: http://potassco.sourceforge.net/
 - lpopt: https://www.dbai.tuwien.ac.at/research/project/lpopt/
 
