@@ -136,9 +136,6 @@ def export_dummy_useropinion(user, discussion):
         elif user == 3:
             accepted_statements_via_click = [77, 78, 80, 81, 82]
             rejected_statements_via_click = []
-        elif user == 4:
-            accepted_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
-            rejected_statements_via_click = [76, 77, 78, 79, 80, 81, 82]
 
     elif discussion == 4:
         # Simplified town policy debate example discussion
