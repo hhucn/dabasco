@@ -98,7 +98,7 @@ Web sources:
 
 - YADF: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
 - DIAMOND: http://diamond-adf.sourceforge.net/
-- gringo/clasp: http://potassco.sourceforge.net/
+- gringo/clasp: https://potassco.org/
 - lpopt: https://www.dbai.tuwien.ac.at/research/project/lpopt/
 
 ## Degrees of Justification
