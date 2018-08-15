@@ -1,4 +1,4 @@
-def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics):
+def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics=None):
     """
     Create an ASPIC representation formatted for TOAST from the given D-BAS data.
 
