@@ -3,10 +3,9 @@
 import unittest
 
 from dabasco.aspic.export import export_toast
-from dabasco.dbas_import import import_dbas_graph, import_dbas_user
+from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph
 
 from os import path
-import logging
 import logging.config
 log_file_path = path.join(path.dirname(path.abspath(__file__)), '../../logging.ini')
 logging.config.fileConfig(log_file_path, disable_existing_loggers=False)

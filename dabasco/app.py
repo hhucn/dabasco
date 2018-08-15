@@ -5,7 +5,7 @@ from flask_cors import CORS
 import urllib.request
 import json
 
-import dbas_import
+from dbas import dbas_import
 from invalid_request_error import InvalidRequestError
 
 from doj.pos import Position
