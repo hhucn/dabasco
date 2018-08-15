@@ -1,8 +1,5 @@
-import sys
-sys.path.append('.')
-
-from dabasco.dbas_graph import DBASGraph
-from dabasco.dbas_user import DBASUser
+from dbas_graph import DBASGraph
+from dbas_user import DBASUser
 
 import logging
 logger = logging.getLogger('root')
