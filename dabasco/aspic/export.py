@@ -1,8 +1,8 @@
-def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias):
+def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics):
     """
     Create an ASPIC representation formatted for TOAST from the given D-BAS data.
 
-    :param dbas_graph: DBASGraph to be used for ADF generation
+    :param dbas_graph: DBASGraph to be used for ASPIC generation
     :type dbas_graph: DBASGraph
     :param opinion_type: indicates whether an opinion is used, and with which strength
     :type opinion_type: str
@@ -11,6 +11,8 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     :param assumptions_type: indicates whether assumptions are used, and with which strength
     :type assumptions_type: str
     :param assumptions_bias: indicates whether assumptions are biased
+    :type assumptions_bias: str
+    :param semantics: allows to specify an evaluation semantics to be used for this ASPIC instance
     :type assumptions_bias: str
     :return: dict
     """
@@ -98,4 +100,9 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
               'kbPrefs': [],
               'link': 'last',
               'contrariness': []}
+
+    # Pass through semantics
+    if semantics:
+        result['semantics'] = str(semantics)
+
     return result

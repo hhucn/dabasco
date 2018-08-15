@@ -7,6 +7,7 @@ import json
 
 import dbas_import
 from invalid_request_error import InvalidRequestError
+from dbas_user import DBASUser
 
 from doj.pos import Position
 from doj.sm import SM
@@ -348,12 +349,13 @@ def toastify():
             if 'bias' in assumptions and assumptions['bias'] in ['positive', 'negative']:
                 assumptions_bias = assumptions['bias']
 
-    # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias)
+    # Pass through given semantics, or set a default semantics
+    semantics = str(json_params['semantics'])
+    if not semantics:
+        semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
 
-    # Auxiliary TOAST input fields (not used, or defaults used)
-    semantics = 'stable'  # options: 'stable', 'preferred', 'grounded'.
-    result['semantics'] = semantics
+    # Get assumptions and inference rules from D-BAS data
+    result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
 
     return jsonify(result)
 
