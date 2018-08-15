@@ -1,8 +1,7 @@
 
 .PHONY: test
 test:
-	py.test tests
-	pep8 .
+	nosetests --with-coverage dabasco
 
 dependencies:
 	pip3 install -r requirements.txt
