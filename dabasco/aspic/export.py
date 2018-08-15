@@ -24,11 +24,14 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     opinion_rule_ids = []
     if opinion_type == 'strict':
         for statement in opinion.accepted_statements_explicit:
-            aspic_axioms.append(str(statement))
+            aspic_rules.append('[o' + str(statement) + '] opinion_dummy->' + str(statement))
+            opinion_rule_ids.append('[o' + str(statement) + ']')
         for statement in opinion.accepted_statements_implicit:
-            aspic_axioms.append(str(statement))
+            aspic_rules.append('[o' + str(statement) + '] opinion_dummy->' + str(statement))
+            opinion_rule_ids.append('[o' + str(statement) + ']')
         for statement in opinion.rejected_statements_implicit:
-            aspic_axioms.append('~' + str(statement))
+            aspic_rules.append('[o' + str(statement) + '] opinion_dummy->~' + str(statement))
+            opinion_rule_ids.append('[o' + str(statement) + ']')
     elif opinion_type == 'strong':
         for statement in opinion.accepted_statements_explicit:
             aspic_rules.append('[o' + str(statement) + '] opinion_dummy=>' + str(statement))

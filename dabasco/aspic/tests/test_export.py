@@ -567,10 +567,12 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "~3", "2"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
+            "[o2] opinion_dummy->2",
+            "[o3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
             "[an1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
@@ -618,10 +620,12 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "~3"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
+            "[o2] opinion_dummy->2",
+            "[o3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
@@ -666,10 +670,12 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "2", "~3"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
+            "[o2] opinion_dummy->2",
+            "[o3] opinion_dummy->~3",
             "[an1] assumptions_dummy=>~1",
             "[an2] assumptions_dummy=>~2",
             "[an3] assumptions_dummy=>~3",
@@ -917,10 +923,13 @@ class TestASPICExport(unittest.TestCase):
         aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy", "3", "4", "~5"}
+        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
+            "[o3] opinion_dummy->3",
+            "[o4] opinion_dummy->4",
+            "[o5] opinion_dummy->~5",
             "[a1] assumptions_dummy=>1",
             "[an1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
