@@ -350,9 +350,9 @@ def toastify():
                 assumptions_bias = assumptions['bias']
 
     # Pass through given semantics, or set a default semantics
-    semantics = str(json_params['semantics'])
-    if not semantics:
-        semantics = 'preferred'  # options: 'stable', 'preferred', 'grounded'.
+    semantics = 'preferred'  # Default semantics. options: 'stable', 'preferred', 'grounded'.
+    if 'semantics' in json_params:
+        semantics = str(json_params['semantics'])
 
     # Get assumptions and inference rules from D-BAS data
     result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
