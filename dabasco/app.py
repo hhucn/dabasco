@@ -7,7 +7,6 @@ import json
 
 import dbas_import
 from invalid_request_error import InvalidRequestError
-from dbas_user import DBASUser
 
 from doj.pos import Position
 from doj.sm import SM
