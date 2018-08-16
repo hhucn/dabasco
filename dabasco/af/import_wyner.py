@@ -77,7 +77,7 @@ def import_af_wyner(dbas_graph, user_opinion, assumptions_strict):
                 opinion_dummy_arg_id_for_name[arg_name] = current_argument
 
     # Create AF for the determined number of AF arguments
-    n_nodes = current_argument+1
+    n_nodes = current_argument + 1
     af = AF(n_nodes)
     for arg in element_id_for_argument:
         af.set_argument_name(arg, element_id_for_argument[arg])

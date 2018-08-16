@@ -51,11 +51,13 @@ def diamond_acc_condition_to_string(acc_node):
                 return diamond_acc_condition_to_string(acc_node.children[0])
             else:
                 # Output operators must not have more than 2 arguments. Nest operators as necessary.
-                output_string = operator + '(' + diamond_acc_condition_to_string(acc_node.children[n_children-2]) \
-                                + ',' + diamond_acc_condition_to_string(acc_node.children[n_children-1]) + ')'
+                output_string = operator\
+                    + '(' + diamond_acc_condition_to_string(acc_node.children[n_children - 2])\
+                    + ',' + diamond_acc_condition_to_string(acc_node.children[n_children - 1]) + ')'
                 n_children -= 2
                 while n_children > 0:
-                    output_string = operator + '(' + diamond_acc_condition_to_string(acc_node.children[n_children-1]) \
-                                    + ',' + output_string + ')'
+                    output_string = operator\
+                        + '(' + diamond_acc_condition_to_string(acc_node.children[n_children - 1])\
+                        + ',' + output_string + ')'
                     n_children -= 1
             return output_string

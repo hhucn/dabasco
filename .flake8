@@ -1,3 +1,4 @@
 [flake8]
 max-line-length = 129
-exclude = tests/*
+exclude = dabasco/doj/*
+ignore = F405, F403
