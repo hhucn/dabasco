@@ -2,7 +2,7 @@
 
 import unittest
 
-from dabasco.aspic.export import export_toast
+from dabasco.aspic.export_toast import export_toast
 from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph
 
 from os import path

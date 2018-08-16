@@ -4,7 +4,7 @@ import unittest
 
 from dabasco.adf.adf_graph import ADF
 from dabasco.adf.adf_node import ADFNode
-from dabasco.adf.import_dbas import import_adf
+from dabasco.adf.import_strass import import_adf
 from dabasco.dbas.dbas_import import import_dbas_graph, import_dbas_user
 
 from os import path

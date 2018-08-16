@@ -3,7 +3,7 @@
 import unittest
 
 from dabasco.af.af_graph import AF
-from dabasco.af.export import export_aspartix
+from dabasco.af.export_aspartix import export_aspartix
 
 from os import path
 import logging.config

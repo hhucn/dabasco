@@ -4,7 +4,7 @@ import unittest
 
 from dabasco.adf.adf_graph import ADF
 from dabasco.adf.adf_node import ADFNode
-from dabasco.adf.export import export_diamond
+from dabasco.adf.export_diamond import export_diamond
 
 from os import path
 import logging

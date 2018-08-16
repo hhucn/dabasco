@@ -13,13 +13,13 @@ from doj.sm import SM
 from doj.doj import DoJ
 import doj.import_dbas as sm_import
 
-import adf.import_dbas as adf_import
-import adf.export as adf_export
+import adf.import_strass as adf_import_strass
+import adf.export_diamond as adf_export_diamond
 
-import af.import_dbas as af_import
-import af.export as af_export
+import af.import_wyner as af_import_wyner
+import af.export_aspartix as af_export_aspartix
 
-import aspic.export as aspic_export
+import aspic.export_toast as aspic_export_toast
 
 from os import path
 import logging
@@ -354,7 +354,7 @@ def toastify():
         semantics = str(json_params['semantics'])
 
     # Get assumptions and inference rules from D-BAS data
-    result = aspic_export.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
+    result = aspic_export_toast.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
 
     return jsonify(result)
 
@@ -384,10 +384,10 @@ def adfify(discussion, user, assumptions_strict):
     dbas_user = load_dbas_user_data(discussion, user)
 
     # Create ADF
-    adf = adf_import.import_adf(dbas_graph, dbas_user, bool(assumptions_strict))
+    adf = adf_import_strass.import_adf(dbas_graph, dbas_user, bool(assumptions_strict))
 
     # Convert to DIAMOND/YADF formatted string
-    output_string = adf_export.export_diamond(adf)
+    output_string = adf_export_diamond.export_diamond(adf)
     json_result = jsonify({'dbas_discussion_id': discussion,
                            'dbas_user_id': user,
                            'adf': output_string})
@@ -419,13 +419,13 @@ def dungify(discussion, user, assumptions_strict):
 
     # Create AF
     dbas_user = load_dbas_user_data(discussion, user) if user else None
-    af = af_import.import_af_wyner(dbas_graph, dbas_user, assumptions_strict=bool(assumptions_strict))
+    af = af_import_wyner.import_af_wyner(dbas_graph, dbas_user, assumptions_strict=bool(assumptions_strict))
 
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))
 
     # Create output text format
-    str_output = af_export.export_aspartix(af)
+    str_output = af_export_aspartix.export_aspartix(af)
     result = {'dbas_discussion_id': discussion,
               'af': str_output}
     if user:

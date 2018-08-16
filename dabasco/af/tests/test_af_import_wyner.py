@@ -3,7 +3,7 @@
 import unittest
 
 from dabasco.af.af_graph import AF
-from dabasco.af.import_dbas import import_af_wyner
+from dabasco.af.import_wyner import import_af_wyner
 from dabasco.dbas.dbas_import import import_dbas_graph, import_dbas_user
 
 from os import path
