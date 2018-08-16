@@ -1,3 +1,4 @@
+from dabasco.config import *
 from dabasco.dbas.dbas_user import DBASUser
 from dabasco.dbas.dbas_graph import DBASGraph
 
@@ -19,24 +20,24 @@ def import_dbas_graph(discussion_id, graph_export):
     graph = DBASGraph(discussion_id)
 
     n_statements = 0
-    for statement in graph_export['nodes']:
+    for statement in graph_export[DBAS_KEYWORD_STATEMENTS]:
         logging.debug('Statement: %s', statement)
         graph.add_statement(statement)
         n_statements += 1
 
-    for i in graph_export['inferences']:
+    for i in graph_export[DBAS_KEYWORD_INFERENCE_RULES]:
         logging.debug('Inference: %s', i)
-        inference_id = i['id']
-        premises = i['premises']
-        conclusion = i['conclusion']
-        is_supportive = i['is_supportive']
+        inference_id = i[DBAS_KEYWORD_INFERENCE_RULE_ID]
+        premises = i[DBAS_KEYWORD_INFERENCE_RULE_PREMISES]
+        conclusion = i[DBAS_KEYWORD_INFERENCE_RULE_CONCLUSION]
+        is_supportive = i[DBAS_KEYWORD_INFERENCE_RULE_SUPPORTIVE]
         graph.add_inference(inference_id, premises, conclusion, is_supportive)
 
-    for u in graph_export['undercuts']:
+    for u in graph_export[DBAS_KEYWORD_UNDERCUTS]:
         logging.debug('Undercut: %s', u)
-        inference_id = u['id']
-        premises = u['premises']
-        conclusion = u['conclusion']
+        inference_id = u[DBAS_KEYWORD_UNDERCUT_ID]
+        premises = u[DBAS_KEYWORD_UNDERCUT_PREMISES]
+        conclusion = u[DBAS_KEYWORD_UNDERCUT_CONCLUSION]
         graph.add_undercut(inference_id, premises, conclusion)
 
     return graph
@@ -57,10 +58,10 @@ def import_dbas_user(discussion_id, user_id, user_export):
     logging.debug('Reading D-BAS user opinion data...')
     user_opinion = DBASUser(discussion_id, user_id)
 
-    user_opinion.accepted_statements_explicit = user_export['marked_statements']
-    user_opinion.accepted_statements_implicit = user_export['accepted_statements_via_click']
-    user_opinion.rejected_statements_implicit = user_export['rejected_statements_via_click']
-    user_opinion.accepted_arguments_explicit = user_export['marked_arguments']
-    user_opinion.rejected_arguments_explicit = user_export['rejected_arguments']
+    user_opinion.accepted_statements_explicit = user_export[DBAS_KEYWORD_ACCEPTED_STATEMENTS_EXPLICIT]
+    user_opinion.accepted_statements_implicit = user_export[DBAS_KEYWORD_ACCEPTED_STATEMENTS_IMPLICIT]
+    user_opinion.rejected_statements_implicit = user_export[DBAS_KEYWORD_REJECTED_STATEMENTS_IMPLICIT]
+    user_opinion.accepted_arguments_explicit = user_export[DBAS_KEYWORD_ACCEPTED_ARGUMENTS_EXPLICIT]
+    user_opinion.rejected_arguments_explicit = user_export[DBAS_KEYWORD_REJECTED_ARGUMENTS_EXPLICIT]
 
     return user_opinion
