@@ -331,7 +331,10 @@ def toastify():
     if DABASCO_INPUT_KEYWORD_OPINION in json_params:
         opinion_params = json_params[DABASCO_INPUT_KEYWORD_OPINION]
         if isinstance(opinion_params, dict):
-            if DABASCO_INPUT_KEYWORD_TYPE in opinion_params and opinion_params[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG, DABASCO_INPUT_KEYWORD_OPINION_STRICT]:
+            if (DABASCO_INPUT_KEYWORD_TYPE in opinion_params
+                and opinion_params[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK,
+                                                                   DABASCO_INPUT_KEYWORD_OPINION_STRONG,
+                                                                   DABASCO_INPUT_KEYWORD_OPINION_STRICT]):
                 opinion_type = opinion_params[DABASCO_INPUT_KEYWORD_TYPE]
             if opinion_type:
                 if DABASCO_INPUT_KEYWORD_USER in opinion_params:
@@ -343,9 +346,13 @@ def toastify():
     if DABASCO_INPUT_KEYWORD_ASSUMPTIONS in json_params:
         assumptions = json_params[DABASCO_INPUT_KEYWORD_ASSUMPTIONS]
         if isinstance(assumptions, dict):
-            if DABASCO_INPUT_KEYWORD_TYPE in assumptions and assumptions[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
+            if (DABASCO_INPUT_KEYWORD_TYPE in assumptions
+                    and assumptions[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK,
+                                                                    DABASCO_INPUT_KEYWORD_OPINION_STRONG]):
                 assumptions_type = assumptions[DABASCO_INPUT_KEYWORD_TYPE]
-            if DABASCO_INPUT_KEYWORD_BIAS in assumptions and assumptions[DABASCO_INPUT_KEYWORD_BIAS] in [DABASCO_INPUT_KEYWORD_POSITIVE_BIAS, DABASCO_INPUT_KEYWORD_NEGATIVE_BIAS]:
+            if (DABASCO_INPUT_KEYWORD_BIAS in assumptions
+                    and assumptions[DABASCO_INPUT_KEYWORD_BIAS] in [DABASCO_INPUT_KEYWORD_POSITIVE_BIAS,
+                                                                    DABASCO_INPUT_KEYWORD_NEGATIVE_BIAS]):
                 assumptions_bias = assumptions[DABASCO_INPUT_KEYWORD_BIAS]
 
     # Pass through given semantics, or set a default semantics
@@ -354,7 +361,12 @@ def toastify():
         semantics = str(json_params[DABASCO_INPUT_KEYWORD_SEMANTICS])
 
     # Get assumptions and inference rules from D-BAS data
-    result = aspic_export_toast.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
+    result = aspic_export_toast.export_toast(dbas_graph,
+                                             opinion_type,
+                                             opinion,
+                                             assumptions_type,
+                                             assumptions_bias,
+                                             semantics)
 
     return jsonify(result)
 
