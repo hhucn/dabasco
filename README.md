@@ -60,8 +60,7 @@ In the body of the request, provide JSON in the following format to specify para
     {
       "discussion": <dbas_discussion_id>,  # mandatory
       "assumptions": {  # optional, default type "none"
-        "type": "none", "weak", "strong",  # optional, default type "none"
-        "bias": "none", "positive", "negative",  # optional, default bias "none"
+        "type": "none", "weak",  # optional, default type "none"
       },
       "opinion": {  # optional, default type "none"
         "type": "none", "weak", "strong", "strict",  # optional, default type "none"
@@ -100,48 +99,3 @@ Web sources:
 - DIAMOND: http://diamond-adf.sourceforge.net/
 - gringo/clasp: https://potassco.org/
 - lpopt: https://www.dbai.tuwien.ac.at/research/project/lpopt/
-
-## Degrees of Justification
-
-To request all degrees of justification for a discussion, use:
-
-    http://localhost:5101/evaluate/dojs/dis/<discussion_id>
-    
-To request the degrees of justification of specific statements (s1, s2, ...) in a discussion, use:
-
-    http://localhost:5101/evaluate/dojs/dis/<discussion_id>/stats/<s1>,<s2>,...
-
-To request the degree of justification of a specific position (given by comma separated IDs of accepted statements "acc1" and rejected statements "rej1") conditioned by another specific position (given by "acc2" and "rej2"), use:
-
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/pos1/acc/<acc1>/rej/<rej1>/pos2/acc/<acc2>/rej/<rej2>
-    
-All statement parameters are optional. When omitting a parameter, also omit the corresponding route element, e.g.:
-
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/pos1/rej/<rej1>/pos2/acc/<acc2>/rej/<rej2>
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/pos1/rej/<rej1>/pos2/acc/<acc2>
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/pos1/rej/<rej1>/pos2
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/pos1/pos2
-
-To request the degree of justification of a user opinion (as provided by the user opinion export), use:
-
-    http://localhost:5101/evaluate/doj/dis/<discussion_id>/user/<user_id>
-
-## Reasons
-
-To request all reason relations for a discussion, use:
-
-    http://localhost:5101/evaluate/reasons/dis/<discussion_id>
-
-To request the strength of reason of a specific statement s2 for/against a specific statement s1, use (either of):
-
-    http://localhost:5101/evaluate/reasons/dis/<discussion_id>/for/<s1>/by/<s2>
-    http://localhost:5101/evaluate/reasons/dis/<discussion_id>/by/<s2>/for/<s1>
-                                             
-To request the strength of reason of all statements for/against a specific statement s1, use:
-
-    http://localhost:5101/evaluate/reasons/dis/<discussion_id>/for/<s1>
-        
-To request the strength of reason of a specific statement s2 for/against all statements, use:
-
-    http://localhost:5101/evaluate/reasons/dis/<discussion_id>/by/<s2>
-    
