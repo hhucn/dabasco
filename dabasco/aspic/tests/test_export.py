@@ -47,16 +47,16 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy=>2",
-            "[o3] opinion_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[ua2] opinion_dummy=>2",
+            "[ur3] opinion_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[o2] < [r1]",
-            "[o2] < [r2]",
-            "[o3] < [r1]",
-            "[o3] < [r2]"
+            "[ua2] < [i1]",
+            "[ua2] < [i2]",
+            "[ur3] < [i1]",
+            "[ur3] < [i2]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -91,27 +91,27 @@ class TestASPICExport(unittest.TestCase):
         reference_kbPrefs = set()
         reference_rules = {
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[a1] < [r1]",
-            "[a1] < [r2]",
-            "[an1] < [r1]",
-            "[an1] < [r2]",
-            "[a2] < [r1]",
-            "[a2] < [r2]",
-            "[an2] < [r1]",
-            "[an2] < [r2]",
-            "[a3] < [r1]",
-            "[a3] < [r2]",
-            "[an3] < [r1]",
-            "[an3] < [r2]"
+            "[a1] < [i1]",
+            "[a1] < [i2]",
+            "[r1] < [i1]",
+            "[r1] < [i2]",
+            "[a2] < [i1]",
+            "[a2] < [i2]",
+            "[r2] < [i1]",
+            "[r2] < [i2]",
+            "[a3] < [i1]",
+            "[a3] < [i2]",
+            "[r3] < [i1]",
+            "[r3] < [i2]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -148,16 +148,16 @@ class TestASPICExport(unittest.TestCase):
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[a1] < [r1]",
-            "[a1] < [r2]",
-            "[a2] < [r1]",
-            "[a2] < [r2]",
-            "[a3] < [r1]",
-            "[a3] < [r2]"
+            "[a1] < [i1]",
+            "[a1] < [i2]",
+            "[a2] < [i1]",
+            "[a2] < [i2]",
+            "[a3] < [i1]",
+            "[a3] < [i2]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -191,19 +191,19 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[an1] assumptions_dummy=>~1",
-            "[an2] assumptions_dummy=>~2",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r1] assumptions_dummy=>~1",
+            "[r2] assumptions_dummy=>~2",
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[an1] < [r1]",
-            "[an1] < [r2]",
-            "[an2] < [r1]",
-            "[an2] < [r2]",
-            "[an3] < [r1]",
-            "[an3] < [r2]"
+            "[r1] < [i1]",
+            "[r1] < [i2]",
+            "[r2] < [i1]",
+            "[r2] < [i2]",
+            "[r3] < [i1]",
+            "[r3] < [i2]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -238,13 +238,13 @@ class TestASPICExport(unittest.TestCase):
         reference_kbPrefs = set()
         reference_rules = {
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -282,8 +282,8 @@ class TestASPICExport(unittest.TestCase):
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -318,11 +318,11 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[an1] assumptions_dummy=>~1",
-            "[an2] assumptions_dummy=>~2",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r1] assumptions_dummy=>~1",
+            "[r2] assumptions_dummy=>~2",
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -366,42 +366,42 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy=>2",
-            "[o3] opinion_dummy=>~3",
+            "[ua2] opinion_dummy=>2",
+            "[ur3] opinion_dummy=>~3",
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[a1] < [r1]",
-            "[a1] < [r2]",
-            "[an1] < [r1]",
-            "[an1] < [r2]",
-            "[a2] < [r1]",
-            "[a2] < [r2]",
-            "[an2] < [r1]",
-            "[an2] < [r2]",
-            "[a3] < [r1]",
-            "[a3] < [r2]",
-            "[an3] < [r1]",
-            "[an3] < [r2]",
-            "[a1] < [o2]",
-            "[a1] < [o3]",
-            "[an1] < [o2]",
-            "[an1] < [o3]",
-            "[a2] < [o2]",
-            "[a2] < [o3]",
-            "[an2] < [o2]",
-            "[an2] < [o3]",
-            "[a3] < [o2]",
-            "[a3] < [o3]",
-            "[an3] < [o2]",
-            "[an3] < [o3]"
+            "[a1] < [i1]",
+            "[a1] < [i2]",
+            "[r1] < [i1]",
+            "[r1] < [i2]",
+            "[a2] < [i1]",
+            "[a2] < [i2]",
+            "[r2] < [i1]",
+            "[r2] < [i2]",
+            "[a3] < [i1]",
+            "[a3] < [i2]",
+            "[r3] < [i1]",
+            "[r3] < [i2]",
+            "[a1] < [ua2]",
+            "[a1] < [ur3]",
+            "[r1] < [ua2]",
+            "[r1] < [ur3]",
+            "[a2] < [ua2]",
+            "[a2] < [ur3]",
+            "[r2] < [ua2]",
+            "[r2] < [ur3]",
+            "[a3] < [ua2]",
+            "[a3] < [ur3]",
+            "[r3] < [ua2]",
+            "[r3] < [ur3]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -444,27 +444,27 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy=>2",
-            "[o3] opinion_dummy=>~3",
+            "[ua2] opinion_dummy=>2",
+            "[ur3] opinion_dummy=>~3",
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[a1] < [r1]",
-            "[a1] < [r2]",
-            "[a2] < [r1]",
-            "[a2] < [r2]",
-            "[a3] < [r1]",
-            "[a3] < [r2]",
-            "[a1] < [o2]",
-            "[a1] < [o3]",
-            "[a2] < [o2]",
-            "[a2] < [o3]",
-            "[a3] < [o2]",
-            "[a3] < [o3]"
+            "[a1] < [i1]",
+            "[a1] < [i2]",
+            "[a2] < [i1]",
+            "[a2] < [i2]",
+            "[a3] < [i1]",
+            "[a3] < [i2]",
+            "[a1] < [ua2]",
+            "[a1] < [ur3]",
+            "[a2] < [ua2]",
+            "[a2] < [ur3]",
+            "[a3] < [ua2]",
+            "[a3] < [ur3]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -507,27 +507,27 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy=>2",
-            "[o3] opinion_dummy=>~3",
-            "[an1] assumptions_dummy=>~1",
-            "[an2] assumptions_dummy=>~2",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[ua2] opinion_dummy=>2",
+            "[ur3] opinion_dummy=>~3",
+            "[r1] assumptions_dummy=>~1",
+            "[r2] assumptions_dummy=>~2",
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = {
-            "[an1] < [r1]",
-            "[an1] < [r2]",
-            "[an2] < [r1]",
-            "[an2] < [r2]",
-            "[an3] < [r1]",
-            "[an3] < [r2]",
-            "[an1] < [o2]",
-            "[an1] < [o3]",
-            "[an2] < [o2]",
-            "[an2] < [o3]",
-            "[an3] < [o2]",
-            "[an3] < [o3]"
+            "[r1] < [i1]",
+            "[r1] < [i2]",
+            "[r2] < [i1]",
+            "[r2] < [i2]",
+            "[r3] < [i1]",
+            "[r3] < [i2]",
+            "[r1] < [ua2]",
+            "[r1] < [ur3]",
+            "[r2] < [ua2]",
+            "[r2] < [ur3]",
+            "[r3] < [ua2]",
+            "[r3] < [ur3]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -570,16 +570,16 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy->2",
-            "[o3] opinion_dummy->~3",
+            "[ua2] opinion_dummy->2",
+            "[ur3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -623,13 +623,13 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy->2",
-            "[o3] opinion_dummy->~3",
+            "[ua2] opinion_dummy->2",
+            "[ur3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -673,13 +673,13 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o2] opinion_dummy->2",
-            "[o3] opinion_dummy->~3",
-            "[an1] assumptions_dummy=>~1",
-            "[an2] assumptions_dummy=>~2",
-            "[an3] assumptions_dummy=>~3",
-            "[r1] 2=>1",
-            "[r2] 3=>~1"
+            "[ua2] opinion_dummy->2",
+            "[ur3] opinion_dummy->~3",
+            "[r1] assumptions_dummy=>~1",
+            "[r2] assumptions_dummy=>~2",
+            "[r3] assumptions_dummy=>~3",
+            "[i1] 2=>1",
+            "[i2] 3=>~1"
         }
         reference_rulePrefs = set()
 
@@ -726,27 +726,27 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o3] opinion_dummy=>3",
-            "[o4] opinion_dummy=>4",
-            "[o5] opinion_dummy=>~5",
-            "[r1] 2=>1",
-            "[r2] 3=>~1",
-            "[r3] 4=>~2",
-            "[r4] 5=>~[r2]"
+            "[ua3] opinion_dummy=>3",
+            "[ua4] opinion_dummy=>4",
+            "[ur5] opinion_dummy=>~5",
+            "[i1] 2=>1",
+            "[i2] 3=>~1",
+            "[i3] 4=>~2",
+            "[i4] 5=>~[i2]"
         }
         reference_rulePrefs = {
-            "[o3] < [r1]",
-            "[o3] < [r2]",
-            "[o3] < [r3]",
-            "[o3] < [r4]",
-            "[o4] < [r1]",
-            "[o4] < [r2]",
-            "[o4] < [r3]",
-            "[o4] < [r4]",
-            "[o5] < [r1]",
-            "[o5] < [r2]",
-            "[o5] < [r3]",
-            "[o5] < [r4]"
+            "[ua3] < [i1]",
+            "[ua3] < [i2]",
+            "[ua3] < [i3]",
+            "[ua3] < [i4]",
+            "[ua4] < [i1]",
+            "[ua4] < [i2]",
+            "[ua4] < [i3]",
+            "[ua4] < [i4]",
+            "[ur5] < [i1]",
+            "[ur5] < [i2]",
+            "[ur5] < [i3]",
+            "[ur5] < [i4]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -792,95 +792,95 @@ class TestASPICExport(unittest.TestCase):
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[o3] opinion_dummy=>3",
-            "[o4] opinion_dummy=>4",
-            "[o5] opinion_dummy=>~5",
+            "[ua3] opinion_dummy=>3",
+            "[ua4] opinion_dummy=>4",
+            "[ur5] opinion_dummy=>~5",
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
+            "[r3] assumptions_dummy=>~3",
             "[a4] assumptions_dummy=>4",
-            "[an4] assumptions_dummy=>~4",
+            "[r4] assumptions_dummy=>~4",
             "[a5] assumptions_dummy=>5",
-            "[an5] assumptions_dummy=>~5",
-            "[r1] 2=>1",
-            "[r2] 3=>~1",
-            "[r3] 4=>~2",
-            "[r4] 5=>~[r2]"
+            "[r5] assumptions_dummy=>~5",
+            "[i1] 2=>1",
+            "[i2] 3=>~1",
+            "[i3] 4=>~2",
+            "[i4] 5=>~[i2]"
         }
         reference_rulePrefs = {
-            "[a1] < [r1]",
-            "[a1] < [r2]",
-            "[a1] < [r3]",
-            "[a1] < [r4]",
-            "[an1] < [r1]",
-            "[an1] < [r2]",
-            "[an1] < [r3]",
-            "[an1] < [r4]",
-            "[a2] < [r1]",
-            "[a2] < [r2]",
-            "[a2] < [r3]",
-            "[a2] < [r4]",
-            "[an2] < [r1]",
-            "[an2] < [r2]",
-            "[an2] < [r3]",
-            "[an2] < [r4]",
-            "[a3] < [r1]",
-            "[a3] < [r2]",
-            "[a3] < [r3]",
-            "[a3] < [r4]",
-            "[an3] < [r1]",
-            "[an3] < [r2]",
-            "[an3] < [r3]",
-            "[an3] < [r4]",
-            "[a4] < [r1]",
-            "[a4] < [r2]",
-            "[a4] < [r3]",
-            "[a4] < [r4]",
-            "[an4] < [r1]",
-            "[an4] < [r2]",
-            "[an4] < [r3]",
-            "[an4] < [r4]",
-            "[a5] < [r1]",
-            "[a5] < [r2]",
-            "[a5] < [r3]",
-            "[a5] < [r4]",
-            "[an5] < [r1]",
-            "[an5] < [r2]",
-            "[an5] < [r3]",
-            "[an5] < [r4]",
-            "[a1] < [o3]",
-            "[a1] < [o4]",
-            "[a1] < [o5]",
-            "[an1] < [o3]",
-            "[an1] < [o4]",
-            "[an1] < [o5]",
-            "[a2] < [o3]",
-            "[a2] < [o4]",
-            "[a2] < [o5]",
-            "[an2] < [o3]",
-            "[an2] < [o4]",
-            "[an2] < [o5]",
-            "[a3] < [o3]",
-            "[a3] < [o4]",
-            "[a3] < [o5]",
-            "[an3] < [o3]",
-            "[an3] < [o4]",
-            "[an3] < [o5]",
-            "[a4] < [o3]",
-            "[a4] < [o4]",
-            "[a4] < [o5]",
-            "[an4] < [o3]",
-            "[an4] < [o4]",
-            "[an4] < [o5]",
-            "[a5] < [o3]",
-            "[a5] < [o4]",
-            "[a5] < [o5]",
-            "[an5] < [o3]",
-            "[an5] < [o4]",
-            "[an5] < [o5]"
+            "[a1] < [i1]",
+            "[a1] < [i2]",
+            "[a1] < [i3]",
+            "[a1] < [i4]",
+            "[r1] < [i1]",
+            "[r1] < [i2]",
+            "[r1] < [i3]",
+            "[r1] < [i4]",
+            "[a2] < [i1]",
+            "[a2] < [i2]",
+            "[a2] < [i3]",
+            "[a2] < [i4]",
+            "[r2] < [i1]",
+            "[r2] < [i2]",
+            "[r2] < [i3]",
+            "[r2] < [i4]",
+            "[a3] < [i1]",
+            "[a3] < [i2]",
+            "[a3] < [i3]",
+            "[a3] < [i4]",
+            "[r3] < [i1]",
+            "[r3] < [i2]",
+            "[r3] < [i3]",
+            "[r3] < [i4]",
+            "[a4] < [i1]",
+            "[a4] < [i2]",
+            "[a4] < [i3]",
+            "[a4] < [i4]",
+            "[r4] < [i1]",
+            "[r4] < [i2]",
+            "[r4] < [i3]",
+            "[r4] < [i4]",
+            "[a5] < [i1]",
+            "[a5] < [i2]",
+            "[a5] < [i3]",
+            "[a5] < [i4]",
+            "[r5] < [i1]",
+            "[r5] < [i2]",
+            "[r5] < [i3]",
+            "[r5] < [i4]",
+            "[a1] < [ua3]",
+            "[a1] < [ua4]",
+            "[a1] < [ur5]",
+            "[r1] < [ua3]",
+            "[r1] < [ua4]",
+            "[r1] < [ur5]",
+            "[a2] < [ua3]",
+            "[a2] < [ua4]",
+            "[a2] < [ur5]",
+            "[r2] < [ua3]",
+            "[r2] < [ua4]",
+            "[r2] < [ur5]",
+            "[a3] < [ua3]",
+            "[a3] < [ua4]",
+            "[a3] < [ur5]",
+            "[r3] < [ua3]",
+            "[r3] < [ua4]",
+            "[r3] < [ur5]",
+            "[a4] < [ua3]",
+            "[a4] < [ua4]",
+            "[a4] < [ur5]",
+            "[r4] < [ua3]",
+            "[r4] < [ua4]",
+            "[r4] < [ur5]",
+            "[a5] < [ua3]",
+            "[a5] < [ua4]",
+            "[a5] < [ur5]",
+            "[r5] < [ua3]",
+            "[r5] < [ua4]",
+            "[r5] < [ur5]"
         }
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
@@ -924,34 +924,34 @@ class TestASPICExport(unittest.TestCase):
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
         reference_contrariness = set()
-        reference_kbPrefs = set()
+        reference_kb_prefs = set()
         reference_rules = {
-            "[o3] opinion_dummy->3",
-            "[o4] opinion_dummy->4",
-            "[o5] opinion_dummy->~5",
+            "[ua3] opinion_dummy->3",
+            "[ua4] opinion_dummy->4",
+            "[ur5] opinion_dummy->~5",
             "[a1] assumptions_dummy=>1",
-            "[an1] assumptions_dummy=>~1",
+            "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
-            "[an2] assumptions_dummy=>~2",
+            "[r2] assumptions_dummy=>~2",
             "[a3] assumptions_dummy=>3",
-            "[an3] assumptions_dummy=>~3",
+            "[r3] assumptions_dummy=>~3",
             "[a4] assumptions_dummy=>4",
-            "[an4] assumptions_dummy=>~4",
+            "[r4] assumptions_dummy=>~4",
             "[a5] assumptions_dummy=>5",
-            "[an5] assumptions_dummy=>~5",
-            "[r1] 2=>1",
-            "[r2] 3=>~1",
-            "[r3] 4=>~2",
-            "[r4] 5=>~[r2]"
+            "[r5] assumptions_dummy=>~5",
+            "[i1] 2=>1",
+            "[i2] 3=>~1",
+            "[i3] 4=>~2",
+            "[i4] 5=>~[i2]"
         }
-        reference_rulePrefs = set()
+        reference_rule_prefs = set()
 
         self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
         self.assertEqual(set(aspic_result["axioms"]), reference_axioms)
         self.assertEqual(set(aspic_result["contrariness"]), reference_contrariness)
-        self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
+        self.assertEqual(set(aspic_result["kbPrefs"]), reference_kb_prefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
-        self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(set(aspic_result["rulePrefs"]), reference_rule_prefs)
 
 
 if __name__ == '__main__':
