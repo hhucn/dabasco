@@ -54,26 +54,26 @@ class TestADFImport(unittest.TestCase):
         ]))
         adf_reference.add_statement('s2', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns2')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a2'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ua2'))
         ]))
         adf_reference.add_statement('ns2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('s3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r3'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ur3'))
         ]))
 
         # User opinion
-        adf_reference.add_statement('a2', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('ua2', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns2')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na2'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nua2'))
         ]))
-        adf_reference.add_statement('na2', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a2')))
-        adf_reference.add_statement('r3', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('nua2', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ua2')))
+        adf_reference.add_statement('ur3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr3'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nur3'))
         ]))
-        adf_reference.add_statement('nr3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'r3')))
+        adf_reference.add_statement('nur3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ur3')))
 
         # D-BAS Inferences
         adf_reference.add_statement('i1', ADFNode(ADFNode.AND, [
@@ -129,25 +129,25 @@ class TestADFImport(unittest.TestCase):
         ]))
         adf_reference.add_statement('s2', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns2')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a2'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ua2'))
         ]))
         adf_reference.add_statement('ns2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('s3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's3')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r3'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ur3'))
         ]))
 
         # User opinion
-        adf_reference.add_statement('a2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
-        adf_reference.add_statement('na2', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('ua2', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+        adf_reference.add_statement('nua2', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's2')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na2'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nua2'))
         ]))
-        adf_reference.add_statement('r3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
-        adf_reference.add_statement('nr3', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('ur3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+        adf_reference.add_statement('nur3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns3')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr3'))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nur3'))
         ]))
 
         # D-BAS Inferences
@@ -212,33 +212,33 @@ class TestADFImport(unittest.TestCase):
         ]))
         adf_reference.add_statement('s3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns3')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a3'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ua3'))
         ]))
         adf_reference.add_statement('ns3', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('s4', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns4')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'a4'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ua4'))
         ]))
         adf_reference.add_statement('ns4', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('s5', ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         adf_reference.add_statement('ns5', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's5')),
-            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'r5'))
+            ADFNode(ADFNode.OR, ADFNode(ADFNode.LEAF, 'ur5'))
         ]))
 
         # User opinion
-        adf_reference.add_statement('a3', ADFNode(ADFNode.AND, [
+        adf_reference.add_statement('ua3', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns3')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na3'))]))
-        adf_reference.add_statement('na3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a3')))
-        adf_reference.add_statement('a4', ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nua3'))]))
+        adf_reference.add_statement('nua3', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ua3')))
+        adf_reference.add_statement('ua4', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ns4')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'na4'))]))
-        adf_reference.add_statement('na4', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'a4')))
-        adf_reference.add_statement('r5', ADFNode(ADFNode.AND, [
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nua4'))]))
+        adf_reference.add_statement('nua4', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ua4')))
+        adf_reference.add_statement('ur5', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's5')),
-            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nr5'))]))
-        adf_reference.add_statement('nr5', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'r5')))
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'nur5'))]))
+        adf_reference.add_statement('nur5', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ur5')))
 
         # D-BAS Inferences
         adf_reference.add_statement('i1', ADFNode(ADFNode.AND, [
