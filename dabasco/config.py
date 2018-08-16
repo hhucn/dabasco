@@ -8,13 +8,13 @@ KEYWORD_OPINION_STRICT = 'strict'
 DUMMY_LITERAL_NAME_OPINION = 'opinion_dummy'
 DUMMY_LITERAL_NAME_ASSUMPTIONS = 'assumptions_dummy'
 
-LITERAL_PREFIX_OPINION_ASSUME = 'ua'
-LITERAL_PREFIX_OPINION_REJECT = 'ur'
-LITERAL_PREFIX_ASSUMPTION_ASSUME = 'a'
-LITERAL_PREFIX_ASSUMPTION_REJECT = 'r'
-LITERAL_PREFIX_STATEMENT = 's'
-LITERAL_PREFIX_INFERENCE_RULE = 'i'
-LITERAL_PREFIX_NOT = 'n'
+LITERAL_PREFIX_OPINION_ASSUME = 'ua'             # read "user accepts"
+LITERAL_PREFIX_OPINION_REJECT = 'ur'             # read "user rejects"
+LITERAL_PREFIX_ASSUMPTION_ASSUME = 'a'           # read "accept"
+LITERAL_PREFIX_ASSUMPTION_REJECT = 'r'           # read "reject"
+LITERAL_PREFIX_STATEMENT = 's'                   # read "statement"
+LITERAL_PREFIX_INFERENCE_RULE = 'i'              # read "inference"
+LITERAL_PREFIX_NOT = 'n'                         # read "not"
 
 # DBAS API: interface keywords
 DBAS_KEYWORD_ACCEPTED_STATEMENTS_EXPLICIT = 'marked_statements'
