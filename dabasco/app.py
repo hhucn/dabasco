@@ -5,6 +5,8 @@ from flask_cors import CORS
 import urllib.request
 import json
 
+from config import *
+
 from dbas import dbas_import
 from invalid_request_error import InvalidRequestError
 
@@ -31,8 +33,6 @@ logger = logging.getLogger('root')
 app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
-BASE_URL = 'http://localhost:4284/export'
-
 
 def load_dbas_graph_data(discussion_id):
     """
@@ -42,7 +42,7 @@ def load_dbas_graph_data(discussion_id):
     :type discussion_id: int
     :return: json string representation of the graph
     """
-    graph_url = BASE_URL + '/doj/{}'.format(discussion_id)
+    graph_url = DBAS_BASE_URL + '/' + DBAS_PATH_GRAPH_DATA + '/{}'.format(discussion_id)
     graph_response = urllib.request.urlopen(graph_url).read()
     graph_export = graph_response.decode('utf-8')
     while isinstance(graph_export, str):
@@ -61,7 +61,7 @@ def load_dbas_user_data(discussion_id, user_id):
     :type user_id: int
     :return: json string representation of the user opinion
     """
-    user_url = BASE_URL + '/doj_user/{}/{}'.format(user_id, discussion_id)
+    user_url = DBAS_BASE_URL + '/' + DBAS_PATH_USER_DATA + '/{}/{}'.format(user_id, discussion_id)
     user_response = urllib.request.urlopen(user_url).read()
     user_export = user_response.decode('utf-8')
     while isinstance(user_export, str):
@@ -121,8 +121,8 @@ def evaluate_issue_reasons(discussion, s1, s2):
             reasons_s1[statement_map.node_id_for_index[s2]] = r
         reasons['for ' + str(statement_map.node_id_for_index[s1])] = reasons_s1
 
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'reasons': reasons})
+    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+                           DABASCO_OUTPUT_KEYWORD_REASONS: reasons})
     return json_result
 
 
@@ -170,8 +170,8 @@ def evaluate_issue_dojs(discussion, statements):
         dojs[statement_map.node_id_for_index[s]] = doj_s
         logging.debug('DoJ(%s): %s', statement_map.node_id_for_index[s], doj_s)
 
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'dojs': dojs})
+    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+                           DABASCO_OUTPUT_KEYWORD_DEGREES_OF_JUSTIFICATION: dojs})
     return json_result
 
 
@@ -258,8 +258,8 @@ def evaluate_issue_conditional_doj(dis, acc1, rej1, acc2, rej2):
     doj = DoJ()
     result = doj.doj_conditional(statement_map, pos1, pos2, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
 
-    json_result = jsonify({'dbas_discussion_id': dis,
-                           'doj': result})
+    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: dis,
+                           DABASCO_OUTPUT_KEYWORD_DEGREE_OF_JUSTIFICATION: result})
     return json_result
 
 
@@ -296,9 +296,9 @@ def evaluate_issue_doj_user_position(discussion, user):
     doj = DoJ()
     result = doj.doj(statement_map, pos1, DoJ.DOJ_RECALL, SM.COHERENCE_DEDUCTIVE_INFERENCES)
 
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'dbas_user_id': user,
-                           'doj': result})
+    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+                           DABASCO_OUTPUT_KEYWORD_USER_ID: user,
+                           DABASCO_OUTPUT_KEYWORD_DEGREE_OF_JUSTIFICATION: result})
     return json_result
 
 
@@ -320,38 +320,38 @@ def toastify():
         raise InvalidRequestError('Missing request parameters', status_code=400)
 
     # The 'discussion' field is mandatory, respond with error if missing.
-    if 'discussion' not in json_params:
+    if DABASCO_INPUT_KEYWORD_DISCUSSION_ID not in json_params:
         raise InvalidRequestError('Field "discussion" is required', status_code=400)
 
-    discussion = int(json_params['discussion'])
+    discussion = int(json_params[DABASCO_INPUT_KEYWORD_DISCUSSION_ID])
     dbas_graph = load_dbas_graph_data(discussion)
 
     opinion_type = None
     opinion = None
-    if 'opinion' in json_params:
-        opinion_params = json_params['opinion']
+    if DABASCO_INPUT_KEYWORD_OPINION in json_params:
+        opinion_params = json_params[DABASCO_INPUT_KEYWORD_OPINION]
         if isinstance(opinion_params, dict):
-            if 'type' in opinion_params and opinion_params['type'] in ['weak', 'strong', 'strict']:
-                opinion_type = opinion_params['type']
+            if DABASCO_INPUT_KEYWORD_TYPE in opinion_params and opinion_params[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG, DABASCO_INPUT_KEYWORD_OPINION_STRICT]:
+                opinion_type = opinion_params[DABASCO_INPUT_KEYWORD_TYPE]
             if opinion_type:
-                if 'user' in opinion_params:
-                    user_id = int(opinion_params['user'])
+                if DABASCO_INPUT_KEYWORD_USER in opinion_params:
+                    user_id = int(opinion_params[DABASCO_INPUT_KEYWORD_USER])
                     opinion = load_dbas_user_data(discussion, user_id)
 
     assumptions_type = None
     assumptions_bias = None
-    if 'assumptions' in json_params:
-        assumptions = json_params['assumptions']
+    if DABASCO_INPUT_KEYWORD_ASSUMPTIONS in json_params:
+        assumptions = json_params[DABASCO_INPUT_KEYWORD_ASSUMPTIONS]
         if isinstance(assumptions, dict):
-            if 'type' in assumptions and assumptions['type'] in ['weak', 'strong']:
-                assumptions_type = assumptions['type']
-            if 'bias' in assumptions and assumptions['bias'] in ['positive', 'negative']:
-                assumptions_bias = assumptions['bias']
+            if DABASCO_INPUT_KEYWORD_TYPE in assumptions and assumptions[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
+                assumptions_type = assumptions[DABASCO_INPUT_KEYWORD_TYPE]
+            if DABASCO_INPUT_KEYWORD_BIAS in assumptions and assumptions[DABASCO_INPUT_KEYWORD_BIAS] in [DABASCO_INPUT_KEYWORD_POSITIVE_BIAS, DABASCO_INPUT_KEYWORD_NEGATIVE_BIAS]:
+                assumptions_bias = assumptions[DABASCO_INPUT_KEYWORD_BIAS]
 
     # Pass through given semantics, or set a default semantics
-    semantics = 'preferred'  # Default semantics. options: 'stable', 'preferred', 'grounded'.
-    if 'semantics' in json_params:
-        semantics = str(json_params['semantics'])
+    semantics = TOAST_KEYWORD_SEMANTICS_PREFERRED  # Default semantics
+    if DABASCO_INPUT_KEYWORD_SEMANTICS in json_params:
+        semantics = str(json_params[DABASCO_INPUT_KEYWORD_SEMANTICS])
 
     # Get assumptions and inference rules from D-BAS data
     result = aspic_export_toast.export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumptions_bias, semantics)
@@ -388,9 +388,9 @@ def adfify(discussion, user, assumptions_strict):
 
     # Convert to DIAMOND/YADF formatted string
     output_string = adf_export_diamond.export_diamond(adf)
-    json_result = jsonify({'dbas_discussion_id': discussion,
-                           'dbas_user_id': user,
-                           'adf': output_string})
+    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+                           DABASCO_OUTPUT_KEYWORD_USER_ID: user,
+                           DABASCO_OUTPUT_KEYWORD_ADF: output_string})
     return json_result
 
 
@@ -426,10 +426,10 @@ def dungify(discussion, user, assumptions_strict):
 
     # Create output text format
     str_output = af_export_aspartix.export_aspartix(af)
-    result = {'dbas_discussion_id': discussion,
-              'af': str_output}
+    result = {DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+              DABASCO_OUTPUT_KEYWORD_AF: str_output}
     if user:
-        result['user'] = user
+        result[DABASCO_OUTPUT_KEYWORD_USER_ID] = user
     json_result = jsonify(result)
     return json_result
 

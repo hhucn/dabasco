@@ -47,7 +47,7 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
 
     # Encode user opinion
     opinion_rule_names = []
-    if opinion_type == KEYWORD_OPINION_STRICT:
+    if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_STRICT:
         for statement in itertools.chain(opinion.accepted_statements_explicit, opinion.accepted_statements_implicit):
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
             rule = create_toast_rule_strict(rule_name=rule_name,
@@ -62,7 +62,7 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
                                             conclusion=TOAST_SYMBOL_NEGATION + str(statement))
             aspic_rules.append(rule)
             opinion_rule_names.append(rule_name)
-    elif opinion_type in [KEYWORD_OPINION_WEAK, KEYWORD_OPINION_STRONG]:
+    elif opinion_type in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
         for statement in itertools.chain(opinion.accepted_statements_explicit, opinion.accepted_statements_implicit):
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
             rule = create_toast_rule_defeasible(rule_name=rule_name,
@@ -120,17 +120,17 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
 
     # Set rule preferences
     aspic_rule_prefs = []
-    if assumptions_type == KEYWORD_OPINION_WEAK:
+    if assumptions_type == DABASCO_INPUT_KEYWORD_OPINION_WEAK:
         for assumption_id in assumption_rule_names:
             for inference_id in inference_rule_names:
                 preference = create_toast_preference(item_lower=assumption_id, item_higher=inference_id)
                 aspic_rule_prefs.append(preference)
-    if opinion_type == KEYWORD_OPINION_WEAK:
+    if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_WEAK:
         for opinion_id in opinion_rule_names:
             for inference_id in inference_rule_names:
                 preference = create_toast_preference(item_lower=opinion_id, item_higher=inference_id)
                 aspic_rule_prefs.append(preference)
-    if opinion_type == KEYWORD_OPINION_STRONG and assumptions_type == KEYWORD_OPINION_WEAK:
+    if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_STRONG and assumptions_type == DABASCO_INPUT_KEYWORD_OPINION_WEAK:
         for assumption_id in assumption_rule_names:
             for opinion_id in opinion_rule_names:
                 preference = create_toast_preference(item_lower=assumption_id, item_higher=opinion_id)
