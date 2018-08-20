@@ -1,4 +1,3 @@
-import itertools
 
 from dabasco.config import *
 

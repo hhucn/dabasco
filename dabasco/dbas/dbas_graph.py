@@ -47,10 +47,10 @@ class DBASGraph(object):
             found_equal = False
             for other_inference_id in other.inferences:
                 other_inference = other.inferences[other_inference_id]
-                if (my_inference.id == other_inference.id
-                        and my_inference.premises == other_inference.premises
-                        and my_inference.conclusion == other_inference.conclusion
-                        and my_inference.is_supportive == other_inference.is_supportive):
+                if (my_inference.id == other_inference.id and
+                        my_inference.premises == other_inference.premises and
+                        my_inference.conclusion == other_inference.conclusion and
+                        my_inference.is_supportive == other_inference.is_supportive):
                     found_equal = True
                     break
             if not found_equal:
@@ -60,9 +60,9 @@ class DBASGraph(object):
             found_equal = False
             for other_undercut_id in other.undercuts:
                 other_undercut = other.undercuts[other_undercut_id]
-                if (my_undercut.id == other_undercut.id
-                        and my_undercut.premises == other_undercut.premises
-                        and my_undercut.conclusion == other_undercut.conclusion):
+                if (my_undercut.id == other_undercut.id and
+                        my_undercut.premises == other_undercut.premises and
+                        my_undercut.conclusion == other_undercut.conclusion):
                     found_equal = True
                     break
             if not found_equal:
