@@ -20,6 +20,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "weak"
         assumptions_type = None
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -40,7 +41,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -65,12 +71,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_weak_assumptions_no_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "weak"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -82,8 +90,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -120,12 +134,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_weak_assumptions_positive_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "weak"
         assumptions_bias = "positive"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -137,8 +153,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -166,12 +188,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_weak_assumptions_negative_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "weak"
         assumptions_bias = "negative"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -183,8 +207,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -212,12 +242,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_strong_assumptions_no_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "strong"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -229,8 +261,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -254,12 +292,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_strong_assumptions_positive_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "strong"
         assumptions_bias = "positive"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -271,8 +311,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -293,12 +339,14 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_no_user_strong_assumptions_negative_bias(self):
         discussion_id = 1
         opinion_type = None
         assumptions_type = "strong"
         assumptions_bias = "negative"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -310,8 +358,14 @@ class TestASPICExport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = None
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, None, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -332,6 +386,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strong_user1_weak_assumptions_no_bias(self):
         discussion_id = 1
@@ -339,6 +394,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strong"
         assumptions_type = "weak"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -359,7 +415,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -410,6 +471,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strong_user1_weak_assumptions_positive_bias(self):
         discussion_id = 1
@@ -417,6 +479,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strong"
         assumptions_type = "weak"
         assumptions_bias = "positive"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -437,7 +500,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -473,6 +541,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strong_user1_weak_assumptions_negative_bias(self):
         discussion_id = 1
@@ -480,6 +549,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strong"
         assumptions_type = "weak"
         assumptions_bias = "negative"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -500,7 +570,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -536,6 +611,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strict_user1_strong_assumptions_no_bias(self):
         discussion_id = 1
@@ -543,6 +619,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strict"
         assumptions_type = "strong"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -563,7 +640,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -589,6 +671,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strict_user1_strong_assumptions_positive_bias(self):
         discussion_id = 1
@@ -596,6 +679,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strict"
         assumptions_type = "strong"
         assumptions_bias = "positive"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -616,7 +700,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -639,6 +728,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion1_strict_user1_strong_assumptions_negative_bias(self):
         discussion_id = 1
@@ -646,6 +736,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strict"
         assumptions_type = "strong"
         assumptions_bias = "negative"
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -666,7 +757,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -689,6 +785,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion2_weak_user2_no_assumptions(self):
         discussion_id = 2
@@ -696,6 +793,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "weak"
         assumptions_type = None
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -719,7 +817,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -755,6 +858,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion2_strong_user2_weak_assumptions_no_bias(self):
         discussion_id = 2
@@ -762,6 +866,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strong"
         assumptions_type = "weak"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -785,7 +890,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -889,6 +999,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
     def test_discussion2_strict_user2_strong_assumptions_no_bias(self):
         discussion_id = 2
@@ -896,6 +1007,7 @@ class TestASPICExport(unittest.TestCase):
         opinion_type = "strict"
         assumptions_type = "strong"
         assumptions_bias = None
+        semantics = "preferred"
 
         dbas_discussion_json = {
             "inferences": [
@@ -919,7 +1031,12 @@ class TestASPICExport(unittest.TestCase):
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
 
-        aspic_result = export_toast(dbas_discussion, opinion_type, dbas_user, assumptions_type, assumptions_bias)
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
 
         reference_assumptions = set()
         reference_axioms = {"assumptions_dummy", "opinion_dummy"}
@@ -952,6 +1069,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["kbPrefs"]), reference_kb_prefs)
         self.assertEqual(set(aspic_result["rules"]), reference_rules)
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rule_prefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
 
 
 if __name__ == '__main__':
