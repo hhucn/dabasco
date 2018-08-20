@@ -2,6 +2,7 @@
 
 import unittest
 
+from dabasco.config import *
 from dabasco.af.af_graph import AF
 from dabasco.af.import_wyner import import_af_wyner
 from dabasco.dbas.dbas_import import import_dbas_graph, import_dbas_user
@@ -217,23 +218,23 @@ class TestAFImport(unittest.TestCase):
         af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, assumptions_strict=assumptions_strict)
 
         af_reference = AF(17)
-        arg_1 = 0
-        arg_neg1 = 1
-        arg_2 = 2
-        arg_neg2 = 3
-        arg_3 = 4
-        arg_neg3 = 5
-        arg_4 = 6
-        arg_neg4 = 7
-        arg_5 = 8
-        arg_neg5 = 9
-        arg_r1 = 10
-        arg_r2 = 11
-        arg_r3 = 12
-        arg_r4 = 13
-        arg_u4 = 14
-        arg_u3 = 15
-        arg_uneg5 = 16
+        arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
+        arg_neg1 = af_result.get_argument_for_name(LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + '1')
+        arg_2 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '2')
+        arg_neg2 = af_result.get_argument_for_name(LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + '2')
+        arg_3 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '3')
+        arg_neg3 = af_result.get_argument_for_name(LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + '3')
+        arg_4 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '4')
+        arg_neg4 = af_result.get_argument_for_name(LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + '4')
+        arg_5 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '5')
+        arg_neg5 = af_result.get_argument_for_name(LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + '5')
+        arg_r1 = af_result.get_argument_for_name(LITERAL_PREFIX_INFERENCE_RULE + '1')
+        arg_r2 = af_result.get_argument_for_name(LITERAL_PREFIX_INFERENCE_RULE + '2')
+        arg_r3 = af_result.get_argument_for_name(LITERAL_PREFIX_INFERENCE_RULE + '3')
+        arg_r4 = af_result.get_argument_for_name(LITERAL_PREFIX_INFERENCE_RULE + '4')
+        arg_u3 = af_result.get_argument_for_name(DUMMY_LITERAL_NAME_OPINION + '_' + '3')
+        arg_u4 = af_result.get_argument_for_name(DUMMY_LITERAL_NAME_OPINION + '_' + '4')
+        arg_uneg5 = af_result.get_argument_for_name(DUMMY_LITERAL_NAME_OPINION + '_' + LITERAL_PREFIX_NOT + '5')
 
         # Attacks between statement args
         af_reference.set_attack(arg_1, arg_neg1, AF.DEFINITE_ATTACK)

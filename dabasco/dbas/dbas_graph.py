@@ -13,14 +13,14 @@ class DBASGraph(object):
 
     Attributes:
           discussion_id (int): id of the discussion represented by this graph.
-          statements (list): list of statements.
+          statements (set): list of statements.
           inferences (dict): dict of inference rules on the statements.
           undercuts (dict): dict of undercut inference rules.
     """
 
     def __init__(self, discussion_id):
         self.discussion_id = discussion_id
-        self.statements = []
+        self.statements = set()
         self.inferences = {}
         self.undercuts = {}
 
@@ -32,7 +32,7 @@ class DBASGraph(object):
         :type statement: int
         """
         if statement not in self.statements:
-            self.statements.append(statement)
+            self.statements.add(statement)
         else:
             logging.warning('Attempt to add statement (%s) to DBASGraph: already exists!', str(statement))
 

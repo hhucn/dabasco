@@ -20,7 +20,7 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
     # Get accepted/rejected statements from opinion
     user_rejected_statements = user_opinion.rejected_statements_implicit
     user_accepted_statements = user_opinion.accepted_statements_explicit \
-        + user_opinion.accepted_statements_implicit
+        | user_opinion.accepted_statements_implicit
 
     # Setup statement acceptance functions
     for statement in dbas_graph.statements:

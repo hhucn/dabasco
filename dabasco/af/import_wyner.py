@@ -33,8 +33,7 @@ def import_af_wyner(dbas_graph, user_opinion, assumptions_strict):
     user_accepted_statements = []
     if user_opinion:
         user_rejected_statements = user_opinion.rejected_statements_implicit
-        user_accepted_statements = user_opinion.accepted_statements_explicit \
-            + user_opinion.accepted_statements_implicit
+        user_accepted_statements = user_opinion.accepted_statements_explicit | user_opinion.accepted_statements_implicit
 
     # Add two arguments for each statement
     for statement in dbas_graph.statements:
@@ -56,25 +55,25 @@ def import_af_wyner(dbas_graph, user_opinion, assumptions_strict):
         argument_for_inference_id[inference_id] = current_argument
 
     # When using strict user assumptions, create a dummy arg that attacks all statements that oppose the user opinion
-    opinion_dummy_arg_id_for_name = {}
+    opinion_arg_id_for_name = {}
     if user_opinion:
         # When using strict user assumptions, create a single dummy arg
         if assumptions_strict:
             current_argument += 1
             element_id_for_argument[current_argument] = DUMMY_LITERAL_NAME_OPINION
-            opinion_dummy_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION] = current_argument
+            opinion_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION] = current_argument
         # When using non-strict user assumptions, create a dummy arg for each commitment to a statement in the opinion
         else:
             for statement in user_accepted_statements:
                 current_argument += 1
                 arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + str(statement)
                 element_id_for_argument[current_argument] = arg_name
-                opinion_dummy_arg_id_for_name[arg_name] = current_argument
+                opinion_arg_id_for_name[arg_name] = current_argument
             for statement in user_rejected_statements:
                 current_argument += 1
                 arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + LITERAL_PREFIX_NOT + str(statement)
                 element_id_for_argument[current_argument] = arg_name
-                opinion_dummy_arg_id_for_name[arg_name] = current_argument
+                opinion_arg_id_for_name[arg_name] = current_argument
 
     # Create AF for the determined number of AF arguments
     n_nodes = current_argument + 1
@@ -86,23 +85,23 @@ def import_af_wyner(dbas_graph, user_opinion, assumptions_strict):
     if user_opinion and assumptions_strict:
         for statement in user_accepted_statements:
             statement_argument = argument_for_statement_id[statement] + 1  # attack the negated statement arg
-            af.set_attack(opinion_dummy_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
+            af.set_attack(opinion_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
         for statement in user_rejected_statements:
             statement_argument = argument_for_statement_id[statement]  # attack the non-negated statement arg
-            af.set_attack(opinion_dummy_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
+            af.set_attack(opinion_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
 
     # For non-strict user opinion, add attacks between each dummy arg and the statement opposing that user opinion
     if user_opinion and not assumptions_strict:
         for statement in user_accepted_statements:
             statement_argument = argument_for_statement_id[statement] + 1  # attack the negated statement arg
             arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + str(statement)
-            af.set_attack(opinion_dummy_arg_id_for_name[arg_name], statement_argument, AF.DEFINITE_ATTACK)
-            af.set_attack(statement_argument, opinion_dummy_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
+            af.set_attack(opinion_arg_id_for_name[arg_name], statement_argument, AF.DEFINITE_ATTACK)
+            af.set_attack(statement_argument, opinion_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
         for statement in user_rejected_statements:
             statement_argument = argument_for_statement_id[statement]  # attack the non-negated statement arg
             arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + LITERAL_PREFIX_NOT + str(statement)
-            af.set_attack(opinion_dummy_arg_id_for_name[arg_name], statement_argument, AF.DEFINITE_ATTACK)
-            af.set_attack(statement_argument, opinion_dummy_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
+            af.set_attack(opinion_arg_id_for_name[arg_name], statement_argument, AF.DEFINITE_ATTACK)
+            af.set_attack(statement_argument, opinion_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
 
     # Create attacks between statement arguments
     for statement in dbas_graph.statements:
