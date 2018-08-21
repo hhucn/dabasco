@@ -29,7 +29,7 @@ class TestAFImport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=None, assumptions_strict=False)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=None, opinion_strict=False)
 
         af_reference = AF(8)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
@@ -77,7 +77,7 @@ class TestAFImport(unittest.TestCase):
         }
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=None, assumptions_strict=False)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=None, opinion_strict=False)
 
         af_reference = AF(14)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
@@ -149,7 +149,7 @@ class TestAFImport(unittest.TestCase):
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, assumptions_strict=assumptions_strict)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, opinion_strict=assumptions_strict)
 
         af_reference = AF(10)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
@@ -215,7 +215,7 @@ class TestAFImport(unittest.TestCase):
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, assumptions_strict=assumptions_strict)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, opinion_strict=assumptions_strict)
 
         af_reference = AF(17)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
@@ -298,7 +298,7 @@ class TestAFImport(unittest.TestCase):
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, assumptions_strict=assumptions_strict)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, opinion_strict=assumptions_strict)
 
         af_reference = AF(9)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')
@@ -361,7 +361,7 @@ class TestAFImport(unittest.TestCase):
 
         dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
         dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
-        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, assumptions_strict=assumptions_strict)
+        af_result = import_af_wyner(dbas_discussion, user_opinion=dbas_user, opinion_strict=assumptions_strict)
 
         af_reference = AF(15)
         arg_1 = af_result.get_argument_for_name(LITERAL_PREFIX_STATEMENT + '1')

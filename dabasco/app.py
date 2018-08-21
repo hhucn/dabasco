@@ -372,10 +372,10 @@ def toastify():
 
 
 @app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>',
-           defaults={'assumptions_strict': 0})
-@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
-           defaults={'assumptions_strict': 1})
-def adfify(discussion, user, assumptions_strict):
+           defaults={'opinion_strict': 0})
+@app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/opinion_strict',
+           defaults={'opinion_strict': 1})
+def adfify(discussion, user, opinion_strict):
     """
     Create a YADF/QADF/DIAMOND-formatted ADF representation for given user's opinion.
 
@@ -385,8 +385,8 @@ def adfify(discussion, user, assumptions_strict):
     :type discussion: int
     :param user: user ID
     :type user: int
-    :param assumptions_strict: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strict: int
+    :param opinion_strict: indicate whether assumptions shall be implemented as strict or defeasible
+    :type opinion_strict: int
     :return: json string
     """
     logging.debug('Create ADF from D-BAS graph...')
@@ -396,7 +396,7 @@ def adfify(discussion, user, assumptions_strict):
     dbas_user = load_dbas_user_data(discussion, user)
 
     # Create ADF
-    adf = adf_import_strass.import_adf(dbas_graph, dbas_user, bool(assumptions_strict))
+    adf = adf_import_strass.import_adf(dbas_graph, dbas_user, opinion_strict=bool(opinion_strict))
 
     # Convert to DIAMOND/YADF formatted string
     output_string = adf_export_diamond.export_diamond(adf)
@@ -407,12 +407,12 @@ def adfify(discussion, user, assumptions_strict):
 
 
 @app.route('/evaluate/dungify/dis/<int:discussion>',
-           defaults={'user': None, 'assumptions_strict': 0})
+           defaults={'user': None, 'opinion_strict': 0})
 @app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>',
-           defaults={'assumptions_strict': 0})
-@app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>/assumptions_strict',
-           defaults={'assumptions_strict': 1})
-def dungify(discussion, user, assumptions_strict):
+           defaults={'opinion_strict': 0})
+@app.route('/evaluate/dungify/dis/<int:discussion>/user/<int:user>/opinion_strict',
+           defaults={'opinion_strict': 1})
+def dungify(discussion, user, opinion_strict):
     """
     Create a Dung-style argumentation graph representation for the given discussion.
 
@@ -420,8 +420,8 @@ def dungify(discussion, user, assumptions_strict):
     :type discussion: int
     :param user: user ID
     :type user: int
-    :param assumptions_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
-    :type assumptions_strict: int
+    :param opinion_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
+    :type opinion_strict: int
     :return: json string
     """
     logging.debug('Create AF from D-BAS graph...')
@@ -431,7 +431,7 @@ def dungify(discussion, user, assumptions_strict):
 
     # Create AF
     dbas_user = load_dbas_user_data(discussion, user) if user else None
-    af = af_import_wyner.import_af_wyner(dbas_graph, dbas_user, assumptions_strict=bool(assumptions_strict))
+    af = af_import_wyner.import_af_wyner(dbas_graph, dbas_user, opinion_strict=bool(opinion_strict))
 
     logging.debug(str(af.name_for_argument))
     logging.debug(str(af.argument_for_name))

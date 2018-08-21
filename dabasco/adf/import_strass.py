@@ -3,7 +3,7 @@ from .adf_graph import ADF
 from .adf_node import ADFNode
 
 
-def import_adf(dbas_graph, user_opinion, assumptions_strong):
+def import_adf(dbas_graph, user_opinion, opinion_strict):
     """
     Create an ADF representation for given user's opinion in the given discussion.
 
@@ -11,8 +11,8 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
     :type dbas_graph: DBASGraph
     :param user_opinion: DBASUser to be used for ADF generation
     :type user_opinion: DBASUser
-    :param assumptions_strong: indicate whether assumptions shall be implemented as strict or defeasible
-    :type assumptions_strong: bool
+    :param opinion_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
+    :type opinion_strict: bool
     :return: ADF
     """
     adf = ADF()
@@ -67,7 +67,7 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
-    if assumptions_strong:
+    if opinion_strict:
         # Setup strict user assumption acceptance functions
         for assumption in user_accepted_statements:
             assumption_name = LITERAL_PREFIX_OPINION_ASSUME + str(assumption)
@@ -78,14 +78,14 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, statement_name)),
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name_negated))
             ]))
-        for assumption in user_rejected_statements:
-            assumption_name = LITERAL_PREFIX_OPINION_REJECT + str(assumption)
-            adf.add_statement(assumption_name, ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
-            assumption_name_negated = LITERAL_PREFIX_NOT + assumption_name
-            statement_name = LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + str(assumption)
-            adf.add_statement(assumption_name_negated, ADFNode(ADFNode.AND, [
+        for rejection in user_rejected_statements:
+            rejection_name = LITERAL_PREFIX_OPINION_REJECT + str(rejection)
+            adf.add_statement(rejection_name, ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_TRUE))
+            rejection_name_negated = LITERAL_PREFIX_NOT + rejection_name
+            statement_name = LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + str(rejection)
+            adf.add_statement(rejection_name_negated, ADFNode(ADFNode.AND, [
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, statement_name)),
-                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name_negated))
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rejection_name_negated))
             ]))
     else:
         # Setup defeasible user assumption acceptance functions
@@ -98,15 +98,15 @@ def import_adf(dbas_graph, user_opinion, assumptions_strong):
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name_negated))
             ]))
             adf.add_statement(assumption_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name)))
-        for assumption in user_rejected_statements:
-            assumption_name = LITERAL_PREFIX_OPINION_REJECT + str(assumption)
-            assumption_name_negated = LITERAL_PREFIX_NOT + assumption_name
-            statement_name = LITERAL_PREFIX_STATEMENT + str(assumption)
-            adf.add_statement(assumption_name, ADFNode(ADFNode.AND, [
+        for rejection in user_rejected_statements:
+            rejection_name = LITERAL_PREFIX_OPINION_REJECT + str(rejection)
+            rejection_name_negated = LITERAL_PREFIX_NOT + rejection_name
+            statement_name = LITERAL_PREFIX_STATEMENT + str(rejection)
+            adf.add_statement(rejection_name, ADFNode(ADFNode.AND, [
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, statement_name)),
-                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name_negated))
+                ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rejection_name_negated))
             ]))
-            adf.add_statement(assumption_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, assumption_name)))
+            adf.add_statement(rejection_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rejection_name)))
 
     # Setup defeasible inference acceptance functions
     for inference_id in dbas_graph.inferences:
