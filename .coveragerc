@@ -6,5 +6,3 @@ omit =
     *socketserver.py
     *logging/config.py
     *logging/handlers.py
-    # omit doj module from coverage report
-    dabasco/doj/*

@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This module provides an interface between the graph data and user data export of [D-BAS](https://github.com/hhucn/dbas) and various argumentation formalisms. It can also calculate the degree of justification of individual statements or positions in D-BAS. Requires D-BAS argument graph export data as served by the D-BAS export interface. All results are provided as a JSON string.
+This module provides an interface between the graph data and user data export of [D-BAS](https://github.com/hhucn/dbas) and established data formats of abstract argumentation frameworks, abstract dialectical frameworks, or the ASPIC framework. As input, dabasco requires D-BAS argument graph and user data as served by the D-BAS export interface. All results are provided as a JSON string.
 
 ## Setup
 
