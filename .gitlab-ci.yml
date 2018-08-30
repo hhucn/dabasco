@@ -26,5 +26,5 @@ unittests:
   artifacts:
     paths:
       - dabasco/coverage.xml
-    expire_in: 10 mins
+    expire_in: 60 mins
 
