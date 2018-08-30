@@ -25,6 +25,6 @@ unittests:
   coverage: '/^TOTAL\s*\d+\s*\d+\s*(\d+\%)\s*$/'
   artifacts:
     paths:
-      - coverage.xml
+      - dabasco/coverage.xml
     expire_in: 10 mins
 
