@@ -3,14 +3,14 @@ from .adf_graph import ADF
 from .adf_node import ADFNode
 
 
-def import_adf(dbas_graph, user_opinion, opinion_strict):
+def import_adf(dbas_graph, opinion, opinion_strict):
     """
     Create an ADF representation for given user's opinion in the given discussion.
 
     :param dbas_graph: DBASGraph to be used for ADF generation
     :type dbas_graph: DBASGraph
-    :param user_opinion: DBASUser to be used for ADF generation
-    :type user_opinion: DBASUser
+    :param opinion: DBASUser to be used for ADF generation
+    :type opinion: DBASUser
     :param opinion_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
     :type opinion_strict: bool
     :return: ADF
@@ -18,9 +18,8 @@ def import_adf(dbas_graph, user_opinion, opinion_strict):
     adf = ADF()
 
     # Get accepted/rejected statements from opinion
-    user_rejected_statements = user_opinion.rejected_statements_implicit
-    user_accepted_statements = user_opinion.accepted_statements_explicit \
-        | user_opinion.accepted_statements_implicit
+    user_accepted_statements = opinion.get_accepted_statements()
+    user_rejected_statements = opinion.get_rejected_statements()
 
     # Setup statement acceptance functions
     for statement in dbas_graph.statements:

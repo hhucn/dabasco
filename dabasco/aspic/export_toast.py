@@ -45,16 +45,21 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     aspic_rules = []
 
     # Encode user opinion
+    user_accepted_statements = set()
+    user_rejected_statements = set()
+    if opinion:
+        user_accepted_statements = opinion.get_accepted_statements()
+        user_rejected_statements = opinion.get_rejected_statements()
     opinion_rule_names = []
     if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_STRICT:
-        for statement in (opinion.accepted_statements_explicit | opinion.accepted_statements_implicit):
+        for statement in user_accepted_statements:
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
             rule = create_toast_rule_strict(rule_name=rule_name,
                                             premises=[DUMMY_LITERAL_NAME_OPINION],
                                             conclusion=str(statement))
             aspic_rules.append(rule)
             opinion_rule_names.append(rule_name)
-        for statement in opinion.rejected_statements_implicit:
+        for statement in user_rejected_statements:
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_REJECT, statement)
             rule = create_toast_rule_strict(rule_name=rule_name,
                                             premises=[DUMMY_LITERAL_NAME_OPINION],
@@ -62,14 +67,14 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
             aspic_rules.append(rule)
             opinion_rule_names.append(rule_name)
     elif opinion_type in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
-        for statement in (opinion.accepted_statements_explicit | opinion.accepted_statements_implicit):
+        for statement in user_accepted_statements:
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
             rule = create_toast_rule_defeasible(rule_name=rule_name,
                                                 premises=[DUMMY_LITERAL_NAME_OPINION],
                                                 conclusion=str(statement))
             aspic_rules.append(rule)
             opinion_rule_names.append(rule_name)
-        for statement in opinion.rejected_statements_implicit:
+        for statement in user_rejected_statements:
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_REJECT, statement)
             rule = create_toast_rule_defeasible(rule_name=rule_name,
                                                 premises=[DUMMY_LITERAL_NAME_OPINION],

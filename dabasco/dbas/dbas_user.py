@@ -25,6 +25,20 @@ class DBASUser(object):
         self.accepted_arguments_explicit = set()
         self.rejected_arguments_explicit = set()
 
+    def get_accepted_statements(self):
+        # Accept all explicitly accepted statements, if NOT expl. rejected
+        # Accept all implicitly accepted statements, if NOT impl./expl. rejected
+        return (self.accepted_statements_explicit.difference(self.rejected_statements_explicit) |
+                self.accepted_statements_implicit.difference(self.rejected_statements_explicit |
+                                                             self.rejected_statements_implicit))
+
+    def get_rejected_statements(self):
+        # Reject all explicitly rejected statements, if NOT expl. accepted
+        # Reject all implicitly rejected statements, if NOT impl./expl. rejected
+        return (self.rejected_statements_explicit.difference(self.accepted_statements_explicit) |
+                self.rejected_statements_implicit.difference(self.accepted_statements_explicit |
+                                                             self.accepted_statements_implicit))
+
     def is_equivalent_to(self, other):
         """
         Check equivalence of two DBAS user data structures.

@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger('root')
 
 
-def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
+def import_af_wyner(dbas_graph, opinion, opinion_strict):
     """
     Create an AF representation of the given discussion.
 
@@ -16,8 +16,8 @@ def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
 
     :param dbas_graph: DBASGraph to be used for AF generation
     :type dbas_graph: DBASGraph
-    :param user_opinion: DBASUser to be used for ADF generation
-    :type user_opinion: DBASUser
+    :param opinion: DBASUser to be used for ADF generation
+    :type opinion: DBASUser
     :param opinion_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
     :type opinion_strict: bool
     :return: AF
@@ -29,11 +29,11 @@ def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
     argument_for_inference_id = {}
 
     # Get accepted/rejected statements from opinion
-    user_rejected_statements = []
-    user_accepted_statements = []
-    if user_opinion:
-        user_rejected_statements = user_opinion.rejected_statements_implicit
-        user_accepted_statements = user_opinion.accepted_statements_explicit | user_opinion.accepted_statements_implicit
+    user_rejected_statements = set()
+    user_accepted_statements = set()
+    if opinion:
+        user_rejected_statements = opinion.get_rejected_statements()
+        user_accepted_statements = opinion.get_accepted_statements()
 
     # Add two arguments for each statement
     for statement in dbas_graph.statements:
@@ -56,7 +56,7 @@ def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
 
     # When using strict user opinion, create a dummy arg that attacks all statements that oppose the user opinion
     opinion_arg_id_for_name = {}
-    if user_opinion:
+    if opinion:
         # When using strict user opinion, create a single dummy arg
         if opinion_strict:
             current_argument += 1
@@ -82,7 +82,7 @@ def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
         af.set_argument_name(arg, element_id_for_argument[arg])
 
     # When using strict user opinion, the single dummy arg attacks all statements that oppose the user opinion
-    if user_opinion and opinion_strict:
+    if opinion and opinion_strict:
         for statement in user_accepted_statements:
             statement_argument = argument_for_statement_id[statement] + 1  # attack the negated statement arg
             af.set_attack(opinion_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
@@ -91,7 +91,7 @@ def import_af_wyner(dbas_graph, user_opinion, opinion_strict):
             af.set_attack(opinion_arg_id_for_name[DUMMY_LITERAL_NAME_OPINION], statement_argument, AF.DEFINITE_ATTACK)
 
     # For non-strict user opinion, add attacks between each dummy arg and the statement opposing that user opinion
-    if user_opinion and not opinion_strict:
+    if opinion and not opinion_strict:
         for statement in user_accepted_statements:
             statement_argument = argument_for_statement_id[statement] + 1  # attack the negated statement arg
             arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + str(statement)

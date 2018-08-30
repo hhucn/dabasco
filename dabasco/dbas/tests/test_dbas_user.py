@@ -197,6 +197,265 @@ class TestASPICExport(unittest.TestCase):
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
+    def test_accepted_args_both_empty(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = set()
+        user.accepted_statements_implicit = set()
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_accepted_statements()
+
+        reference = set()
+
+        self.assertEquals(result, reference)
+
+    def test_accepted_args_only_explicit(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = set()
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_accepted_statements()
+
+        reference = {1}
+
+        self.assertEquals(result, reference)
+
+    def test_accepted_args_only_implicit(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = set()
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_accepted_statements()
+
+        reference = {2}
+
+        self.assertEquals(result, reference)
+
+    def test_accepted_args_both(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_accepted_statements()
+
+        reference = {1, 2}
+
+        self.assertEquals(result, reference)
+
+    def test_accepted_args_both_identical(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 99}
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_accepted_statements()
+
+        reference = {1, 2, 99}
+
+        self.assertEquals(result, reference)
+
+    def test_rejected_args_both_empty(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = set()
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = set()
+        result = user.get_rejected_statements()
+
+        reference = set()
+
+        self.assertEquals(result, reference)
+
+    def test_rejected_args_only_explicit(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = set()
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_rejected_statements()
+
+        reference = {6}
+
+        self.assertEquals(result, reference)
+
+    def test_rejected_args_only_implicit(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = set()
+        result = user.get_rejected_statements()
+
+        reference = {3}
+
+        self.assertEquals(result, reference)
+
+    def test_rejected_args_both(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = {3}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result = user.get_rejected_statements()
+
+        reference = {3, 6}
+
+        self.assertEquals(result, reference)
+
+    def test_rejected_args_both_identical(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2}
+        user.rejected_statements_implicit = {99}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {99}
+        result = user.get_rejected_statements()
+
+        reference = {99}
+
+        self.assertEquals(result, reference)
+
+    def test_accepted_and_rejected_args_conflict_canceled_out1(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 999}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6, 99}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2}
+        reference_rejected = {3, 6}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_canceled_out2(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 999}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2, 99}
+        reference_rejected = {3, 6}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_canceled_out3(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 999}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6, 99}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2}
+        reference_rejected = {3, 6, 99}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_canceled_out4(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 999}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2}
+        reference_rejected = {3, 6}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_overruled1(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 99}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6, 999}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2, 99}
+        reference_rejected = {3, 6, 999}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_overruled2(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 999}
+        user.rejected_statements_implicit = {3, 999}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6, 999}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2, 99}
+        reference_rejected = {3, 6, 999}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
+    def test_accepted_and_rejected_args_conflict_overruled3(self):
+        user = DBASUser(discussion_id=1, user_id=1)
+        user.accepted_statements_explicit = {1, 99}
+        user.accepted_statements_implicit = {2, 99}
+        user.rejected_statements_implicit = {3, 99}
+        user.accepted_arguments_explicit = {4}
+        user.rejected_arguments_explicit = {5}
+        user.rejected_statements_explicit = {6, 999}
+        result_accepted = user.get_accepted_statements()
+        result_rejected = user.get_rejected_statements()
+
+        reference_accepted = {1, 2, 99}
+        reference_rejected = {3, 6, 999}
+
+        self.assertEquals(result_accepted, reference_accepted)
+        self.assertEquals(result_rejected, reference_rejected)
+
 
 if __name__ == '__main__':
     unittest.main()
