@@ -28,7 +28,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertTrue(user1.is_equivalent_to(user2))
 
@@ -79,7 +79,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -98,7 +98,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -117,7 +117,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -136,7 +136,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -155,7 +155,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {99}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -174,7 +174,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {99}
         user2.rejected_arguments_explicit = {5}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
@@ -193,7 +193,7 @@ class TestASPICExport(unittest.TestCase):
         user2.rejected_statements_implicit = {3}
         user2.accepted_arguments_explicit = {4}
         user2.rejected_arguments_explicit = {99}
-        user1.rejected_statements_explicit = {6}
+        user2.rejected_statements_explicit = {6}
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
