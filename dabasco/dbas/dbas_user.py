@@ -6,6 +6,7 @@ class DBASUser(object):
           discussion_id (int): id of the context discussion.
           user_id (int): id of the user.
           accepted_statements_explicit (set): statements explicitly accepted by user.
+          rejected_statements_explicit (set): statements explicitly rejected by user.
           accepted_statements_implicit (set): statements implicitly accepted by user.
           rejected_statements_implicit (set): statements implicitly rejected by user.
           accepted_arguments_explicit (set): arguments explicitly accepted by user.
@@ -17,6 +18,7 @@ class DBASUser(object):
         self.user_id = user_id
 
         self.accepted_statements_explicit = set()
+        self.rejected_statements_explicit = set()
         self.accepted_statements_implicit = set()
         self.rejected_statements_implicit = set()
 
@@ -38,6 +40,8 @@ class DBASUser(object):
         if self.user_id != other.user_id:
             return False
         if self.accepted_statements_explicit != other.accepted_statements_explicit:
+            return False
+        if self.rejected_statements_explicit != other.rejected_statements_explicit:
             return False
         if self.accepted_statements_implicit != other.accepted_statements_implicit:
             return False
