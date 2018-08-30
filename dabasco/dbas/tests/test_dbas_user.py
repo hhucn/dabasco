@@ -121,6 +121,25 @@ class TestASPICExport(unittest.TestCase):
 
         self.assertFalse(user1.is_equivalent_to(user2))
 
+    def test_equivalence_different_rejected_explicit(self):
+        user1 = DBASUser(discussion_id=1, user_id=1)
+        user1.accepted_statements_explicit = {1}
+        user1.accepted_statements_implicit = {2}
+        user1.rejected_statements_implicit = {3}
+        user1.accepted_arguments_explicit = {4}
+        user1.rejected_arguments_explicit = {5}
+        user1.rejected_statements_explicit = {6}
+
+        user2 = DBASUser(discussion_id=1, user_id=1)
+        user2.accepted_statements_explicit = {1}
+        user2.accepted_statements_implicit = {2}
+        user2.rejected_statements_implicit = {3}
+        user2.accepted_arguments_explicit = {4}
+        user2.rejected_arguments_explicit = {5}
+        user2.rejected_statements_explicit = {99}
+
+        self.assertFalse(user1.is_equivalent_to(user2))
+
     def test_equivalence_different_accepted_implicit(self):
         user1 = DBASUser(discussion_id=1, user_id=1)
         user1.accepted_statements_explicit = {1}
