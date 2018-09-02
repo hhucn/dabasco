@@ -123,6 +123,7 @@ def import_af_wyner(dbas_graph, opinion, opinion_strict):
         inference_argument = argument_for_inference_id[inference_id]
         target_argument = argument_for_inference_id[inference.conclusion]
         af.set_attack(inference_argument, target_argument, AF.DEFINITE_ATTACK)
+        af.set_attack(target_argument, inference_argument, AF.DEFINITE_ATTACK)
 
     # Create rebutting attacks
     for inference_id in dbas_graph.inferences:

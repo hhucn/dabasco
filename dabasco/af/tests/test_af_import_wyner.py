@@ -123,6 +123,7 @@ class TestAFImport(unittest.TestCase):
 
         # Undercutting attacks
         af_reference.set_attack(arg_r4, arg_r2, AF.DEFINITE_ATTACK)
+        af_reference.set_attack(arg_r2, arg_r4, AF.DEFINITE_ATTACK)
 
         self.assertTrue(af_reference.is_equivalent_to(af_result))
 
@@ -264,6 +265,7 @@ class TestAFImport(unittest.TestCase):
 
         # Undercutting attacks
         af_reference.set_attack(arg_r4, arg_r2, AF.DEFINITE_ATTACK)
+        af_reference.set_attack(arg_r2, arg_r4, AF.DEFINITE_ATTACK)
 
         # Attacks between user opinion args and negated statements
         af_reference.set_attack(arg_u3, arg_neg3, AF.DEFINITE_ATTACK)
@@ -408,6 +410,7 @@ class TestAFImport(unittest.TestCase):
 
         # Undercutting attacks
         af_reference.set_attack(arg_r4, arg_r2, AF.DEFINITE_ATTACK)
+        af_reference.set_attack(arg_r2, arg_r4, AF.DEFINITE_ATTACK)
 
         # Attacks between user opinion args and negated statements
         af_reference.set_attack(arg_u, arg_neg3, AF.DEFINITE_ATTACK)
