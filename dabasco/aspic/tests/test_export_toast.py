@@ -49,7 +49,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -100,7 +100,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -163,7 +163,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -217,7 +217,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -271,7 +271,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -321,7 +321,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -368,7 +368,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
@@ -825,7 +825,7 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"opinion_dummy"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {

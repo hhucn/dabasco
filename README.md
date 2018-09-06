@@ -51,35 +51,26 @@ Web sources:
 
 ## TOAST/ASPIC Interface
 
-To get a TOAST input format representation of a user opinion in a discussion, use:
+To get a TOAST input format representation of a user opinion in a discussion, use either of the following, where the user opinion is encoded with varying strength. 
 
-    http://localhost:5101/evaluate/toastify
+Normal opinion (no additional route element):
 
-In the body of the request, provide JSON in the following format to specify parameters:
+    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>
+The opinion is represented by defeasible rules with the same preference as rules representing D-BAS arguments. If a user commitment is in conflict with the conclusion of a D-BAS argument, these mutually attack each other and both will be acceptable in some extension (but not simultaneously).
 
-    {
-      "discussion": <dbas_discussion_id>,  # mandatory
-      "assumptions": {  # optional, default type "none"
-        "type": "none", "weak",  # optional, default type "none"
-      },
-      "opinion": {  # optional, default type "none"
-        "type": "none", "weak", "strong", "strict",  # optional, default type "none"
-        "user": <dbas_user_id>  # mandatory unless opinion type is "none"
-      }
-    }
+Weak opinion (add "opinion_weak" to route): 
     
-ASPIC can only build arguments from assumed literals. You can use either a user opinion, general assumptions, or both to provide these.
+    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>/opinion_weak 
+The opinion is represented by defeasible rules with a lower preference than rules representing D-BAS arguments. This allows to weakly assume each commitment in the opinion, but these commitments are overruled by the conclusions of D-BAS arguments, if in conflict.
+   
+Strict opinion (add "opinion_strict" to route):
     
-The field "assumptions" is ignored if not present or if its "type" is "none". If the assumptions type is "weak", then a defeasible rule with a lower preference than rules representing D-BAS arguments is created for each D-BAS statement and its negation. This allows to weakly assume each and every statement, but these are overruled by the conclusions of D-BAS arguments or by strong or strict user commitments, if in conflict.
+    http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>/opinion_strict
+The opinion is represented by strict rules. This enforces the user opinion and defeats all assumptions or conclusions of D-BAS arguments that are in conflict with the opinion.
+    
+Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1, with weak user opinion):
 
-The field "opinion" is ignored if not present or if its "type" is "none". If the opinion "type" is either of "weak", "strong", or "strict", the field "user" must be set to a D-BAS user's ID in the given discussion - this user's opinion is then encoded in the result via either:
-* "weak": defeasible rules with a lower preference than rules representing D-BAS arguments. This allows to weakly assume each commitment in the opinion, but these commitments are overruled by the conclusions of D-BAS arguments, if in conflict. Note that a weak user opinion has no impact when already using (weak) assumptions. 
-* "strong": defeasible rules with the same preference as rules representing D-BAS arguments. This allows to strongly assume each commitment in the opinion. If a strong user commitment is in conflict with the conclusion of a D-BAS argument, these mutually attack each other and both will be acceptable in some extension (but not simultaneously).
-* "strict": strict rules. This enforces the user opinion and defeats all assumptions or conclusions of D-BAS arguments that are in conflict with the opinion.
-
-Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1, with weak user opinion and no assumptions):
-
-    curl -H "Content-Type: application/json" -XGET 'http://localhost:5101/evaluate/toastify' -d '{"discussion": 2, "opinion": {"type": "weak", "user": 1}}' | curl -d @- http://toast.arg-tech.org/api/evaluate
+    curl -s 'http://localhost:5101/evaluate/toastify/dis/2/user/1/opinion_weak' | curl -d @- http://toast.arg-tech.org/api/evaluate
     
 Web sources:
 

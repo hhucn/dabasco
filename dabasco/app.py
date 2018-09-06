@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import urllib.request
 import json
@@ -65,68 +65,49 @@ def load_dbas_user_data(discussion_id, user_id):
     return dbas_user
 
 
-@app.route('/evaluate/toastify', methods=['GET'])
-def toastify():
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>',
+           defaults={'opinion_strict': 0})
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>/opinion_strict',
+           defaults={'opinion_strict': 1})
+@app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>/opinion_weak',
+           defaults={'opinion_strict': -1})
+def toastify(discussion, user, opinion_strict):
     """
     Create a TOAST-formatted graph representation for given user's opinion.
 
     TOAST documentation: http://toast.arg-tech.org/help/web
 
+    :param discussion: discussion ID
+    :type discussion: int
+    :param user: user ID
+    :type user: int
+    :param opinion_strict: indicate whether assumptions shall be implemented as strict (1), defeasible (0), or weak (-1)
+    :type opinion_strict: int
     :return: json string
     """
     logging.debug('Create TOAST representation from D-BAS graph...')
 
-    json_params = request.get_json()
-
-    # Respond with error if no parameters in body
-    if not json_params:
-        raise InvalidRequestError('Missing request parameters', status_code=400)
-
-    # The 'discussion' field is mandatory, respond with error if missing.
-    if DABASCO_INPUT_KEYWORD_DISCUSSION_ID not in json_params:
-        raise InvalidRequestError('Field "discussion" is required', status_code=400)
-
-    discussion = int(json_params[DABASCO_INPUT_KEYWORD_DISCUSSION_ID])
+    # Get D-BAS graph and user data
     dbas_graph = load_dbas_graph_data(discussion)
-
-    opinion_type = None
-    opinion = None
-    if DABASCO_INPUT_KEYWORD_OPINION in json_params:
-        opinion_params = json_params[DABASCO_INPUT_KEYWORD_OPINION]
-        if isinstance(opinion_params, dict):
-            if (DABASCO_INPUT_KEYWORD_TYPE in opinion_params and
-                opinion_params[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK,
-                                                               DABASCO_INPUT_KEYWORD_OPINION_STRONG,
-                                                               DABASCO_INPUT_KEYWORD_OPINION_STRICT]):
-                opinion_type = opinion_params[DABASCO_INPUT_KEYWORD_TYPE]
-            if opinion_type:
-                if DABASCO_INPUT_KEYWORD_USER in opinion_params:
-                    user_id = int(opinion_params[DABASCO_INPUT_KEYWORD_USER])
-                    opinion = load_dbas_user_data(discussion, user_id)
+    dbas_user = load_dbas_user_data(discussion, user)
 
     assumptions_type = None
     assumptions_bias = None
-    if DABASCO_INPUT_KEYWORD_ASSUMPTIONS in json_params:
-        assumptions = json_params[DABASCO_INPUT_KEYWORD_ASSUMPTIONS]
-        if isinstance(assumptions, dict):
-            if (DABASCO_INPUT_KEYWORD_TYPE in assumptions and
-                    assumptions[DABASCO_INPUT_KEYWORD_TYPE] in [DABASCO_INPUT_KEYWORD_OPINION_WEAK,
-                                                                DABASCO_INPUT_KEYWORD_OPINION_STRONG]):
-                assumptions_type = assumptions[DABASCO_INPUT_KEYWORD_TYPE]
-            if (DABASCO_INPUT_KEYWORD_BIAS in assumptions and
-                    assumptions[DABASCO_INPUT_KEYWORD_BIAS] in [DABASCO_INPUT_KEYWORD_POSITIVE_BIAS,
-                                                                DABASCO_INPUT_KEYWORD_NEGATIVE_BIAS]):
-                assumptions_bias = assumptions[DABASCO_INPUT_KEYWORD_BIAS]
 
-    # Pass through given semantics, or set a default semantics
+    # Pass through opinion strength
+    opinion_type = DABASCO_INPUT_KEYWORD_OPINION_STRONG
+    if opinion_strict == 1:
+        opinion_type = DABASCO_INPUT_KEYWORD_OPINION_STRICT
+    elif opinion_strict == -1:
+        opinion_type = DABASCO_INPUT_KEYWORD_OPINION_WEAK
+
+    # Set a default semantics
     semantics = TOAST_KEYWORD_SEMANTICS_PREFERRED  # Default semantics
-    if DABASCO_INPUT_KEYWORD_SEMANTICS in json_params:
-        semantics = str(json_params[DABASCO_INPUT_KEYWORD_SEMANTICS])
 
     # Get assumptions and inference rules from D-BAS data
     result = aspic_export_toast.export_toast(dbas_graph,
                                              opinion_type,
-                                             opinion,
+                                             dbas_user,
                                              assumptions_type,
                                              assumptions_bias,
                                              semantics)

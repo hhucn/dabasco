@@ -41,13 +41,14 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     :return: dict
     """
     aspic_assumptions = []
-    aspic_axioms = [DUMMY_LITERAL_NAME_ASSUMPTIONS, DUMMY_LITERAL_NAME_OPINION]
+    aspic_axioms = []
     aspic_rules = []
 
     # Encode user opinion
     user_accepted_statements = set()
     user_rejected_statements = set()
     if opinion:
+        aspic_axioms.append(DUMMY_LITERAL_NAME_OPINION)
         user_accepted_statements = opinion.get_accepted_statements()
         user_rejected_statements = opinion.get_rejected_statements()
     opinion_rule_names = []
@@ -85,6 +86,7 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     # Encode assumptions
     assumption_rule_names = []
     if assumptions_type:
+        aspic_axioms.append(DUMMY_LITERAL_NAME_ASSUMPTIONS)
         for statement in dbas_graph.statements:
             if assumptions_bias != 'negative':
                 rule_name = create_toast_rule_representation(LITERAL_PREFIX_ASSUMPTION_ASSUME, statement)
