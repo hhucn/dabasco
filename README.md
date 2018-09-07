@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This module provides an interface between the graph data and user data export of [D-BAS](https://github.com/hhucn/dbas) and established data formats of abstract argumentation frameworks, abstract dialectical frameworks, or the ASPIC framework. As input, dabasco requires D-BAS argument graph and user data as served by the D-BAS export interface. All results are provided as a JSON string.
+This module provides an interface between the discussion data and user data export interface of [D-BAS](https://github.com/hhucn/dbas) and established data formats of abstract [argumentation framework](https://doi.org/10.1016/0004-3702(94)00041-X), [abstract dialectical frameworks](https://dl.acm.org/citation.cfm?id=2540245), or the [ASPIC](https://doi.org/10.1016/j.artint.2012.10.008) framework. As input, dabasco requires D-BAS argument graph and user data as served by the D-BAS export interface. All results are provided as a JSON string.
 
 ## Setup
 
@@ -26,13 +26,13 @@ A small python web app that serves example D-BAS data is included. To run it, ex
     
 ## Dung AF Interface
 
-To get a Dung-style argumentation framework (AF) representation of a discussion, use:
+The [argumentation framework](https://doi.org/10.1016/0004-3702(94)00041-X) (AF) interface creates AF instances in [ASPARTIX](https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/dung.html#input_format) syntax based on a translation by [Wyner et al. (2015)](http://www.doi.org/10.1080/19462166.2014.1002535).
+
+To get an AF representation of the D-BAS discussion with ID <discussion_id>, use:
 
     http://localhost:5101/evaluate/dungify/dis/<discussion_id>    
 
-The AF is provided in ASPARTIX format.
-
-You can configure dabasco to use a single D-BAS user opinion as a source for assertions by adding corresponding path elements:
+You can configure dabasco to use a single D-BAS user opinion, identified by that user's ID <user_id>, as a source for assertions by adding corresponding route elements:
 
     http://localhost:5101/evaluate/dungify/dis/<discussion_id>/user/<user_id> 
 
@@ -40,7 +40,7 @@ To get a different encoding, where the user opinion is strictly enforced, use:
 
     http://localhost:5101/evaluate/dungify/dis/<discussion_id>/user/<user_id>/opinion_strict
 
-Example pipeline for Dung AF evaluation using conarg2 (get preferred extensions of discussion 2, use user opinion 1):
+Example pipeline for Dung AF evaluation using the [conarg](http://www.dmi.unipg.it/conarg/) solver (get preferred extensions of discussion 2, use user opinion 1):
 
     curl -s 'http://localhost:5101/evaluate/dungify/dis/2/user/1' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
     
@@ -51,7 +51,8 @@ Web sources:
 
 ## TOAST/ASPIC Interface
 
-To get a TOAST input format representation of a user opinion in a discussion, use either of the following, where the user opinion is encoded with varying strength. 
+The [ASPIC](https://doi.org/10.1016/j.artint.2012.10.008) interface creates ASPIC instances formatted for the [TOAST](http://toast.arg-tech.org/help/web) web service.
+To get a TOAST representation of a user opinion in a discussion, use either of the following, where the user opinion is encoded with varying strength. 
 
 Normal opinion (no additional route element):
 
@@ -68,7 +69,7 @@ Strict opinion (add "opinion_strict" to route):
     http://localhost:5101/evaluate/toastify/dis/<discussion_id>/user/<user_id>/opinion_strict
 The opinion is represented by strict rules. This enforces the user opinion and defeats all assumptions or conclusions of D-BAS arguments that are in conflict with the opinion.
     
-Example pipeline for evaluation using the TOAST Web service (evaluate discussion 2, user ID 1, with weak user opinion):
+Example pipeline for evaluation using the [TOAST Web service](http://toast.arg-tech.org/help/api) (evaluate discussion 2, user ID 1, with weak user opinion):
 
     curl -s 'http://localhost:5101/evaluate/toastify/dis/2/user/1/opinion_weak' | curl -d @- http://toast.arg-tech.org/api/evaluate
     
@@ -81,15 +82,16 @@ Web sources:
 
 ## ADF Interface
 
-To get a YADF/DIAMOND formatted ADF representation of a user opinion in a discussion, use:
+The [ADF](https://dl.acm.org/citation.cfm?id=2540245) interface creates ADF instances based on a translation by [Strass (2015)](https://doi.org/10.1093/logcom/exv004) formatted for the [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/) or [DIAMOND](http://diamond-adf.sourceforge.net/) solvers. 
+To get an ADF representation of a user opinion in a D-BAS discussion, use:
  
     http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>
     
-You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent the D-BAS user opinion by adding a corresponding path element:
+You can configure dabasco to use strict ADF rules (instead of defeasible rules, as default) to represent the D-BAS user opinion by adding a corresponding route element:
 
     http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>/opinion_strict 
          
-Example pipeline for ADF evaluation using YADF, lpopt, gringo and clasp (get preferred models for user 1 in discussion 2):
+Example pipeline for ADF evaluation using [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/), [lpopt](https://www.dbai.tuwien.ac.at/research/project/lpopt/), [gringo and clasp](https://potassco.org/) (get preferred models for user 1 in discussion 2):
 
     curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
      
