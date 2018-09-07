@@ -24,7 +24,7 @@ A small python web app that serves example D-BAS data is included. To run it, ex
 
     python3 dbas_export_mockup.py
     
-## Dung AF Interface
+## Argumentation Framework Interface
 
 The [argumentation framework](https://doi.org/10.1016/0004-3702(94)00041-X) (AF) interface creates AF instances in [ASPARTIX](https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/dung.html#input_format) syntax based on a translation by [Wyner et al. (2015)](http://www.doi.org/10.1080/19462166.2014.1002535).
 
@@ -49,7 +49,7 @@ Web sources:
 - ASPARTIX website: https://www.dbai.tuwien.ac.at/proj/argumentation/systempage/
 - conarg website: http://www.dmi.unipg.it/conarg/
 
-## TOAST/ASPIC Interface
+## ASPIC Interface
 
 The [ASPIC](https://doi.org/10.1016/j.artint.2012.10.008) interface creates ASPIC instances formatted for the [TOAST](http://toast.arg-tech.org/help/web) web service.
 To get a TOAST representation of a user opinion in a discussion, use either of the following, where the user opinion is encoded with varying strength. 
@@ -80,7 +80,7 @@ Web sources:
 - TOAST interactive web interface: http://toast.arg-tech.org/
 - TOAST web interface: http://toast.arg-tech.org/api/evaluate
 
-## ADF Interface
+## Abstract Dialectical Framework Interface
 
 The [ADF](https://dl.acm.org/citation.cfm?id=2540245) interface creates ADF instances based on a translation by [Strass (2015)](https://doi.org/10.1093/logcom/exv004) formatted for the [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/) or [DIAMOND](http://diamond-adf.sourceforge.net/) solvers. 
 To get an ADF representation of a user opinion in a D-BAS discussion, use:
