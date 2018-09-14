@@ -82,7 +82,7 @@ Web sources:
 
 ## Abstract Dialectical Framework Interface
 
-The [ADF](https://dl.acm.org/citation.cfm?id=2540245) interface creates ADF instances based on a translation by [Strass (2015)](https://doi.org/10.1093/logcom/exv004) formatted for the [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/) or [DIAMOND](http://diamond-adf.sourceforge.net/) solvers. 
+The [ADF](https://dl.acm.org/citation.cfm?id=2540245) interface creates ADF instances based on a translation by [Strass (2015)](https://doi.org/10.1093/logcom/exv004) formatted for the [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/), [DIAMOND](http://diamond-adf.sourceforge.net/), or [k++ADF](https://bitbucket.org/andreasniskanen/k-adf)  solvers. 
 To get an ADF representation of a user opinion in a D-BAS discussion, use:
  
     http://localhost:5101/evaluate/adfify/dis/<discussion_id>/user/<user_id>
@@ -99,5 +99,6 @@ Web sources:
 
 - YADF: https://www.dbai.tuwien.ac.at/proj/adf/yadf/
 - DIAMOND: http://diamond-adf.sourceforge.net/
+- k++ADF: https://bitbucket.org/andreasniskanen/k-adf
 - gringo/clasp: https://potassco.org/
 - lpopt: https://www.dbai.tuwien.ac.at/research/project/lpopt/
