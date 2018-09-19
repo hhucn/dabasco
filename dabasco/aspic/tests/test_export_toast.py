@@ -648,12 +648,10 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy", "2", "~3"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[ua2] opinion_dummy->2",
-            "[ur3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
             "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",
@@ -708,12 +706,10 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy", "2", "~3"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[ua2] opinion_dummy->2",
-            "[ur3] opinion_dummy->~3",
             "[a1] assumptions_dummy=>1",
             "[a2] assumptions_dummy=>2",
             "[a3] assumptions_dummy=>3",
@@ -765,12 +761,10 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy", "2", "~3"}
         reference_contrariness = set()
         reference_kbPrefs = set()
         reference_rules = {
-            "[ua2] opinion_dummy->2",
-            "[ur3] opinion_dummy->~3",
             "[r1] assumptions_dummy=>~1",
             "[r2] assumptions_dummy=>~2",
             "[r3] assumptions_dummy=>~3",
@@ -1039,13 +1033,10 @@ class TestASPICExport(unittest.TestCase):
                                     semantics=semantics)
 
         reference_assumptions = set()
-        reference_axioms = {"assumptions_dummy", "opinion_dummy"}
+        reference_axioms = {"assumptions_dummy", "3", "4", "~5"}
         reference_contrariness = set()
         reference_kb_prefs = set()
         reference_rules = {
-            "[ua3] opinion_dummy->3",
-            "[ua4] opinion_dummy->4",
-            "[ur5] opinion_dummy->~5",
             "[a1] assumptions_dummy=>1",
             "[r1] assumptions_dummy=>~1",
             "[a2] assumptions_dummy=>2",

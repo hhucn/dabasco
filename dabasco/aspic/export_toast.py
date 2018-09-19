@@ -48,25 +48,16 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     user_accepted_statements = set()
     user_rejected_statements = set()
     if opinion:
-        aspic_axioms.append(DUMMY_LITERAL_NAME_OPINION)
+        if opinion_type in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
+            aspic_axioms.append(DUMMY_LITERAL_NAME_OPINION)
         user_accepted_statements = opinion.get_accepted_statements()
         user_rejected_statements = opinion.get_rejected_statements()
     opinion_rule_names = []
     if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_STRICT:
         for statement in user_accepted_statements:
-            rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
-            rule = create_toast_rule_strict(rule_name=rule_name,
-                                            premises=[DUMMY_LITERAL_NAME_OPINION],
-                                            conclusion=str(statement))
-            aspic_rules.append(rule)
-            opinion_rule_names.append(rule_name)
+            aspic_axioms.append(str(statement))
         for statement in user_rejected_statements:
-            rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_REJECT, statement)
-            rule = create_toast_rule_strict(rule_name=rule_name,
-                                            premises=[DUMMY_LITERAL_NAME_OPINION],
-                                            conclusion=TOAST_SYMBOL_NEGATION + str(statement))
-            aspic_rules.append(rule)
-            opinion_rule_names.append(rule_name)
+            aspic_axioms.append(TOAST_SYMBOL_NEGATION + str(statement))
     elif opinion_type in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
         for statement in user_accepted_statements:
             rule_name = create_toast_rule_representation(LITERAL_PREFIX_OPINION_ASSUME, statement)
