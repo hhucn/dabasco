@@ -16,6 +16,7 @@ logger = logging.getLogger('test')
 class TestASPICExport(unittest.TestCase):
 
     def test_discussion1(self):
+        """Small discussion without undercut."""
         discussion_id = 1
 
         dbas_discussion_json = {
@@ -40,6 +41,7 @@ class TestASPICExport(unittest.TestCase):
         self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
 
     def test_discussion2(self):
+        """Bigger discussion with undercut."""
         discussion_id = 2
 
         dbas_discussion_json = {
@@ -49,6 +51,62 @@ class TestASPICExport(unittest.TestCase):
                 {"conclusion": 2, "id": 3, "is_supportive": False, "premises": [4]}
             ],
             "nodes": [1, 2, 3, 4, 5],
+            "undercuts": [
+                {"conclusion": 2, "id": 4, "premises": [5]}
+            ]
+        }
+
+        dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2, 3, 4, 5}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+            2: Inference(2, [3], 1, False),
+            3: Inference(3, [4], 2, False)
+        }
+        dbas_discussion_reference.undercuts = {
+            4: Undercut(4, [5], 2)
+        }
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
+    def test_discussion3(self):
+        """Small discussion without redundant Statements."""
+        discussion_id = 3
+
+        dbas_discussion_json = {
+            "inferences": [
+                {"conclusion": 1, "id": 1, "is_supportive": True, "premises": [2]},
+                {"conclusion": 1, "id": 2, "is_supportive": False, "premises": [3]}
+            ],
+            "nodes": [1, 2, 3, 4, 1],
+            "undercuts": []
+        }
+
+        dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2, 3}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+            2: Inference(2, [3], 1, False),
+        }
+        dbas_discussion_reference.undercuts = dict()
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
+    def test_discussion4(self):
+        """Bigger discussion without redundant Statements."""
+        discussion_id = 4
+
+        dbas_discussion_json = {
+            "inferences": [
+                {"conclusion": 1, "id": 1, "is_supportive": True, "premises": [2]},
+                {"conclusion": 1, "id": 2, "is_supportive": False, "premises": [3]},
+                {"conclusion": 2, "id": 3, "is_supportive": False, "premises": [4]}
+            ],
+            "nodes": [1, 2, 3, 4, 5, 6, 1],
             "undercuts": [
                 {"conclusion": 2, "id": 4, "premises": [5]}
             ]

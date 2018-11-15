@@ -19,17 +19,21 @@ def import_dbas_graph(discussion_id, graph_export):
     logging.debug('Reading D-BAS graph data...')
     graph = DBASGraph(discussion_id)
 
-    n_statements = 0
+    all_statements = set()
     for statement in graph_export[DBAS_KEYWORD_STATEMENTS]:
         logging.debug('Statement: %s', statement)
-        graph.add_statement(statement)
-        n_statements += 1
+        # graph.add_statement(statement)
+        all_statements.add(statement)
 
+    used_statements = set()
     for argument in graph_export[DBAS_KEYWORD_INFERENCE_RULES]:
         logging.debug('Inference: %s', argument)
         inference_id = argument[DBAS_KEYWORD_INFERENCE_RULE_ID]
         premises = argument[DBAS_KEYWORD_INFERENCE_RULE_PREMISES]
         conclusion = argument[DBAS_KEYWORD_INFERENCE_RULE_CONCLUSION]
+        for premise in premises:
+            used_statements.add(premise)
+        used_statements.add(conclusion)
         is_supportive = argument[DBAS_KEYWORD_INFERENCE_RULE_SUPPORTIVE]
         graph.add_inference(inference_id, premises, conclusion, is_supportive)
 
@@ -38,7 +42,15 @@ def import_dbas_graph(discussion_id, graph_export):
         inference_id = undercut[DBAS_KEYWORD_UNDERCUT_ID]
         premises = undercut[DBAS_KEYWORD_UNDERCUT_PREMISES]
         conclusion = undercut[DBAS_KEYWORD_UNDERCUT_CONCLUSION]
+        for premise in premises:
+            used_statements.add(premise)
         graph.add_undercut(inference_id, premises, conclusion)
+
+    for statement in all_statements:
+        if statement not in used_statements:
+            logging.debug('Statement %s not used in arguments: omit!', statement)
+        else:
+            graph.add_statement(statement)
 
     return graph
 
