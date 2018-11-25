@@ -116,10 +116,16 @@ def import_adf(dbas_graph, opinion, opinion_strict):
             else conclusion
         rule_name = LITERAL_PREFIX_INFERENCE_RULE + str(inference.id)
         rule_name_negated = LITERAL_PREFIX_NOT + rule_name
-        adf.add_statement(rule_name, ADFNode(ADFNode.AND, [
+        acceptance_tree = [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, negated_conclusion)),
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name_negated))
-        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]))
+        ] + [ADFNode(ADFNode.LEAF, premise) for premise in premises]
+        for undercut_id in dbas_graph.undercuts:
+            undercut = dbas_graph.undercuts[undercut_id]
+            if undercut.conclusion == inference_id:
+                undercutter_name = LITERAL_PREFIX_INFERENCE_RULE + str(undercut_id)
+                acceptance_tree.append(ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, undercutter_name)))
+        adf.add_statement(rule_name, ADFNode(ADFNode.AND, acceptance_tree))
         adf.add_statement(rule_name_negated, ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rule_name)))
     for undercut_id in dbas_graph.undercuts:
         undercut = dbas_graph.undercuts[undercut_id]

@@ -249,6 +249,7 @@ class TestADFImport(unittest.TestCase):
         adf_reference.add_statement('i2', ADFNode(ADFNode.AND, [
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 's1')),
             ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'ni2')),
+            ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'i4')),
             ADFNode(ADFNode.LEAF, 's3')]))
         adf_reference.add_statement('ni2', ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, 'i2')))
         adf_reference.add_statement('i3', ADFNode(ADFNode.AND, [
