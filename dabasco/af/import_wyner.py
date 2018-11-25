@@ -125,7 +125,7 @@ def import_af_wyner(dbas_graph, opinion, opinion_strict):
         af.set_attack(inference_argument, target_argument, AF.DEFINITE_ATTACK)
         af.set_attack(target_argument, inference_argument, AF.DEFINITE_ATTACK)
 
-    # Create rebutting attacks
+    # Create rebutting attacks between rule arguments and literal arguments
     for inference_id in dbas_graph.inferences:
         inference = dbas_graph.inferences[inference_id]
         inference_argument = argument_for_inference_id[inference_id]
@@ -137,5 +137,40 @@ def import_af_wyner(dbas_graph, opinion, opinion_strict):
             eliminated_statement_argument += 1  # In case of a supportive inference, attack the negated statement
         af.set_attack(inference_argument, eliminated_statement_argument, AF.DEFINITE_ATTACK)
         af.set_attack(eliminated_statement_argument, inference_argument, AF.DEFINITE_ATTACK)
+
+    # Create rebutting attacks between conflicting rule arguments
+    for inference_id in dbas_graph.inferences:
+        inference = dbas_graph.inferences[inference_id]
+        inference_argument = argument_for_inference_id[inference_id]
+        conclusion = inference.conclusion
+
+        # Conflicting D-BAS arguments
+        for inference2_id in dbas_graph.inferences:
+            inference2 = dbas_graph.inferences[inference2_id]
+            conclusion2 = inference2.conclusion
+            if conclusion2 == conclusion:
+                if inference.is_supportive != inference2.is_supportive:
+                    inference2_argument = argument_for_inference_id[inference2_id]
+                    af.set_attack(inference_argument, inference2_argument, AF.DEFINITE_ATTACK)
+                    af.set_attack(inference2_argument, inference_argument, AF.DEFINITE_ATTACK)
+
+        if opinion:
+            # Conflict between D-BAS argument and a user opinion commitment
+            if inference.is_supportive and (conclusion in user_rejected_statements):
+                if opinion_strict:
+                    arg_name = DUMMY_LITERAL_NAME_OPINION
+                    af.set_attack(opinion_arg_id_for_name[arg_name], inference_argument, AF.DEFINITE_ATTACK)
+                else:
+                    arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + LITERAL_PREFIX_NOT + str(conclusion)
+                    af.set_attack(opinion_arg_id_for_name[arg_name], inference_argument, AF.DEFINITE_ATTACK)
+                    af.set_attack(inference_argument, opinion_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
+            elif (not inference.is_supportive) and (conclusion in user_accepted_statements):
+                if opinion_strict:
+                    arg_name = DUMMY_LITERAL_NAME_OPINION
+                    af.set_attack(opinion_arg_id_for_name[arg_name], inference_argument, AF.DEFINITE_ATTACK)
+                else:
+                    arg_name = DUMMY_LITERAL_NAME_OPINION + '_' + str(conclusion)
+                    af.set_attack(opinion_arg_id_for_name[arg_name], inference_argument, AF.DEFINITE_ATTACK)
+                    af.set_attack(inference_argument, opinion_arg_id_for_name[arg_name], AF.DEFINITE_ATTACK)
 
     return af
