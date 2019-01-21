@@ -93,7 +93,7 @@ You can configure dabasco to use strict ADF rules (instead of defeasible rules, 
          
 Example pipeline for ADF evaluation using [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/), [lpopt](https://www.dbai.tuwien.ac.at/research/project/lpopt/), [gringo and clasp](https://potassco.org/) (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf' > temp.dl; java -jar yadf_2.11-0.1.0.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
+    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf' > temp.dl; java -jar yadf.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
      
 Web sources:
 
