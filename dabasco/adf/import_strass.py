@@ -9,7 +9,7 @@ def import_adf(dbas_graph, opinion, opinion_strict):
 
     :param dbas_graph: DBASGraph to be used for ADF generation
     :type dbas_graph: DBASGraph
-    :param opinion: DBASUser to be used for ADF generation
+    :param opinion: DBASUser to be used for ADF generation (optional)
     :type opinion: DBASUser
     :param opinion_strict: indicate whether user opinion shall be implemented as strict or defeasible rules
     :type opinion_strict: bool
@@ -18,8 +18,8 @@ def import_adf(dbas_graph, opinion, opinion_strict):
     adf = ADF()
 
     # Get accepted/rejected statements from opinion
-    user_accepted_statements = opinion.get_accepted_statements()
-    user_rejected_statements = opinion.get_rejected_statements()
+    user_accepted_statements = opinion.get_accepted_statements() if opinion else []
+    user_rejected_statements = opinion.get_rejected_statements() if opinion else []
 
     # Setup statement acceptance functions
     for statement in dbas_graph.statements:
@@ -40,8 +40,8 @@ def import_adf(dbas_graph, opinion, opinion_strict):
             statement_name = LITERAL_PREFIX_STATEMENT + str(statement)
             adf.add_statement(statement_name, ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = [ADFNode(ADFNode.LEAF, LITERAL_PREFIX_INFERENCE_RULE + str(inference.id))
-                                   for inference in inferences_for]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, LITERAL_PREFIX_INFERENCE_RULE + str(inference_for.id))
+                                   for inference_for in inferences_for]
             if statement_assumed:
                 acceptance_criteria.append(ADFNode(ADFNode.LEAF, LITERAL_PREFIX_OPINION_ASSUME + str(statement)))
             statement_name = LITERAL_PREFIX_STATEMENT + str(statement)
@@ -56,8 +56,8 @@ def import_adf(dbas_graph, opinion, opinion_strict):
             statement_name = LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + str(statement)
             adf.add_statement(statement_name, ADFNode(ADFNode.LEAF, ADFNode.CONSTANT_FALSE))
         else:
-            acceptance_criteria = [ADFNode(ADFNode.LEAF, LITERAL_PREFIX_INFERENCE_RULE + str(inference.id))
-                                   for inference in inferences_against]
+            acceptance_criteria = [ADFNode(ADFNode.LEAF, LITERAL_PREFIX_INFERENCE_RULE + str(inference_for.id))
+                                   for inference_for in inferences_against]
             if statement_rejected:
                 acceptance_criteria.append(ADFNode(ADFNode.LEAF, LITERAL_PREFIX_OPINION_REJECT + str(statement)))
             statement_name = LITERAL_PREFIX_NOT + LITERAL_PREFIX_STATEMENT + str(statement)
@@ -66,7 +66,7 @@ def import_adf(dbas_graph, opinion, opinion_strict):
                 ADFNode(ADFNode.OR, acceptance_criteria)
             ]))
 
-    if opinion_strict:
+    if opinion and opinion_strict:
         # Setup strict user assumption acceptance functions
         for assumption in user_accepted_statements:
             assumption_name = LITERAL_PREFIX_OPINION_ASSUME + str(assumption)
@@ -86,7 +86,7 @@ def import_adf(dbas_graph, opinion, opinion_strict):
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, statement_name)),
                 ADFNode(ADFNode.NOT, ADFNode(ADFNode.LEAF, rejection_name_negated))
             ]))
-    else:
+    elif opinion and not opinion_strict:
         # Setup defeasible user assumption acceptance functions
         for assumption in user_accepted_statements:
             assumption_name = LITERAL_PREFIX_OPINION_ASSUME + str(assumption)

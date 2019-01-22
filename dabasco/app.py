@@ -115,6 +115,8 @@ def toastify(discussion, user, opinion_strict):
     return jsonify(result)
 
 
+@app.route('/evaluate/adfify/dis/<int:discussion>',
+           defaults={'user': None, 'opinion_strict': 0})
 @app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>',
            defaults={'opinion_strict': 0})
 @app.route('/evaluate/adfify/dis/<int:discussion>/user/<int:user>/opinion_strict',
@@ -137,16 +139,18 @@ def adfify(discussion, user, opinion_strict):
 
     # Get D-BAS graph and user data
     dbas_graph = load_dbas_graph_data(discussion)
-    dbas_user = load_dbas_user_data(discussion, user)
+    dbas_user = load_dbas_user_data(discussion, user) if user else None
 
     # Create ADF
     adf = adf_import_strass.import_adf(dbas_graph, dbas_user, opinion_strict=bool(opinion_strict))
 
     # Convert to DIAMOND/YADF formatted string
-    output_string = adf_export_diamond.export_diamond(adf)
-    json_result = jsonify({DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
-                           DABASCO_OUTPUT_KEYWORD_USER_ID: user,
-                           DABASCO_OUTPUT_KEYWORD_ADF: output_string})
+    str_output = adf_export_diamond.export_diamond(adf)
+    result = {DABASCO_OUTPUT_KEYWORD_DISCUSSION_ID: discussion,
+              DABASCO_OUTPUT_KEYWORD_ADF: str_output}
+    if user:
+        result[DABASCO_OUTPUT_KEYWORD_USER_ID] = user
+    json_result = jsonify(result)
     return json_result
 
 
