@@ -50,8 +50,8 @@ def export_toast(dbas_graph, opinion_type, opinion, assumptions_type, assumption
     if opinion:
         if opinion_type in [DABASCO_INPUT_KEYWORD_OPINION_WEAK, DABASCO_INPUT_KEYWORD_OPINION_STRONG]:
             aspic_axioms.append(DUMMY_LITERAL_NAME_OPINION)
-        user_accepted_statements = opinion.get_accepted_statements()
-        user_rejected_statements = opinion.get_rejected_statements()
+        user_accepted_statements = opinion.get_accepted_statements().intersection(dbas_graph.statements)
+        user_rejected_statements = opinion.get_rejected_statements().intersection(dbas_graph.statements)
     opinion_rule_names = []
     if opinion_type == DABASCO_INPUT_KEYWORD_OPINION_STRICT:
         for statement in user_accepted_statements:

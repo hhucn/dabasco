@@ -1062,6 +1062,66 @@ class TestASPICExport(unittest.TestCase):
         self.assertEqual(set(aspic_result["rulePrefs"]), reference_rule_prefs)
         self.assertEqual(aspic_result["semantics"], semantics)
 
+    def test_discussion2_strong_user99_no_assumptions(self):
+        discussion_id = 2
+        user_id = 99
+        opinion_type = "strong"
+        assumptions_type = None
+        assumptions_bias = None
+        semantics = "preferred"
+
+        dbas_discussion_json = {
+            "inferences": [
+                {"conclusion": 1, "id": 1, "is_supportive": True, "premises": [2]},
+                {"conclusion": 1, "id": 2, "is_supportive": False, "premises": [3]},
+                {"conclusion": 2, "id": 3, "is_supportive": False, "premises": [4]}
+            ],
+            "nodes": [1, 2, 3, 4, 5],
+            "undercuts": [
+                {"conclusion": 2, "id": 4, "premises": [5]}
+            ]
+        }
+        dbas_user_json = {
+            "accepted_statements_via_click": [3, 4, 99],
+            "marked_arguments": [],
+            "marked_statements": [],
+            "rejected_arguments": [],
+            "rejected_statements_via_click": [5, 999],
+        }
+
+        dbas_discussion = import_dbas_graph(discussion_id=discussion_id, graph_export=dbas_discussion_json)
+        dbas_user = import_dbas_user(discussion_id=discussion_id, user_id=user_id, user_export=dbas_user_json)
+
+        aspic_result = export_toast(dbas_graph=dbas_discussion,
+                                    opinion_type=opinion_type,
+                                    opinion=dbas_user,
+                                    assumptions_type=assumptions_type,
+                                    assumptions_bias=assumptions_bias,
+                                    semantics=semantics)
+
+        reference_assumptions = set()
+        reference_axioms = {"opinion_dummy"}
+        reference_contrariness = set()
+        reference_kbPrefs = set()
+        reference_rules = {
+            "[ua3] opinion_dummy=>3",
+            "[ua4] opinion_dummy=>4",
+            "[ur5] opinion_dummy=>~5",
+            "[i1] 2=>1",
+            "[i2] 3=>~1",
+            "[i3] 4=>~2",
+            "[i4] 5=>~[i2]"
+        }
+        reference_rulePrefs = set()
+
+        self.assertEqual(set(aspic_result["assumptions"]), reference_assumptions)
+        self.assertEqual(set(aspic_result["axioms"]), reference_axioms)
+        self.assertEqual(set(aspic_result["contrariness"]), reference_contrariness)
+        self.assertEqual(set(aspic_result["kbPrefs"]), reference_kbPrefs)
+        self.assertEqual(set(aspic_result["rules"]), reference_rules)
+        self.assertEqual(set(aspic_result["rulePrefs"]), reference_rulePrefs)
+        self.assertEqual(aspic_result["semantics"], semantics)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -32,8 +32,8 @@ def import_af_wyner(dbas_graph, opinion, opinion_strict):
     user_rejected_statements = set()
     user_accepted_statements = set()
     if opinion:
-        user_rejected_statements = opinion.get_rejected_statements()
-        user_accepted_statements = opinion.get_accepted_statements()
+        user_rejected_statements = opinion.get_rejected_statements().intersection(dbas_graph.statements)
+        user_accepted_statements = opinion.get_accepted_statements().intersection(dbas_graph.statements)
 
     # Add two arguments for each statement
     for statement in dbas_graph.statements:

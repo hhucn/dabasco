@@ -18,8 +18,10 @@ def import_adf(dbas_graph, opinion, opinion_strict):
     adf = ADF()
 
     # Get accepted/rejected statements from opinion
-    user_accepted_statements = opinion.get_accepted_statements() if opinion else []
-    user_rejected_statements = opinion.get_rejected_statements() if opinion else []
+    user_accepted_statements = opinion.get_accepted_statements().intersection(dbas_graph.statements)\
+        if opinion else set()
+    user_rejected_statements = opinion.get_rejected_statements().intersection(dbas_graph.statements)\
+        if opinion else set()
 
     # Setup statement acceptance functions
     for statement in dbas_graph.statements:
