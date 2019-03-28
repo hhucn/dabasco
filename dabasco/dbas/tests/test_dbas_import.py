@@ -4,7 +4,7 @@ import unittest
 
 from dabasco.dbas.dbas_graph import DBASGraph, Inference, Undercut
 from dabasco.dbas.dbas_user import DBASUser
-from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph
+from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph, import_dbas_graph_v2
 
 from os import path
 import logging.config
@@ -14,6 +14,140 @@ logger = logging.getLogger('test')
 
 
 class TestASPICExport(unittest.TestCase):
+
+    def test_discussion1_apiv2(self):
+        """Small discussion without undercut (Using API v2)."""
+        discussion_id = 1
+
+        dbas_statements_json = {
+            "issue": {
+                "statements": [
+                    {"uid": 1},
+                    {"uid": 2},
+                    {"uid": 3},
+                ]
+            }
+        }
+        dbas_arguments_json = {
+            "issue": {
+                "arguments": [
+                    {
+                        "uid": 1,
+                        "isSupportive": True,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 2}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 2,
+                        "isSupportive": False,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 3}
+                            ]
+                        }
+                    },
+                ]
+            }
+        }
+
+        dbas_discussion = import_dbas_graph_v2(discussion_id, dbas_statements_json, dbas_arguments_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2, 3}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+            2: Inference(2, [3], 1, False),
+        }
+        dbas_discussion_reference.undercuts = dict()
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
+    def test_discussion2_apiv2(self):
+        """Bigger discussion with undercut (Using API v2)"""
+        discussion_id = 2
+
+        dbas_statements_json = {
+            "issue": {
+                "statements": [
+                    {"uid": 1},
+                    {"uid": 2},
+                    {"uid": 3},
+                    {"uid": 4},
+                    {"uid": 5},
+                ]
+            }
+        }
+        dbas_arguments_json = {
+            "issue": {
+                "arguments": [
+                    {
+                        "uid": 1,
+                        "isSupportive": True,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 2}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 2,
+                        "isSupportive": False,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 3}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 3,
+                        "isSupportive": False,
+                        "conclusionUid": 2,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 4}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 4,
+                        "conclusionUid": None,
+                        "argumentUid": 2,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 5}
+                            ]
+                        }
+                    },
+                ]
+            }
+        }
+
+        dbas_discussion = import_dbas_graph_v2(discussion_id, dbas_statements_json, dbas_arguments_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2, 3, 4, 5}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+            2: Inference(2, [3], 1, False),
+            3: Inference(3, [4], 2, False)
+        }
+        dbas_discussion_reference.undercuts = {
+            4: Undercut(4, [5], 2)
+        }
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
 
     def test_discussion1(self):
         """Small discussion without undercut."""

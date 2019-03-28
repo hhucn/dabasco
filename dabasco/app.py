@@ -3,6 +3,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import urllib.request
+import urllib.parse
 import json
 
 from config import *
@@ -29,15 +30,52 @@ app = Flask(__name__)
 CORS(app)  # Set security headers for Web requests
 
 
-def load_dbas_graph_data(discussion_id):
+def load_dbas_graph_data_v2(discussion_id):
     """
-    Get graph data for the given discussion from the D-BAS export interface.
+    Get graph data for the given discussion from the D-BAS API v2 export interface.
 
     :param discussion_id: discussion ID
     :type discussion_id: int
     :return: json string representation of the graph
     """
-    graph_url = DBAS_BASE_URL + '/' + DBAS_PATH_GRAPH_DATA + '/{}'.format(discussion_id)
+    base_url = DBAS_BASE_URL + DBAS_API2_BASE_PATH
+
+    # Fetch statements
+    params_statements = {'q': 'query{issue(uid: %s){statements {uid}}}' % str(discussion_id)}
+    query_string_statements = urllib.parse.urlencode(params_statements)
+    url_statements = base_url + '?' + query_string_statements
+    logging.debug('API_v2 statements URL: %s' % url_statements)
+
+    # Fetch arguments
+    params_arguments = {'q': 'query{issue(uid: ' + str(discussion_id) + ') {arguments {uid isSupportive premisegroup'
+                             '{premises {statementUid}} conclusionUid argumentUid}}}'}
+    query_string_arguments = urllib.parse.urlencode(params_arguments)
+    url_arguments = base_url + '?' + query_string_arguments
+    logging.debug('API_v2 arguments URL: %s' % url_arguments)
+
+    statements_response = urllib.request.urlopen(url_statements).read()
+    statements_json = statements_response.decode('utf-8')
+    while isinstance(statements_json, str):
+        statements_json = json.loads(statements_json)
+
+    arguments_response = urllib.request.urlopen(url_arguments).read()
+    arguments_json = arguments_response.decode('utf-8')
+    while isinstance(arguments_json, str):
+        arguments_json = json.loads(arguments_json)
+
+    dbas_graph = dbas_import.import_dbas_graph_v2(discussion_id, statements_json, arguments_json)
+    return dbas_graph
+
+
+def load_dbas_graph_data_v1(discussion_id):
+    """
+    Get graph data for the given discussion from the D-BAS API v1 export interface.
+
+    :param discussion_id: discussion ID
+    :type discussion_id: int
+    :return: json string representation of the graph
+    """
+    graph_url = DBAS_BASE_URL + DBAS_API1_BASE_PATH + '/' + DBAS_API1_PATH_GRAPH_DATA + '/{}'.format(discussion_id)
     graph_response = urllib.request.urlopen(graph_url).read()
     graph_export = graph_response.decode('utf-8')
     while isinstance(graph_export, str):
@@ -46,9 +84,19 @@ def load_dbas_graph_data(discussion_id):
     return dbas_graph
 
 
-def load_dbas_user_data(discussion_id, user_id):
+def load_dbas_graph_data(discussion_id):
+    if str(DBAS_API_VERSION) == '1':
+        return load_dbas_graph_data_v1(discussion_id)
+    elif str(DBAS_API_VERSION) == '2':
+        return load_dbas_graph_data_v2(discussion_id)
+    else:
+        logging.warning('invalid DBAS_API_VERSION `%s` (expected `1` or `2`)', str(DBAS_API_VERSION))
+        return None
+
+
+def load_dbas_user_data_v2(discussion_id, user_id):
     """
-    Get user opinion data for the given user in the given discussion from the D-BAS export interface.
+    Get user opinion data for the given user in the given discussion from the D-BAS API v2 export interface.
 
     :param discussion_id: discussion ID
     :type discussion_id: int
@@ -56,13 +104,49 @@ def load_dbas_user_data(discussion_id, user_id):
     :type user_id: int
     :return: json string representation of the user opinion
     """
-    user_url = DBAS_BASE_URL + '/' + DBAS_PATH_USER_DATA + '/{}/{}'.format(user_id, discussion_id)
+    base_url = DBAS_BASE_URL + DBAS_API2_BASE_PATH
+
+    # Fetch user opinions
+    params_user = {'q': 'TODO'}
+    query_string_user = urllib.parse.urlencode(params_user)
+    url_user = base_url + '?' + query_string_user
+
+    user_response = urllib.request.urlopen(url_user).read()
+    user_json = user_response.decode('utf-8')
+    while isinstance(user_json, str):
+        user_json = json.loads(user_json)
+
+    dbas_user = dbas_import.import_dbas_user_v2(discussion_id, user_id, user_json)
+    return dbas_user
+
+
+def load_dbas_user_data_v1(discussion_id, user_id):
+    """
+    Get user opinion data for the given user in the given discussion from the D-BAS API v1 export interface.
+
+    :param discussion_id: discussion ID
+    :type discussion_id: int
+    :param user_id: user ID
+    :type user_id: int
+    :return: json string representation of the user opinion
+    """
+    user_url = DBAS_BASE_URL + DBAS_API1_BASE_PATH + '/' + DBAS_API1_PATH_USER_DATA + '/{}/{}'.format(user_id, discussion_id)
     user_response = urllib.request.urlopen(user_url).read()
     user_export = user_response.decode('utf-8')
     while isinstance(user_export, str):
         user_export = json.loads(user_export)
     dbas_user = dbas_import.import_dbas_user(discussion_id, user_id, user_export)
     return dbas_user
+
+
+def load_dbas_user_data(discussion_id, user_id):
+    if str(DBAS_API_VERSION) == '1':
+        return load_dbas_user_data_v1(discussion_id, user_id)
+    elif str(DBAS_API_VERSION) == '2':
+        return load_dbas_user_data_v2(discussion_id, user_id)
+    else:
+        logging.warning('invalid DBAS_API_VERSION `%s` (expected `1` or `2`)', str(DBAS_API_VERSION))
+        return None
 
 
 @app.route('/evaluate/toastify/dis/<int:discussion>/user/<int:user>',

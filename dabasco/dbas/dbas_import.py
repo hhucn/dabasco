@@ -6,6 +6,81 @@ import logging
 logger = logging.getLogger('root')
 
 
+def import_dbas_graph_v2(discussion_id, statements_json, arguments_json):
+    """
+    Convert the given D-BAS API v2 graph export to a DBASGraph data structure.
+
+    :param discussion_id: id of the discussion
+    :type discussion_id: int
+    :param statements_json: json dict as provided by D-BAS graph export
+    :type statements_json: dict
+    :param arguments_json: json dict as provided by D-BAS graph export
+    :type arguments_json: dict
+    :return: DBASGraph
+    """
+    logging.debug('Reading D-BAS graph data...')
+    graph = DBASGraph(discussion_id)
+
+    if statements_json['issue']:
+        all_statements = set()
+        for statement_json in statements_json['issue']['statements']:
+            statement = int(statement_json['uid'])
+            logging.debug('Statement: %s', statement)
+            all_statements.add(statement)
+
+        used_statements = set()
+        for argument_json in arguments_json['issue']['arguments']:
+            logging.debug('Inference: %s', argument_json)
+            inference_id = int(argument_json['uid'])
+            premises = [int(s['statementUid']) for s in argument_json['premisegroup']['premises']]
+            for premise in premises:
+                used_statements.add(premise)
+
+            conclusion = argument_json['conclusionUid']
+            undercut_target = argument_json['argumentUid']
+
+            if conclusion:
+                # Normal argument
+                conclusion = int(conclusion)
+                used_statements.add(conclusion)
+                is_supportive = bool(argument_json['isSupportive'])
+                graph.add_inference(inference_id, premises, conclusion, is_supportive)
+            elif undercut_target:
+                # Undercutting argument
+                undercut_target = int(undercut_target)
+                graph.add_undercut(inference_id, premises, undercut_target)
+            else:
+                logging.warning('D-BAS argument %s has neither statement conclusion nor undercut target!', inference_id)
+
+        for statement in all_statements:
+            if statement not in used_statements:
+                logging.debug('Statement %s not used in arguments: omit!', statement)
+            else:
+                graph.add_statement(statement)
+
+    return graph
+
+
+def import_dbas_user_v2(discussion_id, user_id, user_json):
+    """
+    Convert the given D-BAS API v2 user export to a DBASUser data structure.
+
+    :param discussion_id: id of the context discussion
+    :type discussion_id: int
+    :param user_id: id of the user
+    :type user_id: int
+    :param user_json: json dict as provided by D-BAS user opinion export
+    :type user_json: dict
+    :return: DBASUser
+    """
+    logging.debug('Reading D-BAS user opinion data...')
+    user_opinion = DBASUser(discussion_id, user_id)
+
+    # TODO
+
+    return user_opinion
+
+
 def import_dbas_graph(discussion_id, graph_export):
     """
     Convert the given D-BAS graph export to a DBASGraph data structure.

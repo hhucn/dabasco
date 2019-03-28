@@ -34,10 +34,15 @@ LITERAL_PREFIX_NOT = 'n'                         # read "not"
 
 
 #####################################
+# DBAS API: version (1 or 2)
+DBAS_API_VERSION = 1
+
 # DBAS API: URL schema
-DBAS_BASE_URL = 'http://localhost:4284/export'
-DBAS_PATH_GRAPH_DATA = 'doj'
-DBAS_PATH_USER_DATA = 'doj_user'
+DBAS_BASE_URL = 'http://localhost:4284'
+DBAS_API1_BASE_PATH = '/export'
+DBAS_API1_PATH_GRAPH_DATA = 'doj'
+DBAS_API1_PATH_USER_DATA = 'doj_user'
+DBAS_API2_BASE_PATH = '/api/v2/query'
 
 # DBAS API: interface keywords
 DBAS_KEYWORD_ACCEPTED_STATEMENTS_EXPLICIT = 'marked_statements'
