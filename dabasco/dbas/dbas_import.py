@@ -76,7 +76,15 @@ def import_dbas_user_v2(discussion_id, user_id, user_json):
     logging.debug('Reading D-BAS user opinion data...')
     user_opinion = DBASUser(discussion_id, user_id)
 
-    # TODO
+    if user_json['user'] and user_json['user']['clickedStatements']:
+        statements_json = user_json['user']['clickedStatements']
+        for statement_json in statements_json:
+            statement_id = int(statement_json['uid'])
+            is_upvote = bool(statement_json['isUpvote'])
+            if is_upvote:
+                user_opinion.accepted_statements_explicit.add(statement_id)
+            else:
+                user_opinion.rejected_statements_explicit.add(statement_id)
 
     return user_opinion
 

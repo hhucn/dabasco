@@ -4,7 +4,7 @@ import unittest
 
 from dabasco.dbas.dbas_graph import DBASGraph, Inference, Undercut
 from dabasco.dbas.dbas_user import DBASUser
-from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph, import_dbas_graph_v2
+from dabasco.dbas.dbas_import import import_dbas_user, import_dbas_graph, import_dbas_user_v2, import_dbas_graph_v2
 
 from os import path
 import logging.config
@@ -148,6 +148,57 @@ class TestASPICExport(unittest.TestCase):
         }
 
         self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
+    def test_discussion1_user1_apiv2(self):
+        discussion_id = 1
+        user_id = 1
+
+        dbas_user_json = {
+            "user": {
+                "clickedStatements": [
+                    {"uid": 2, "isUpvote": True},
+                    {"uid": 3, "isUpvote": False},
+                ]
+            }
+        }
+
+        dbas_user = import_dbas_user_v2(discussion_id=discussion_id, user_id=user_id, user_json=dbas_user_json)
+
+        dbas_user_reference = DBASUser(discussion_id=discussion_id, user_id=user_id)
+        dbas_user_reference.accepted_statements_explicit = {2}
+        dbas_user_reference.accepted_statements_implicit = set()
+        dbas_user_reference.rejected_statements_explicit = {3}
+        dbas_user_reference.rejected_statements_implicit = set()
+        dbas_user_reference.accepted_arguments_explicit = set()
+        dbas_user_reference.rejected_arguments_explicit = set()
+
+        self.assertTrue(dbas_user_reference.is_equivalent_to(dbas_user))
+
+    def test_discussion2_user2_apiv2(self):
+        discussion_id = 2
+        user_id = 2
+
+        dbas_user_json = {
+            "user": {
+                "clickedStatements": [
+                    {"uid": 3, "isUpvote": True},
+                    {"uid": 4, "isUpvote": True},
+                    {"uid": 5, "isUpvote": False},
+                ]
+            }
+        }
+
+        dbas_user = import_dbas_user_v2(discussion_id=discussion_id, user_id=user_id, user_json=dbas_user_json)
+
+        dbas_user_reference = DBASUser(discussion_id=discussion_id, user_id=user_id)
+        dbas_user_reference.accepted_statements_explicit = {3, 4}
+        dbas_user_reference.accepted_statements_implicit = set()
+        dbas_user_reference.rejected_statements_explicit = {5}
+        dbas_user_reference.rejected_statements_implicit = set()
+        dbas_user_reference.accepted_arguments_explicit = set()
+        dbas_user_reference.rejected_arguments_explicit = set()
+
+        self.assertTrue(dbas_user_reference.is_equivalent_to(dbas_user))
 
     def test_discussion1(self):
         """Small discussion without undercut."""
