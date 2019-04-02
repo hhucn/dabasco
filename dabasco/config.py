@@ -47,44 +47,62 @@ DBAS_API2_BASE_PATH = '/api/v2/query'
 
 # DBAS API v2: interface keywords
 DBAS_API2_QUERY_KEY = 'q'
+DBAS_API2_KEYWORD_ISSUE = 'issue'
+DBAS_API2_KEYWORD_STATEMENTS = 'statements'
+DBAS_API2_KEYWORD_UID = 'uid'
+DBAS_API2_KEYWORD_ARGUMENTS = 'arguments'
+DBAS_API2_KEYWORD_IS_SUPPORTIVE = 'isSupportive'
+DBAS_API2_KEYWORD_PREMISEGROUP = 'premisegroup'
+DBAS_API2_KEYWORD_PREMISES = 'premises'
+DBAS_API2_KEYWORD_STATEMENT_UID = 'statementUid'
+DBAS_API2_KEYWORD_CONCLUSION_UID = 'conclusionUid'
+DBAS_API2_KEYWORD_ARGUMENT_UID = 'argumentUid'
+DBAS_API2_KEYWORD_USER = 'user'
+DBAS_API2_KEYWORD_CLICKED_STATEMENTS = 'clickedStatements'
+DBAS_API2_KEYWORD_IS_VALID = 'isValid'
+DBAS_API2_KEYWORD_IS_UPVOTE = 'isUpVote'
+
 DBAS_API2_QUERY_STATEMENTS = Template('''
 {
-  issue(uid: $discussion_id) {
-    statements {
-      uid
+  %s(uid: $discussion_id) {
+    %s {
+      %s
     }
   }
 }
-''')
+''' % (DBAS_API2_KEYWORD_ISSUE, DBAS_API2_KEYWORD_STATEMENTS, DBAS_API2_KEYWORD_UID))
+
 DBAS_API2_QUERY_ARGUMENTS = Template('''
 {
-  issue(uid: $discussion_id) {
-    arguments {
-      uid
-      isSupportive
-      premisegroup {
-        premises {
-          statementUid
+  %s(uid: $discussion_id) {
+    %s {
+      %s
+      %s
+      %s {
+        %s {
+          %s
         }
       }
-      conclusionUid
-      argumentUid
+      %s
+      %s
     }
   }
 }
-''')
+''' % (DBAS_API2_KEYWORD_ISSUE, DBAS_API2_KEYWORD_ARGUMENTS, DBAS_API2_KEYWORD_UID,
+       DBAS_API2_KEYWORD_IS_SUPPORTIVE, DBAS_API2_KEYWORD_PREMISEGROUP, DBAS_API2_KEYWORD_PREMISES,
+       DBAS_API2_KEYWORD_STATEMENT_UID, DBAS_API2_KEYWORD_CONCLUSION_UID, DBAS_API2_KEYWORD_ARGUMENT_UID))
+
 DBAS_API2_QUERY_OPINION = Template('''
 {
-  user(uid: $user_id) {
-    clickedStatements(isValid: true) {
-      statement {
-        uid
-        isUpvote
-      }
+  %s(%s: $user_id) {
+    %s(%s: true) {
+      %s
+      %s
     }
   }
 }
-''')
+''' % (DBAS_API2_KEYWORD_USER, DBAS_API2_KEYWORD_UID, DBAS_API2_KEYWORD_CLICKED_STATEMENTS,
+       DBAS_API2_KEYWORD_IS_VALID, DBAS_API2_KEYWORD_STATEMENT_UID, DBAS_API2_KEYWORD_IS_UPVOTE))
 
 # DBAS API v1: interface keywords
 DBAS_KEYWORD_ACCEPTED_STATEMENTS_EXPLICIT = 'marked_statements'

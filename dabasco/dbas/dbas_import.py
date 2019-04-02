@@ -21,29 +21,30 @@ def import_dbas_graph_v2(discussion_id, statements_json, arguments_json):
     logging.debug('Reading D-BAS graph data...')
     graph = DBASGraph(discussion_id)
 
-    if statements_json['issue']:
+    if statements_json[DBAS_API2_KEYWORD_ISSUE]:
         all_statements = set()
-        for statement_json in statements_json['issue']['statements']:
-            statement = int(statement_json['uid'])
+        for statement_json in statements_json[DBAS_API2_KEYWORD_ISSUE][DBAS_API2_KEYWORD_STATEMENTS]:
+            statement = int(statement_json[DBAS_API2_KEYWORD_UID])
             logging.debug('Statement: %s', statement)
             all_statements.add(statement)
 
         used_statements = set()
-        for argument_json in arguments_json['issue']['arguments']:
+        for argument_json in arguments_json[DBAS_API2_KEYWORD_ISSUE][DBAS_API2_KEYWORD_ARGUMENTS]:
             logging.debug('Inference: %s', argument_json)
-            inference_id = int(argument_json['uid'])
-            premises = [int(s['statementUid']) for s in argument_json['premisegroup']['premises']]
+            inference_id = int(argument_json[DBAS_API2_KEYWORD_UID])
+            premises = [int(s[DBAS_API2_KEYWORD_STATEMENT_UID])
+                        for s in argument_json[DBAS_API2_KEYWORD_PREMISEGROUP][DBAS_API2_KEYWORD_PREMISES]]
             for premise in premises:
                 used_statements.add(premise)
 
-            conclusion = argument_json['conclusionUid']
-            undercut_target = argument_json['argumentUid']
+            conclusion = argument_json[DBAS_API2_KEYWORD_CONCLUSION_UID]
+            undercut_target = argument_json[DBAS_API2_KEYWORD_ARGUMENT_UID]
 
             if conclusion:
                 # Normal argument
                 conclusion = int(conclusion)
                 used_statements.add(conclusion)
-                is_supportive = bool(argument_json['isSupportive'])
+                is_supportive = bool(argument_json[DBAS_API2_KEYWORD_IS_SUPPORTIVE])
                 graph.add_inference(inference_id, premises, conclusion, is_supportive)
             elif undercut_target:
                 # Undercutting argument
@@ -76,11 +77,11 @@ def import_dbas_user_v2(discussion_id, user_id, user_json):
     logging.debug('Reading D-BAS user opinion data...')
     user_opinion = DBASUser(discussion_id, user_id)
 
-    if user_json['user'] and user_json['user']['clickedStatements']:
-        statements_json = user_json['user']['clickedStatements']
+    if user_json[DBAS_API2_KEYWORD_USER] and user_json[DBAS_API2_KEYWORD_USER][DBAS_API2_KEYWORD_CLICKED_STATEMENTS]:
+        statements_json = user_json[DBAS_API2_KEYWORD_USER][DBAS_API2_KEYWORD_CLICKED_STATEMENTS]
         for statement_json in statements_json:
-            statement_id = int(statement_json['uid'])
-            is_upvote = bool(statement_json['isUpvote'])
+            statement_id = int(statement_json[DBAS_API2_KEYWORD_STATEMENT_UID])
+            is_upvote = bool(statement_json[DBAS_API2_KEYWORD_IS_UPVOTE])
             if is_upvote:
                 user_opinion.accepted_statements_explicit.add(statement_id)
             else:

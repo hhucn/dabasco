@@ -15,6 +15,113 @@ logger = logging.getLogger('test')
 
 class TestASPICExport(unittest.TestCase):
 
+    def test_discussion1_apiv2_invalid_arg(self):
+        """Small discussion without undercut (Using API v2)."""
+        discussion_id = 1
+
+        dbas_statements_json = {
+            "issue": {
+                "statements": [
+                    {"uid": 1},
+                    {"uid": 2},
+                ]
+            }
+        }
+        dbas_arguments_json = {
+            "issue": {
+                "arguments": [
+                    {
+                        "uid": 1,
+                        "isSupportive": True,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 2}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 2,
+                        "isSupportive": False,
+                        "conclusionUid": None,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 3}
+                            ]
+                        }
+                    },
+                ]
+            }
+        }
+
+        dbas_discussion = import_dbas_graph_v2(discussion_id, dbas_statements_json, dbas_arguments_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+        }
+        dbas_discussion_reference.undercuts = dict()
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
+    def test_discussion1_apiv2_redundant_statement(self):
+        """Small discussion without undercut (Using API v2)."""
+        discussion_id = 1
+
+        dbas_statements_json = {
+            "issue": {
+                "statements": [
+                    {"uid": 1},
+                    {"uid": 2},
+                    {"uid": 3},
+                    {"uid": 4},
+                ]
+            }
+        }
+        dbas_arguments_json = {
+            "issue": {
+                "arguments": [
+                    {
+                        "uid": 1,
+                        "isSupportive": True,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 2}
+                            ]
+                        }
+                    },
+                    {
+                        "uid": 2,
+                        "isSupportive": False,
+                        "conclusionUid": 1,
+                        "argumentUid": None,
+                        "premisegroup": {
+                            "premises": [
+                                {"statementUid": 3}
+                            ]
+                        }
+                    },
+                ]
+            }
+        }
+
+        dbas_discussion = import_dbas_graph_v2(discussion_id, dbas_statements_json, dbas_arguments_json)
+
+        dbas_discussion_reference = DBASGraph(discussion_id=discussion_id)
+        dbas_discussion_reference.statements = {1, 2, 3}
+        dbas_discussion_reference.inferences = {
+            1: Inference(1, [2], 1, True),
+            2: Inference(2, [3], 1, False),
+        }
+        dbas_discussion_reference.undercuts = dict()
+
+        self.assertTrue(dbas_discussion_reference.is_equivalent_to(dbas_discussion))
+
     def test_discussion1_apiv2(self):
         """Small discussion without undercut (Using API v2)."""
         discussion_id = 1
@@ -156,8 +263,8 @@ class TestASPICExport(unittest.TestCase):
         dbas_user_json = {
             "user": {
                 "clickedStatements": [
-                    {"uid": 2, "isUpvote": True},
-                    {"uid": 3, "isUpvote": False},
+                    {"statementUid": 2, "isUpVote": True},
+                    {"statementUid": 3, "isUpVote": False},
                 ]
             }
         }
@@ -181,9 +288,9 @@ class TestASPICExport(unittest.TestCase):
         dbas_user_json = {
             "user": {
                 "clickedStatements": [
-                    {"uid": 3, "isUpvote": True},
-                    {"uid": 4, "isUpvote": True},
-                    {"uid": 5, "isUpvote": False},
+                    {"statementUid": 3, "isUpVote": True},
+                    {"statementUid": 4, "isUpVote": True},
+                    {"statementUid": 5, "isUpVote": False},
                 ]
             }
         }
