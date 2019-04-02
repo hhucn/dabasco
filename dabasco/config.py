@@ -1,3 +1,4 @@
+from string import Template
 
 #####################################
 # DABASCO API: input keywords
@@ -44,7 +45,48 @@ DBAS_API1_PATH_GRAPH_DATA = 'doj'
 DBAS_API1_PATH_USER_DATA = 'doj_user'
 DBAS_API2_BASE_PATH = '/api/v2/query'
 
-# DBAS API: interface keywords
+# DBAS API v2: interface keywords
+DBAS_API2_QUERY_KEY = 'q'
+DBAS_API2_QUERY_STATEMENTS = Template('''
+{
+  issue(uid: $discussion_id) {
+    statements {
+      uid
+    }
+  }
+}
+''')
+DBAS_API2_QUERY_ARGUMENTS = Template('''
+{
+  issue(uid: $discussion_id) {
+    arguments {
+      uid
+      isSupportive
+      premisegroup {
+        premises {
+          statementUid
+        }
+      }
+      conclusionUid
+      argumentUid
+    }
+  }
+}
+''')
+DBAS_API2_QUERY_OPINION = Template('''
+{
+  user(uid: $user_id) {
+    clickedStatements(isValid: true) {
+      statement {
+        uid
+        isUpvote
+      }
+    }
+  }
+}
+''')
+
+# DBAS API v1: interface keywords
 DBAS_KEYWORD_ACCEPTED_STATEMENTS_EXPLICIT = 'marked_statements'
 DBAS_KEYWORD_ACCEPTED_STATEMENTS_IMPLICIT = 'accepted_statements_via_click'
 DBAS_KEYWORD_REJECTED_STATEMENTS_IMPLICIT = 'rejected_statements_via_click'

@@ -41,14 +41,13 @@ def load_dbas_graph_data_v2(discussion_id):
     base_url = DBAS_BASE_URL + DBAS_API2_BASE_PATH
 
     # Fetch statements
-    params_statements = {'q': 'query{issue(uid: %s){statements {uid}}}' % str(discussion_id)}
+    params_statements = {DBAS_API2_QUERY_KEY: DBAS_API2_QUERY_STATEMENTS.substitute(discussion_id=discussion_id)}
     query_string_statements = urllib.parse.urlencode(params_statements)
     url_statements = base_url + '?' + query_string_statements
     logging.debug('API_v2 statements URL: %s' % url_statements)
 
     # Fetch arguments
-    params_arguments = {'q': 'query{issue(uid: ' + str(discussion_id) + ') {arguments {uid isSupportive premisegroup'
-                             '{premises {statementUid}} conclusionUid argumentUid}}}'}
+    params_arguments = {DBAS_API2_QUERY_KEY: DBAS_API2_QUERY_ARGUMENTS.substitute(discussion_id=discussion_id)}
     query_string_arguments = urllib.parse.urlencode(params_arguments)
     url_arguments = base_url + '?' + query_string_arguments
     logging.debug('API_v2 arguments URL: %s' % url_arguments)
@@ -107,18 +106,7 @@ def load_dbas_user_data_v2(discussion_id, user_id):
     base_url = DBAS_BASE_URL + DBAS_API2_BASE_PATH
 
     # Fetch user opinions
-    params_user = {'q': '''
-        {
-          user(uid: %s) {
-            clickedStatements(isValid: true) {
-              statement {
-                uid
-                isUpvote
-              }
-            }
-          }
-        }
-    ''' % str(user_id)}
+    params_user = {DBAS_API2_QUERY_KEY: DBAS_API2_QUERY_OPINION.substitute(user_id=user_id)}
     query_string_user = urllib.parse.urlencode(params_user)
     url_user = base_url + '?' + query_string_user
 
@@ -141,7 +129,8 @@ def load_dbas_user_data_v1(discussion_id, user_id):
     :type user_id: int
     :return: json string representation of the user opinion
     """
-    user_url = DBAS_BASE_URL + DBAS_API1_BASE_PATH + '/' + DBAS_API1_PATH_USER_DATA + '/{}/{}'.format(user_id, discussion_id)
+    user_url = '{}{}/{}/{}/{}'.format(DBAS_BASE_URL, DBAS_API1_BASE_PATH,
+                                      DBAS_API1_PATH_USER_DATA, user_id, discussion_id)
     user_response = urllib.request.urlopen(user_url).read()
     user_export = user_response.decode('utf-8')
     while isinstance(user_export, str):
