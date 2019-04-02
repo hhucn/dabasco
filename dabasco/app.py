@@ -107,7 +107,18 @@ def load_dbas_user_data_v2(discussion_id, user_id):
     base_url = DBAS_BASE_URL + DBAS_API2_BASE_PATH
 
     # Fetch user opinions
-    params_user = {'q': 'TODO'}
+    params_user = {'q': '''
+        {
+          user(uid: %s) {
+            clickedStatements(isValid: true) {
+              statement {
+                uid
+                isUpvote
+              }
+            }
+          }
+        }
+    ''' % str(user_id)}
     query_string_user = urllib.parse.urlencode(params_user)
     url_user = base_url + '?' + query_string_user
 
