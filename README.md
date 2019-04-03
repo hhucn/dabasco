@@ -10,17 +10,17 @@ To install required python packages, execute:
 
     make dependencies
     
+To run the tests, execute:
+
+    make test
+
 To run the service, execute:
 
     make run
     
-This module requires a running D-BAS instance on localhost.
-Alternatively, you can provide the D-BAS export interface yourself and serve the json export for the graph data and user opinion data at (respectively):
-
-    http://localhost:4284/export/doj/<discussion_id>
-    http://localhost:4284/export/doj_user/<user_id>/<discussion_id>
+This module requires a running D-BAS instance to fetch data. Configure the D-BAS host address and the API version of that D-BAS instance in `config.py` (API version 1 for D-BAS v1.4.2 or older, API version 2 for D-BAS v1.17.0 or newer).
     
-A small python web app that serves example D-BAS data is included. To run it, execute:
+A small python web app that serves example D-BAS data (API version 1) is included. To run it, execute:
 
     python3 dbas_export_mockup.py
     
@@ -42,7 +42,7 @@ To get a different encoding, where the user opinion is strictly enforced, use:
 
 Example pipeline for Dung AF evaluation using the [conarg](http://www.dmi.unipg.it/conarg/) solver (get preferred extensions of discussion 2, use user opinion 1):
 
-    curl -s 'http://localhost:5101/evaluate/dungify/dis/2/user/1' | jq -r '.af' > temp; ./conarg2 -e preferred temp; rm temp;
+    conarg -e preferred <(curl -s 'http://localhost:5101/evaluate/dungify/dis/2/user/1' | jq -r '.af')
     
 Web sources:
 
@@ -93,7 +93,7 @@ You can configure dabasco to use strict ADF rules (instead of defeasible rules, 
          
 Example pipeline for ADF evaluation using [YADF](https://www.dbai.tuwien.ac.at/proj/adf/yadf/), [lpopt](https://www.dbai.tuwien.ac.at/research/project/lpopt/), [gringo and clasp](https://potassco.org/) (get preferred models for user 1 in discussion 2):
 
-    curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf' > temp.dl; java -jar yadf.jar -prf temp.dl | lpopt | gringo | clasp -n 0 --outf=2; rm temp.dl;   
+    java -jar yadf.jar -prf <(curl -s 'http://localhost:5101/evaluate/adfify/dis/2/user/1' | jq -r '.adf') | lpopt | gringo | clasp -n 0   
      
 Web sources:
 
